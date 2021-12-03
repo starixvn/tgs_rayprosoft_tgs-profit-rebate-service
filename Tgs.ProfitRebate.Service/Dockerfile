@@ -10,7 +10,7 @@ ARG BuildConfiguration=Release
 RUN --mount=type=secret,id=nuget,dst=/pat cp /pat ~/.nuget/NuGet/NuGet.Config
 RUN dotnet nuget remove source 'Microsoft Visual Studio Offline Packages' || true
 WORKDIR /src
-COPY ["NuGet.Config", "."]
+COPY ["nuget.config", "."]
 COPY ["Tgs.ProfitRebate.Service/Tgs.ProfitRebate.Service.csproj", "Tgs.ProfitRebate.Service/"]
 COPY ["Tgs.ProfitRebate.ApiClientLogger/Tgs.ProfitRebate.ApiClientLogger.csproj", "Tgs.ProfitRebate.ApiClientLogger/"]
 COPY ["Tgs.ProfitRebate.Core/Tgs.ProfitRebate.Core.csproj", "Tgs.ProfitRebate.Core/"]

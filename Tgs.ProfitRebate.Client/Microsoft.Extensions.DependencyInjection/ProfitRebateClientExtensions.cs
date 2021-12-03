@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Tgs.ProfitRebate.Client;
 using Microsoft.Extensions.Options;
+using Tgs.ProfitRebate.Client;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ProfitRebateClientExtensions
     {
-        public static IServiceCollection AddProfitRebateClient(this IServiceCollection services, 
+        public static IServiceCollection AddProfitRebateClient(this IServiceCollection services,
             IConfiguration configuration, string configSectionName = "ProfitRebate")
         {
             services.Configure<ClientSettings>(configuration.GetSection(configSectionName));

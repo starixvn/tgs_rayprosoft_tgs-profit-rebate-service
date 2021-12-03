@@ -1,5 +1,5 @@
-﻿using MediatR;
-using System.Reflection;
+﻿using System.Reflection;
+using MediatR;
 using Tgs.ProfitRebate.Core;
 
 namespace Microsoft.Extensions.DependencyInjection

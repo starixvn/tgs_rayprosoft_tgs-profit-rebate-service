@@ -19,33 +19,34 @@ builder.Services
         var config = sp.GetRequiredService<IConfiguration>();
 
         options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
-    }); ;
+    });
+;
 
 builder.Services
-                .AddMessageQueue()
-                .AddNatsMessageQueue(natsConfig =>
-                {
-                    natsConfig
-                        .ConfigQueueOptions((options, sp) =>
-                        {
-                            var config = sp.GetRequiredService<IConfiguration>();
+    .AddMessageQueue()
+    .AddNatsMessageQueue(natsConfig =>
+    {
+        natsConfig
+            .ConfigQueueOptions((options, sp) =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
 
-                            options.Url = config.GetValue<string>("NatsSetting:Urls");
-                        });
-                })
-                .AddRabbitMessageQueue(config =>
-                {
-                    config
-                        .ConfigQueueOptions((options, sp) =>
-                        {
-                            var configuration = sp.GetRequiredService<IConfiguration>();
+                options.Url = config.GetValue<string>("NatsSetting:Urls");
+            });
+    })
+    .AddRabbitMessageQueue(config =>
+    {
+        config
+            .ConfigQueueOptions((options, sp) =>
+            {
+                var configuration = sp.GetRequiredService<IConfiguration>();
 
-                            configuration.GetSection("RabbitMQ").Bind(options);
-                        });
-                })
-                .ClearAllExchanges()
-                .AddRabbitGlobPatternExchange("report.error", "amq.direct")
-                .AddNatsGlobPatternExchange("*");
+                configuration.GetSection("RabbitMQ").Bind(options);
+            });
+    })
+    .ClearAllExchanges()
+    .AddRabbitGlobPatternExchange("report.error", "amq.direct")
+    .AddNatsGlobPatternExchange("*");
 
 
 builder.Services.AddControllers();

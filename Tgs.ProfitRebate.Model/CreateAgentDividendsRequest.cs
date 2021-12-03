@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Tgs.ProfitRebate.Core.Models
+namespace Tgs.ProfitRebate.Model
 {
     public class CreateAgentDividendsRequest : IRequest<MessageResponse>
     {

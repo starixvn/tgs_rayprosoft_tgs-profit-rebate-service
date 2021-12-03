@@ -7,6 +7,10 @@ namespace Tgs.ProfitRebate.Repository
 {
     public class TgsRepository : DbContext, ITgsRepository
     {
+        public TgsRepository(DbContextOptions<TgsRepository> options) : base(options)
+        {
+        }
+
         public DbSet<AgentDividend> AgentDividends { get; set; }
 
         public DbSet<Agent> Agents { get; set; }
@@ -35,10 +39,6 @@ namespace Tgs.ProfitRebate.Repository
         public DbSet<WithdrawForm> WithdrawForms { get; set; }
         public DbSet<AgentTransaction> AgentTransactions { get; set; }
         public DbSet<AgentWallet> AgentWallets { get; set; }
-
-        public TgsRepository(DbContextOptions<TgsRepository> options) : base(options)
-        {
-        }
 
         public IDbConnection GetDbConnection() =>
             Database.GetDbConnection();

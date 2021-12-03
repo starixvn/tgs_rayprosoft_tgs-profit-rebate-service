@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.Logging;
-using Tgs.ProfitRebate.Core.Models;
+using Tgs.ProfitRebate.Model;
 
 namespace Tgs.ProfitRebate.Service.Controllers
 {

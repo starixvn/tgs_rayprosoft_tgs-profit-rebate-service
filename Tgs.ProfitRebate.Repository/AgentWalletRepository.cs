@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Transactions;
-using Tgs.ProfitRebate.Repository.Enums;
+﻿using System.Transactions;
 using TGS.Core.Infrastructures.Extensions;
+using Tgs.ProfitRebate.Repository.Enums;
 
 namespace Tgs.ProfitRebate.Repository
 {
@@ -34,10 +31,10 @@ namespace Tgs.ProfitRebate.Repository
                 sql,
                 parameters: new Dictionary<string, object>
                 {
-                    {":agent_id", agentId},
-                    {":wallet_id", walletId},
-                    {":amount", amount},
-                    {":updated_on", updatedOn}
+                    { ":agent_id", agentId },
+                    { ":wallet_id", walletId },
+                    { ":amount", amount },
+                    { ":updated_on", updatedOn }
                 }).ConfigureAwait(false);
 
             await _tgsRepository.AgentTransactions
@@ -70,8 +67,7 @@ namespace Tgs.ProfitRebate.Repository
 
             if (agentWallet.AgentId == agentId)
                 return agentWallet.Balance;
-            else
-                throw new Exception("Can't find agent wallet.");
+            throw new Exception("Can't find agent wallet.");
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Transactions;
+﻿using System.Transactions;
+using Microsoft.EntityFrameworkCore;
 using Tgs.Core.Infrastructures.Utility;
-using Tgs.ProfitRebate.Core.Models;
+using Tgs.ProfitRebate.Model;
 using Tgs.ProfitRebate.Repository;
 using Tgs.ProfitRebate.Repository.Enums;
 using Tgs.ProfitRebate.Repository.Models;
@@ -12,10 +12,10 @@ namespace Tgs.ProfitRebate.Core
     {
         private readonly ITgsService<AgentDividend> _agentDividendService;
         private readonly ITgsService<Agent> _agentService;
+        private readonly IAgentWalletRepository _agentWalletRepository;
         private readonly ITgsService<Brand> _brandService;
         private readonly ITgsService<PlayerAggregate> _playerAggregateService;
         private readonly ITgsService<PlayerGameAggregate> _playerGameAggregateService;
-        private readonly IAgentWalletRepository _agentWalletRepository;
 
         public AgentDividendFactory(
             ITgsService<Agent> agentService,
@@ -35,16 +35,16 @@ namespace Tgs.ProfitRebate.Core
 
         public (DateTimeOffset, DateTimeOffset) GetInterval(SettlementIntervalType type, DateTimeOffset startDate,
             int? dayOfMonth) => type switch
-            {
-                SettlementIntervalType.Daily => (startDate, startDate),
-                SettlementIntervalType.Weekly => (DateGenerator.GetFirstDayOfWeek(startDate),
-                    DateGenerator.GetLastDayOfWeek(startDate)),
-                SettlementIntervalType.Monthly => (startDate,
-                    dayOfMonth == null
-                        ? DateGenerator.GetLastDayOfMonth(startDate.AddMonths(1))
-                        : DateGenerator.GetSpecifyDayOfMonth(startDate.AddMonths(1), dayOfMonth.Value!)),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            };
+        {
+            SettlementIntervalType.Daily => (startDate, startDate),
+            SettlementIntervalType.Weekly => (DateGenerator.GetFirstDayOfWeek(startDate),
+                DateGenerator.GetLastDayOfWeek(startDate)),
+            SettlementIntervalType.Monthly => (startDate,
+                dayOfMonth == null
+                    ? DateGenerator.GetLastDayOfMonth(startDate.AddMonths(1))
+                    : DateGenerator.GetSpecifyDayOfMonth(startDate.AddMonths(1), dayOfMonth.Value!)),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
 
         public async IAsyncEnumerable<Brand[]> GetSettlementIntervalBrands(string brandCode, DateTimeOffset queryDate)
         {
@@ -108,11 +108,11 @@ namespace Tgs.ProfitRebate.Core
                 .Where(x => x.ReportDate >= brand.CurrentSettlementFrom &&
                     x.ReportDate <= brand.CurrentSettlementTo)
                 .GroupBy(x => new
-                {
-                    x.BrandId,
-                    x.AgentId,
-                    x.PlayerCode
-                },
+                    {
+                        x.BrandId,
+                        x.AgentId,
+                        x.PlayerCode
+                    },
                     (groupItem, playerAggregates) => new
                     {
                         groupItem.AgentId,
@@ -175,10 +175,10 @@ namespace Tgs.ProfitRebate.Core
             }).ToArray();
 
             var agentData = playerData.GroupBy(x => new
-            {
-                x.BrandId,
-                x.AgentId
-            },
+                {
+                    x.BrandId,
+                    x.AgentId
+                },
                 (groupItem, playerAggregates) => new
                 {
                     groupItem.AgentId,

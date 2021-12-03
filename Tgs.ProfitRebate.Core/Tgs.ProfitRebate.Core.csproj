@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tgs.ProfitRebate.Model\Tgs.ProfitRebate.Model.csproj" />
     <ProjectReference Include="..\Tgs.ProfitRebate.Repository\Tgs.ProfitRebate.Repository.csproj" />
   </ItemGroup>
 

@@ -1,7 +1,10 @@
-﻿namespace Tgs.ProfitRebate.Core.Models
+﻿namespace Tgs.ProfitRebate.Model
 {
     public class PagedResponse<T> : MessageResponse
     {
+        public int TotalCount { get; set; }
+        public T[] Items { get; set; }
+
         public PagedResponse()
         {
         }
@@ -11,8 +14,5 @@
             TotalCount = count;
             Items = items;
         }
-
-        public int TotalCount { get; set; }
-        public T[] Items { get; set; }
     }
 }

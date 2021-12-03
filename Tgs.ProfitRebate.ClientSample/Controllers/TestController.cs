@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc;
 using Tgs.ProfitRebate.Client;
+using Tgs.ProfitRebate.Model;
 
 namespace Tgs.ProfitRebate.ClientSample.Controllers
 {
@@ -9,6 +10,7 @@ namespace Tgs.ProfitRebate.ClientSample.Controllers
     public class TestController : ControllerBase
     {
         private readonly IProfitRebateClient _client;
+
         public TestController(IProfitRebateClient client)
         {
             _client = client;
@@ -18,8 +20,7 @@ namespace Tgs.ProfitRebate.ClientSample.Controllers
         [Description("Create agent dividends")]
         public async Task CreateAgentDividendsAsync()
         {
-            var dd = await _client.CreateAgentDividendAsync(new Core.Models.CreateAgentDividendsRequest { BrandCode =null});
-            
+            var dd = await _client.CreateAgentDividendAsync(new CreateAgentDividendsRequest { BrandCode = null });
         }
     }
 }

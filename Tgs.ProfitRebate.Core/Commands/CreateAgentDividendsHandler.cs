@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MediatR;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Tgs.ProfitRebate.Model;
 using Tgs.ProfitRebate.Repository.Models;
-using Tgs.ProfitRebate.Core.Models;
 
 namespace Tgs.ProfitRebate.Core.Commands
 {
     public class CreateAgentDividendsHandler : IRequestHandler<CreateAgentDividendsRequest,
-            MessageResponse>
+        MessageResponse>
     {
         private readonly IAgentDividendFactory _agentDividendFactory;
         private readonly ITgsService<AgentDividend> _agentDividendService;
@@ -50,10 +50,10 @@ namespace Tgs.ProfitRebate.Core.Commands
                 foreach (var brand in brands)
                 {
                     if (!await _agentDividendService.GetQueries()
-                        .AnyAsync(
-                            x => x.BrandId == brand.Id && brand.CurrentSettlementFrom == x.From &&
-                                brand.CurrentSettlementTo == x.To,
-                            cancellationToken))
+                            .AnyAsync(
+                                x => x.BrandId == brand.Id && brand.CurrentSettlementFrom == x.From &&
+                                    brand.CurrentSettlementTo == x.To,
+                                cancellationToken))
                     {
                         var (autoSendDividends, manuelOrNegativeDividends, agentDividends) =
                             await _agentDividendFactory.GetAgentDividends(brand, maxNumber);

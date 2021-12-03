@@ -1,10 +1,10 @@
-﻿namespace Tgs.ProfitRebate.Core.Models
+﻿namespace Tgs.ProfitRebate.Model
 {
     public class PagedArray<T>
     {
-        public int TotalCount { get; private set; }
+        public int TotalCount { get; }
 
-        public T[] Items { get; private set; }
+        public T[] Items { get; }
 
         public PagedArray(int totalCount, T[] items)
         {

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Tgs.ProfitRebate.Core;
-using Tgs.ProfitRebate.Core.Models;
+using Tgs.ProfitRebate.Model;
 
 namespace Tgs.ProfitRebate.Core
 {
@@ -57,7 +52,8 @@ namespace Tgs.ProfitRebate.Core
 
         public static Task<PagedResponse<TModel>> CreatePagedResponseAsync<TModel>(this IEnumerable<TModel> query,
             int totalCount) =>
-            Task.FromResult(new PagedResponse<TModel> { Valid = true, TotalCount = totalCount, Items = query.ToArray() });
+            Task.FromResult(
+                new PagedResponse<TModel> { Valid = true, TotalCount = totalCount, Items = query.ToArray() });
 
         public static PagedArray<T> ToPagedArray<T>(this IQueryable<T> query, int page, int pageSize)
         {

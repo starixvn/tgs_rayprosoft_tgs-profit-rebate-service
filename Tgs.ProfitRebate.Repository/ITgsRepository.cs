@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Data;
 using Tgs.ProfitRebate.Repository.Models;
 
 namespace Tgs.ProfitRebate.Repository
 {
     public interface ITgsRepository
     {
-        DbSet<T> Set<T>() where T : class;
         DbSet<AgentDividend> AgentDividends { get; set; }
         DbSet<AgentTransaction> AgentTransactions { get; set; }
         DbSet<AgentWallet> AgentWallets { get; set; }
@@ -33,9 +32,10 @@ namespace Tgs.ProfitRebate.Repository
         DbSet<User> Users { get; set; }
 
         DbSet<WithdrawForm> WithdrawForms { get; set; }
+        IDbContextTransaction CurrentTransaction { get; }
+        DbSet<T> Set<T>() where T : class;
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         IDbConnection GetDbConnection();
-        IDbContextTransaction CurrentTransaction { get; }
     }
 }

@@ -1,18 +1,18 @@
-﻿namespace Tgs.ProfitRebate.Core.Models
+﻿namespace Tgs.ProfitRebate.Model
 {
     public class MessageResponse
     {
+        public bool Valid { get; set; }
+
+        public string Message { get; set; }
+
+        public string[] Errors { get; set; }
+
         public MessageResponse()
         {
             Valid = false;
             Message = string.Empty;
             Errors = new string[] { };
         }
-
-        public bool Valid { get; set; }
-
-        public string Message { get; set; }
-
-        public string[] Errors { get; set; }
     }
 }

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using TGS.Core.Infrastructures.Extensions;
 using Tgs.Logging;
 using Tgs.MessageQueue;
-using Tgs.ProfitRebate.Core.Models;
+using Tgs.ProfitRebate.Model;
 
 namespace Tgs.ProfitRebate.Service.Middlewares
 {

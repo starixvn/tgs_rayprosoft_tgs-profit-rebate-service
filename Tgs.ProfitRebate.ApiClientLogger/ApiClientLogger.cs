@@ -1,5 +1,5 @@
-﻿using Tgs.Logging;
-using TGS.Core.Infrastructures.Extensions;
+﻿using TGS.Core.Infrastructures.Extensions;
+using Tgs.Logging;
 
 namespace Tgs.ProfitRebate.ApiClientLogger
 {
@@ -7,7 +7,8 @@ namespace Tgs.ProfitRebate.ApiClientLogger
     {
         void LogHttpResponse(ApiLogEvent apiLogEvent);
 
-        Task LogHttpResponseAsync(HttpResponseMessage response, int executionTimeMs, string requestContent, string logPrefix);
+        Task LogHttpResponseAsync(HttpResponseMessage response, int executionTimeMs, string requestContent,
+            string logPrefix);
     }
 
     public sealed class ApiClientLogger : IApiClientLogger
@@ -24,7 +25,8 @@ namespace Tgs.ProfitRebate.ApiClientLogger
             _log.LogApi(apiLogEvent);
         }
 
-        async Task IApiClientLogger.LogHttpResponseAsync(HttpResponseMessage response, int executionTimeMs, string requestContent, string logPrefix)
+        async Task IApiClientLogger.LogHttpResponseAsync(HttpResponseMessage response, int executionTimeMs,
+            string requestContent, string logPrefix)
         {
             var request = response.RequestMessage;
             var resMessage = await response.Content?.ReadAsStringAsync();

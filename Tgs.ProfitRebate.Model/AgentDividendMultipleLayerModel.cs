@@ -1,5 +1,4 @@
-﻿
-namespace Tgs.ProfitRebate.Core.Models
+﻿namespace Tgs.ProfitRebate.Model
 {
     public class AgentDividendMultipleLayerModel
     {

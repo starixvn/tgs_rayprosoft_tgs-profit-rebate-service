@@ -1,6 +1,4 @@
-﻿using System.Data.SqlClient;
-
-namespace Tgs.ProfitRebate.Core.Models
+﻿namespace Tgs.ProfitRebate.Model
 {
     public class PageableRequest
     {

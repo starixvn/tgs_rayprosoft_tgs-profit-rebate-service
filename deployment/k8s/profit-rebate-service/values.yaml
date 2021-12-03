@@ -30,9 +30,6 @@ rabbit:
   password: devadmin
   vhost: /devhost
 
-cash:
-  url: https://localhost:44331
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

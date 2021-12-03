@@ -14,7 +14,7 @@ data:
         "Urls": "{{ .Values.nats.urls }}"
       },
       "ProfitRebate": {
-        "CashBaseUrl": "{{ .Values.cash.url }}"
+        "CashBaseUrl": "http://cashservice-api"
       },
       "RabbitMQ": {
         "RabbitMQUrl": "{{ .Values.rabbit.url }}",

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Tgs.ProfitRebate.ApiClientLogger;
 using Tgs.ProfitRebate.Client;
 
 namespace Microsoft.Extensions.DependencyInjection

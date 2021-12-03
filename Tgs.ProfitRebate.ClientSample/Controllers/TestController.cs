@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.ProfitRebate.Client;
-using Tgs.ProfitRebate.Model;
+using Tgs.ProfitRebate.Client.Models;
 
 namespace Tgs.ProfitRebate.ClientSample.Controllers
 {

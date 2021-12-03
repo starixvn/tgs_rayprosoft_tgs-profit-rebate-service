@@ -4,7 +4,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddSystemJsonSerializer()
     .AddTgsLog()
-    .ApiClientExtensions()
     .AddProfitRebateClient(builder.Configuration);
 
 builder.Services.AddNatsMessageQueue(natsConfig =>

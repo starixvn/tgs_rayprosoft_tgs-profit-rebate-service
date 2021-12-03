@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tgs.ProfitRebate.ApiClientLogger\Tgs.ProfitRebate.ApiClientLogger.csproj" />
     <ProjectReference Include="..\Tgs.ProfitRebate.Core\Tgs.ProfitRebate.Core.csproj" />
   </ItemGroup>
 

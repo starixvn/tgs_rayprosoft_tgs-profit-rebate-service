@@ -12,7 +12,6 @@ builder.Services
     .AddTgsRepository(builder.Configuration.GetConnectionString("Tgs"))
     .AddSystemJsonSerializer()
     .AddTgsLog()
-    .ApiClientExtensions()
     .AddProfitRebateCore()
     .AddCashServiceClient((options, sp) =>
     {

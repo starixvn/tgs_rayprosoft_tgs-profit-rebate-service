@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using TGS.Core.Infrastructures.Json;
-using Tgs.ProfitRebate.ApiClientLogger;
 using Tgs.ProfitRebate.Model;
 
 namespace Tgs.ProfitRebate.Client

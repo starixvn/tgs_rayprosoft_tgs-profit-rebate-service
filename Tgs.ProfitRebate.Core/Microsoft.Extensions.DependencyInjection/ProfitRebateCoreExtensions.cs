@@ -10,6 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(ITgsService<>), typeof(TgsService<>));
+            services.AddTransient<IAgentDividendFactory, AgentDividendFactory>();
 
             return services;
         }

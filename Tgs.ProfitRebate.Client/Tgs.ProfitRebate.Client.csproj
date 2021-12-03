@@ -3,19 +3,22 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TGS.Core.Infrastructures.Extensions" Version="0.0.1" />
-    <PackageReference Include="TGS.Core.Infrastructures.Json" Version="0.0.1" />
+    <PackageReference Include="TGS.Core.Infrastructures.Extensions" Version="0.0.1">
+	    <PrivateAssets>all</PrivateAssets>
+	</PackageReference>
+    <PackageReference Include="TGS.Core.Infrastructures.Json" Version="0.0.1">
+	    <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Tgs.Logging" Version="0.0.12" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Tgs.ProfitRebate.Model\Tgs.ProfitRebate.Model.csproj">
 	    <PrivateAssets>all</PrivateAssets>
-	    <ExcludeAssets>compile</ExcludeAssets>
     </ProjectReference>
   </ItemGroup>
 

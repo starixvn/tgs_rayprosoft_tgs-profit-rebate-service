@@ -1,4 +1,7 @@
-﻿using TGS.Core.Infrastructures.Extensions;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using TGS.Core.Infrastructures.Extensions;
 using Tgs.Logging;
 
 namespace Tgs.ProfitRebate.ApiClientLogger

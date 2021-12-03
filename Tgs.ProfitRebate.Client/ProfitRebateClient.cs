@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using TGS.Core.Infrastructures.Json;
 using Tgs.ProfitRebate.ApiClientLogger;
-using Tgs.ProfitRebate.Model;
+using Tgs.ProfitRebate.Client.Models;
 
 namespace Tgs.ProfitRebate.Client
 {

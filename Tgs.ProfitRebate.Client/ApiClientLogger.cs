@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using TGS.Core.Infrastructures.Extensions;
 using Tgs.Logging;
 
 namespace Tgs.ProfitRebate.Client
@@ -39,7 +38,7 @@ namespace Tgs.ProfitRebate.Client
                 Ip = string.Empty,
                 Path = request.RequestUri.AbsoluteUri.NoLongerThan(512),
                 Method = request.Method.ToString().NoLongerThan(8),
-                Prefix = logPrefix.IsNullOrEmpty() ? GetPrefix(request.RequestUri.AbsolutePath) : logPrefix,
+                Prefix = string.IsNullOrEmpty(logPrefix) ? GetPrefix(request.RequestUri.AbsolutePath) : logPrefix,
                 ServerName = Environment.MachineName.NoLongerThan(128),
                 RequestHeaders = request.Headers + request.Content?.Headers?.ToString(),
                 RequestContent = requestContent,

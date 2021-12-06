@@ -12,7 +12,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IApiClientLogger, ApiClientLogger>();
 
             services.Configure<ClientSettings>(configuration.GetSection(configSectionName));
+
             services.AddSingleton(sp => sp.GetRequiredService<IOptions<ClientSettings>>().Value);
+
             services.AddHttpClient<IProfitRebateClient, ProfitRebateClient>((sp, c) =>
             {
                 var settings = sp.GetRequiredService<ClientSettings>();

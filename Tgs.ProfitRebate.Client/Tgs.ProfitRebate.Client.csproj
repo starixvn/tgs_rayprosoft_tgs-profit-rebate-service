@@ -3,17 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.9</Version>
+    <Version>1.0.10</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="TGS.Core.Infrastructures.Extensions" Version="0.0.1" />
+    <PackageReference Include="TGS.Core.Infrastructures.Json" Version="0.0.1" />
     <PackageReference Include="Tgs.Logging" Version="0.0.12" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Tgs.ProfitRebate.ApiClientLogger\Tgs.ProfitRebate.ApiClientLogger.csproj">
-	    <PrivateAssets>all</PrivateAssets>
-    </ProjectReference>
   </ItemGroup>
 
 </Project>

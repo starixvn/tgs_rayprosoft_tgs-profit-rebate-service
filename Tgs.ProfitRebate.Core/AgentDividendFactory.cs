@@ -163,13 +163,10 @@ namespace Tgs.ProfitRebate.Core
             {
                 return brand.AgentDividendType == AgentDividendType.MultipleLayer
                     ? GetAgentDividendsByMultipleLayer(agents, agentCurrentConditions,
-                        brand.Id,
                         x.AgentId,
                         x.NetProfit,
-                        brand.CheckDividendActiveCount,
-                        brand.AgentDividendType)
+                        brand.CheckDividendActiveCount)
                     : GetAgentDividends(agents,
-                        brand.Id,
                         x.AgentId,
                         x.NetProfit);
             }).ToArray();
@@ -437,13 +434,13 @@ namespace Tgs.ProfitRebate.Core
         private static decimal GetAgentDividendPercentage(AgentDividendCondition[] agentDividendCondition,
             AgentConditionModel currentCondition, bool checkDividendActiveCount)
             => agentDividendCondition.OrderByDescending(x => x.Rank).Where(!checkDividendActiveCount,
-                    x => currentCondition.NetProfit > x.NetProfit)
+                    x => currentCondition.NetProfit >= x.NetProfit)
                 .Where(checkDividendActiveCount, x => currentCondition.ActiveCount >= x.ActiveNumber &&
-                    currentCondition.NetProfit > x.NetProfit).Select(x => x.DividendPercentage).FirstOrDefault();
+                    currentCondition.NetProfit >= x.NetProfit).Select(x => x.DividendPercentage).FirstOrDefault();
 
         private static IEnumerable<AgentDividendMultipleLayerModel> GetAgentDividendsByMultipleLayer(
-            Agent[] agents, AgentConditionModel[] agentCurrentConditions, Guid brandId, Guid agentId,
-            decimal netProfit, bool checkDividendActiveCount, AgentDividendType agentDividendType)
+            Agent[] agents, AgentConditionModel[] agentCurrentConditions, Guid agentId,
+            decimal netProfit, bool checkDividendActiveCount)
         {
             var agent = agents.First(x => x.Id == agentId);
             var currentAgentId = agentId;
@@ -463,7 +460,7 @@ namespace Tgs.ProfitRebate.Core
         }
 
         private static IEnumerable<AgentDividendMultipleLayerModel> GetAgentDividends(
-            Agent[] agents, Guid brandId, Guid agentId,
+            Agent[] agents, Guid agentId,
             decimal netProfit)
         {
             bool hasParentAgentId;
@@ -476,8 +473,7 @@ namespace Tgs.ProfitRebate.Core
 
             do
             {
-                var agentDividendPercentage =
-                    agent.AgentDividendConditions.FirstOrDefault(x => x.Rank == 1)?.DividendPercentage ?? 0M;
+                var agentDividendPercentage = agent.DividendPercentage;
 
                 yield return new AgentDividendMultipleLayerModel
                 {

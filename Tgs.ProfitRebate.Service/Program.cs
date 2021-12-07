@@ -19,7 +19,6 @@ builder.Services
 
         options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
     });
-;
 
 builder.Services
     .AddMessageQueue()

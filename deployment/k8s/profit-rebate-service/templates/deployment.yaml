@@ -25,14 +25,8 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "profit-rebate-service.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if eq .Values.namespace "prod" }}
-        - name: rds-combined-ca-bundle
-          configMap:
-            name: configmap-mongodb-pem
-        {{- end }}
       {{ if eq .Values.namespace "staging" }}
       nodeSelector:
         dedicated: nonprod

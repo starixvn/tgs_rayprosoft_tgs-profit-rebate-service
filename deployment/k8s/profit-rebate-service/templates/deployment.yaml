@@ -69,11 +69,9 @@ spec:
           livenessProbe:
             httpGet:
               path: /healthz
-              port: http
           readinessProbe:
             httpGet:
               path: /healthz
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:

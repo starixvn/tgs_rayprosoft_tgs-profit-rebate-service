@@ -34,12 +34,7 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "profit-rebate-service.labels" -}}
-helm.sh/chart: {{ include "profit-rebate-service.chart" . }}
 {{ include "profit-rebate-service.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
@@ -47,16 +42,4 @@ Selector labels
 */}}
 {{- define "profit-rebate-service.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "profit-rebate-service.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "profit-rebate-service.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "profit-rebate-service.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
 {{- end }}

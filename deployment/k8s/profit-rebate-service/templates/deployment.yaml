@@ -27,15 +27,21 @@ spec:
       serviceAccountName: {{ include "profit-rebate-service.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-       nodeSelector:
+      {{- if eq .Values.namespace "prod" }}
+        - name: rds-combined-ca-bundle
+          configMap:
+            name: configmap-mongodb-pem
+        {{- end }}
+      {{ if eq .Values.namespace "staging" }}
+      nodeSelector:
         dedicated: nonprod
       tolerations:
       - effect: NoSchedule
         key: dedicated
         operator: Equal
         value: nonprod
-      {{- end }}
-      {{- if eq .Values.namespace "prod" }}
+      {{ end }}
+      {{ if eq .Values.namespace "prod" }}
       nodeSelector:
         dedicated: prod
       tolerations:
@@ -43,7 +49,7 @@ spec:
         key: dedicated
         operator: Equal
         value: prod
-      {{- end }}
+      {{ end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -59,12 +65,6 @@ spec:
               name: appsettings
               readOnly: true
               subPath: appsettings.json
-            {{- if eq .Values.namespace "prod" }}
-            - mountPath: /etc/ssl/certs/rds-combined-ca-bundle.pem
-              name: rds-combined-ca-bundle
-              readOnly: true
-              subPath: rds-combined-ca-bundle.pem
-            {{- end }}
           livenessProbe:
             httpGet:
               path: /
@@ -75,6 +75,10 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: appsettings
+          configMap:
+            name: configmap-{{ include "profit-rebate-service.fullname" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

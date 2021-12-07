@@ -13,7 +13,7 @@ image:
 namespace: dev
 
 imagePullSecrets:
-  - name: registry-credentials
+  - name: secret-tgs-harbor
 nameOverride: "profit-rebate-service"
 fullnameOverride: "profit-rebate-service"
 

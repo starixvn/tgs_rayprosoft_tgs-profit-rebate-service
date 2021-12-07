@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "profit-rebate-service.fullname" . }}
+  namespace: {{ .Values.namespace }}
   labels:
     {{- include "profit-rebate-service.labels" . | nindent 4 }}
 spec:
@@ -67,11 +68,11 @@ spec:
               subPath: appsettings.json
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

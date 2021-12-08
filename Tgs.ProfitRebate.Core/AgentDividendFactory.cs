@@ -72,7 +72,7 @@ namespace Tgs.ProfitRebate.Core
 
             await CreateAgentDividendsAsync(
                 createAutoSendModels.ToArray(),
-                DateTimeOffset.Now);
+                DateTimeOffset.UtcNow);
 
             await _brandService.UpdateEntitiesAsync(brands);
 
@@ -340,7 +340,7 @@ namespace Tgs.ProfitRebate.Core
                             parentAgentDividends.Where(p => p.AgentId == x.agent.AgentId).Sum(s => s.Dividend),
                         AgentDividendMultipleLayerModels =
                             parentAgentDividends.Where(p => p.AgentId == x.agent.AgentId).ToArray(),
-                        CreatedOn = DateTimeOffset.Now
+                        CreatedOn = DateTimeOffset.UtcNow
                     }).Where(x => x.AgentDividendAmount != 0M).ToArray();
 
             var agentIds = agentDividends.Where(x => x.AgentDividendAmount > 0M).Select(x => x.AgentId).ToArray();
@@ -367,7 +367,7 @@ namespace Tgs.ProfitRebate.Core
                         foreach (var negativeDividend in agentNoSendDividends)
                         {
                             negativeDividend.ReferencedAgentDividendId = dividend.Id;
-                            negativeDividend.SentOn = DateTimeOffset.Now;
+                            negativeDividend.SentOn = DateTimeOffset.UtcNow;
                         }
                     }
                     else

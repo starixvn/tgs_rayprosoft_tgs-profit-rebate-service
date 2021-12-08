@@ -48,7 +48,7 @@ namespace Tgs.ProfitRebate.Repository
                     Balance = postBalance,
                     Type = transactionType,
                     Description = description,
-                    RecordedOn = DateTimeOffset.Now
+                    RecordedOn = DateTimeOffset.UtcNow
                 })
                 .ConfigureAwait(false);
 

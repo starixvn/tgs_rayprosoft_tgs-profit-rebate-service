@@ -58,8 +58,6 @@ namespace Tgs.ProfitRebate.Core.Commands
                         var (autoSendDividends, manuelOrNegativeDividends, agentDividends) =
                             await _agentDividendFactory.GetAgentDividends(brand, maxNumber);
 
-                        maxNumber += autoSendDividends.Count() + manuelOrNegativeDividends.Count();
-
                         createAutoSendModels.AddRange(autoSendDividends);
                         createModels.AddRange(manuelOrNegativeDividends);
                         updateAgentDividends.AddRange(agentDividends);

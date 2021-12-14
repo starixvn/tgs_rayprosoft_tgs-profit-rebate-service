@@ -113,11 +113,11 @@ namespace Tgs.ProfitRebate.Core
                         x.AgentId,
                         x.PlayerCode
                     },
-                    (groupItem, playerAggregates) => new
+                    (groupItem, playerAggregates) => new PlayerGroupDataModel
                     {
-                        groupItem.AgentId,
-                        groupItem.PlayerCode,
-                        groupItem.BrandId,
+                        AgentId = groupItem.AgentId.Value,
+                        PlayerCode = groupItem.PlayerCode,
+                        BrandId = groupItem.BrandId,
                         PromotionAmount = playerAggregates.Sum(p => p.PromotionAmount),
                         RebateAmount = playerAggregates.Sum(p => p.RebateAmount),
                         DepositAmount = playerAggregates.Sum(p => p.DepositAmount),
@@ -132,25 +132,7 @@ namespace Tgs.ProfitRebate.Core
                         NetProfit = playerAggregates.Sum(p
                             => p.WinLossAmount - p.AdjustmentAmount - p.RebateAmount - p.PromotionAmount -
                             p.WinLossAmount * brand.PlatformCharge / 100)
-                    })
-                .Select(x => new
-                {
-                    AgentId = x.AgentId.Value,
-                    x.PlayerCode,
-                    x.BrandId,
-                    x.PromotionAmount,
-                    x.RebateAmount,
-                    x.DepositAmount,
-                    x.WithdrawalAmount,
-                    x.AdjustmentAmount,
-                    x.BonusAmount,
-                    x.ValidBetAmount,
-                    x.OriginalTurnover,
-                    x.BetAmount,
-                    x.Turnover,
-                    x.WinLossAmount,
-                    x.NetProfit
-                }).ToArrayAsync();
+                    }).ToArrayAsync();
 
             var agentCurrentConditions = playerData.GroupBy(x => x.AgentId, (agentId, items) => new AgentConditionModel
             {

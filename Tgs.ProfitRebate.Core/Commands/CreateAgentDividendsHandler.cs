@@ -38,14 +38,14 @@ namespace Tgs.ProfitRebate.Core.Commands
             string? brandCode, DateTimeOffset queryDate,
             CancellationToken cancellationToken)
         {
-            var maxNumber = await _agentDividendService.GetQueries()
-                .MaxAsync(x => (int?)x.Id, cancellationToken) ?? 0;
-
             await foreach (var brands in _agentDividendFactory.GetSettlementIntervalBrands(brandCode, queryDate))
             {
                 var createModels = new List<CreateAgentDividendModel>();
                 var createAutoSendModels = new List<CreateAgentDividendModel>();
                 var updateAgentDividends = new List<AgentDividend>();
+
+                var maxNumber = await _agentDividendService.GetQueries()
+                    .MaxAsync(x => (int?)x.Id, cancellationToken) ?? 0;
 
                 foreach (var brand in brands)
                 {
@@ -57,8 +57,6 @@ namespace Tgs.ProfitRebate.Core.Commands
                     {
                         var (autoSendDividends, manuelOrNegativeDividends, agentDividends) =
                             await _agentDividendFactory.GetAgentDividends(brand, maxNumber);
-
-                        maxNumber += autoSendDividends.Count() + manuelOrNegativeDividends.Count();
 
                         createAutoSendModels.AddRange(autoSendDividends);
                         createModels.AddRange(manuelOrNegativeDividends);

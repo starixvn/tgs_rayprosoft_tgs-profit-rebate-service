@@ -68,11 +68,12 @@ namespace Tgs.ProfitRebate.Core
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
             await CreateAgentDividendsAsync(createModels.ToArray(), null);
-            await _agentDividendService.UpdateEntitiesAsync(updateAgentDividends.ToArray());
 
             await CreateAgentDividendsAsync(
                 createAutoSendModels.ToArray(),
                 DateTimeOffset.UtcNow);
+
+            await _agentDividendService.UpdateEntitiesAsync(updateAgentDividends.ToArray());
 
             await _brandService.UpdateEntitiesAsync(brands);
 

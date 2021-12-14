@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.Service", "Tgs.ProfitRebate.Service\Tgs.ProfitRebate.Service.csproj", "{B7E443E2-39CD-4D61-A7CD-75E187E11A6A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.Repository", "Tgs.ProfitRebate.Repository\Tgs.ProfitRebate.Repository.csproj", "{1BA36AB0-5F60-4509-B883-9EF400D3235B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.Core", "Tgs.ProfitRebate.Core\Tgs.ProfitRebate.Core.csproj", "{06B530FA-F06A-4448-9336-5CA52A5EC4D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.Client", "Tgs.ProfitRebate.Client\Tgs.ProfitRebate.Client.csproj", "{BFF3158A-2267-4D40-A1B8-A5D6C121E919}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.ClientSample", "Tgs.ProfitRebate.ClientSample\Tgs.ProfitRebate.ClientSample.csproj", "{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.Model", "Tgs.ProfitRebate.Model\Tgs.ProfitRebate.Model.csproj", "{FB21EC58-6BF3-48A9-A257-7BFF1792032E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7E443E2-39CD-4D61-A7CD-75E187E11A6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7E443E2-39CD-4D61-A7CD-75E187E11A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7E443E2-39CD-4D61-A7CD-75E187E11A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7E443E2-39CD-4D61-A7CD-75E187E11A6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BA36AB0-5F60-4509-B883-9EF400D3235B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BA36AB0-5F60-4509-B883-9EF400D3235B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BA36AB0-5F60-4509-B883-9EF400D3235B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BA36AB0-5F60-4509-B883-9EF400D3235B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06B530FA-F06A-4448-9336-5CA52A5EC4D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06B530FA-F06A-4448-9336-5CA52A5EC4D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06B530FA-F06A-4448-9336-5CA52A5EC4D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06B530FA-F06A-4448-9336-5CA52A5EC4D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFF3158A-2267-4D40-A1B8-A5D6C121E919}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFF3158A-2267-4D40-A1B8-A5D6C121E919}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFF3158A-2267-4D40-A1B8-A5D6C121E919}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFF3158A-2267-4D40-A1B8-A5D6C121E919}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB21EC58-6BF3-48A9-A257-7BFF1792032E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB21EC58-6BF3-48A9-A257-7BFF1792032E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB21EC58-6BF3-48A9-A257-7BFF1792032E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB21EC58-6BF3-48A9-A257-7BFF1792032E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8621D637-1704-4C00-869D-F281EBD33038}
+	EndGlobalSection
+EndGlobal

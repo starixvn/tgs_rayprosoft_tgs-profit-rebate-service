@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Tgs.CashService.Client" Version="0.0.14" />
+    <PackageReference Include="Tgs.Core.Infrastructures.Utility" Version="0.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tgs.ProfitRebate.Model\Tgs.ProfitRebate.Model.csproj" />
+    <ProjectReference Include="..\Tgs.ProfitRebate.Repository\Tgs.ProfitRebate.Repository.csproj" />
+  </ItemGroup>
+
+</Project>

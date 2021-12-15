@@ -68,11 +68,12 @@ namespace Tgs.ProfitRebate.Core
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
             await CreateAgentDividendsAsync(createModels.ToArray(), null);
-            await _agentDividendService.UpdateEntitiesAsync(updateAgentDividends.ToArray());
 
             await CreateAgentDividendsAsync(
                 createAutoSendModels.ToArray(),
                 DateTimeOffset.UtcNow);
+
+            await _agentDividendService.UpdateEntitiesAsync(updateAgentDividends.ToArray());
 
             await _brandService.UpdateEntitiesAsync(brands);
 
@@ -98,11 +99,12 @@ namespace Tgs.ProfitRebate.Core
         public async Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>)>
             GetAgentDividends(Brand brand, int idNumber)
         {
-            var agents = await _agentService.GetQueries().Where(x => x.BrandId == brand.Id)
+            var agents = await _agentService.GetQueries()
+                .Where(x => x.BrandId == brand.Id)
                 .Include(x => x.AgentDividendConditions)
                 .ToArrayAsync();
 
-            var playerData = await _playerAggregateService.GetQueries()
+            var playerDataModels = await _playerAggregateService.GetQueries()
                 .Where(x => x.AgentId != null)
                 .Where(x => x.BrandId == brand.Id)
                 .Where(x => x.ReportDate >= brand.CurrentSettlementFrom &&
@@ -128,29 +130,28 @@ namespace Tgs.ProfitRebate.Core
                         ValidBetAmount = playerAggregates.Sum(p => p.ValidBetAmount),
                         OriginalTurnover = playerAggregates.Sum(p => p.OriginalTurnover),
                         Turnover = playerAggregates.Sum(p => p.Turnover),
-                        WinLossAmount = playerAggregates.Sum(p => p.WinLossAmount),
-                        NetProfit = playerAggregates.Sum(p
-                            => p.WinLossAmount - p.AdjustmentAmount - p.RebateAmount - p.PromotionAmount -
-                            p.WinLossAmount * brand.PlatformCharge / 100)
-                    })
-                .Select(x => new
-                {
-                    AgentId = x.AgentId.Value,
-                    x.PlayerCode,
-                    x.BrandId,
-                    x.PromotionAmount,
-                    x.RebateAmount,
-                    x.DepositAmount,
-                    x.WithdrawalAmount,
-                    x.AdjustmentAmount,
-                    x.BonusAmount,
-                    x.ValidBetAmount,
-                    x.OriginalTurnover,
-                    x.BetAmount,
-                    x.Turnover,
-                    x.WinLossAmount,
-                    x.NetProfit
-                }).ToArrayAsync();
+                        WinLossAmount = playerAggregates.Sum(p => p.WinLossAmount)
+                    }).ToArrayAsync();
+
+            var playerData = playerDataModels.Select(x => new PlayerGroupDataModel
+            {
+                AgentId = x.AgentId.Value,
+                PlayerCode = x.PlayerCode,
+                BrandId = x.BrandId,
+                PromotionAmount = x.PromotionAmount,
+                RebateAmount = x.RebateAmount,
+                DepositAmount = x.DepositAmount,
+                WithdrawalAmount = x.WithdrawalAmount,
+                AdjustmentAmount = x.AdjustmentAmount,
+                BonusAmount = x.BonusAmount,
+                ValidBetAmount = x.ValidBetAmount,
+                OriginalTurnover = x.OriginalTurnover,
+                BetAmount = x.BetAmount,
+                Turnover = x.Turnover,
+                WinLossAmount = x.WinLossAmount,
+                NetProfit = x.WinLossAmount - x.AdjustmentAmount - x.RebateAmount - x.PromotionAmount -
+                    x.WinLossAmount * brand.PlatformCharge / 100
+            }).ToArray();
 
             var agentCurrentConditions = playerData.GroupBy(x => x.AgentId, (agentId, items) => new AgentConditionModel
             {

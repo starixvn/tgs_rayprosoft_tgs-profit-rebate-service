@@ -344,7 +344,7 @@ namespace Tgs.ProfitRebate.Core
                         CreatedOn = DateTimeOffset.UtcNow
                     }).ToArray();
 
-            var agentIds = agentDividends.Where(x => x.AgentDividendAmount > 0M).Select(x => x.AgentId).ToArray();
+            var agentIds = agentDividends.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
 
             var noSendDividends = await _agentDividendService.GetQueries()
                 .Where(x => agentIds.Contains(x.AgentId) && x.SentOn == null).ToArrayAsync()

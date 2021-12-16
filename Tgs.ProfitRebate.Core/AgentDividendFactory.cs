@@ -383,7 +383,7 @@ namespace Tgs.ProfitRebate.Core
                 agentDividends.Where(x =>
                     x.AgentDividendAmount < 0M || !x.AutoSend).ToList(),
                 noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList(),
-                agentDividends.Max(x => x.Id) ?? 0);
+                agentDividends.Max(x => x.Id) ?? idNumber);
         }
 
         private ValueTask CreateAgentDividendsAsync(CreateAgentDividendModel[] models, DateTimeOffset? sentOn) =>

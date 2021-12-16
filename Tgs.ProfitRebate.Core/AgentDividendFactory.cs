@@ -96,7 +96,7 @@ namespace Tgs.ProfitRebate.Core
             scope.Complete();
         }
 
-        public async Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>)>
+        public async Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>, int)>
             GetAgentDividends(Brand brand, int idNumber)
         {
             var agents = await _agentService.GetQueries()
@@ -382,7 +382,8 @@ namespace Tgs.ProfitRebate.Core
                     x.AgentDividendAmount >= 0M && x.AutoSend).ToList(),
                 agentDividends.Where(x =>
                     x.AgentDividendAmount < 0M || !x.AutoSend).ToList(),
-                noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList());
+                noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList(),
+                agentDividends.Max(x => x.Id) ?? 0);
         }
 
         private ValueTask CreateAgentDividendsAsync(CreateAgentDividendModel[] models, DateTimeOffset? sentOn) =>

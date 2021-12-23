@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(ITgsService<>), typeof(TgsService<>));
             services.AddTransient<IAgentDividendFactory, AgentDividendFactory>();
+            services.AddTransient<IPlayerRebateFactory, PlayerRebateFactory>();
 
             return services;
         }

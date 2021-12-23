@@ -11,6 +11,8 @@ namespace Tgs.ProfitRebate.Repository
         {
         }
 
+        public DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; }
+
         public DbSet<AgentDividend> AgentDividends { get; set; }
 
         public DbSet<Agent> Agents { get; set; }
@@ -23,6 +25,7 @@ namespace Tgs.ProfitRebate.Repository
         public DbSet<Licensee> Licensees { get; set; }
 
         public DbSet<PlayerAggregate> PlayerAggregates { get; set; }
+        public DbSet<PlayerGameAggregate> PlayerGameAggregates { get; set; }
 
         public DbSet<Player> Players { get; set; }
 
@@ -39,6 +42,12 @@ namespace Tgs.ProfitRebate.Repository
         public DbSet<WithdrawForm> WithdrawForms { get; set; }
         public DbSet<AgentTransaction> AgentTransactions { get; set; }
         public DbSet<AgentWallet> AgentWallets { get; set; }
+        public DbSet<BrandGame> BrandGames { get; set; }
+        public DbSet<BrandAllAgent> BrandAllAgents { get; set; }
+        public DbSet<BrandAllAgentGameType> BrandAllAgentGameTypes { get; set; }
+        public DbSet<BrandAllAgentGameTypeCondition> BrandAllAgentGameTypeConditions { get; set; }
+
+        public DbSet<PlayerParent> PlayerParents { get; set; }
 
         public IDbConnection GetDbConnection() =>
             Database.GetDbConnection();

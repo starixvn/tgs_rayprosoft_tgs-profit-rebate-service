@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Tgs.ProfitRebate.Repository.Models
+﻿namespace Tgs.ProfitRebate.Repository.Models
 {
     public class Department
     {

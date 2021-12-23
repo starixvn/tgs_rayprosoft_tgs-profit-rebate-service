@@ -1,5 +1,4 @@
-﻿using System;
-using Tgs.ProfitRebate.Repository.Enums;
+﻿using Tgs.ProfitRebate.Enum;
 
 namespace Tgs.ProfitRebate.Repository.Models
 {

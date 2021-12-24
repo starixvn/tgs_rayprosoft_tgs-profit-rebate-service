@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using NSubstitute;
 using NUnit.Framework;
@@ -95,8 +96,8 @@ namespace Tgs.ProfitRebate.Tests
 
         private async IAsyncEnumerable<Brand[]> GetBrands(int totalNumber)
         {
-            var enumerator = CreateBrandFixture().CreateMany<Brand>(totalNumber).AsQueryable().ToArray();
-            yield return enumerator;
+            yield return await CreateBrandFixture().CreateMany<Brand>(totalNumber).AsQueryable().BuildMock().Object
+                .ToArrayAsync();
         }
     }
 }

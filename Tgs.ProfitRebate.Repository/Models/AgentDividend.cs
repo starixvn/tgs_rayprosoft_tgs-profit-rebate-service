@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Tgs.ProfitRebate.Repository.Models
+﻿namespace Tgs.ProfitRebate.Repository.Models
 {
     public class AgentDividend
     {
@@ -40,6 +37,5 @@ namespace Tgs.ProfitRebate.Repository.Models
         public decimal ValidBetAmount { get; set; }
 
         public decimal OriginalTurnover { get; set; }
-
     }
 }

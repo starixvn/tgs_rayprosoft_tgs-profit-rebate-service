@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Tgs.ProfitRebate.Model;
 using Tgs.ProfitRebate.Repository.Models;
+using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Commands
 {

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Tgs.ProfitRebate.Repository.Enums;
+﻿using Tgs.ProfitRebate.Enum;
 
 namespace Tgs.ProfitRebate.Repository.Models
 {
     public class Brand : BaseEntity<Guid>
     {
-
         public string ApiKey { get; set; }
 
         public bool AutoSentAgentBonus { get; set; }
@@ -61,5 +58,6 @@ namespace Tgs.ProfitRebate.Repository.Models
 
         public string? TimeZoneId { get; set; }
         public AgentDividendType AgentDividendType { get; set; }
+        public virtual ICollection<VipLevel> VipLevels { get; set; }
     }
 }

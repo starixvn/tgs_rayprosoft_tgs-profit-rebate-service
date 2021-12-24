@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using TGS.Core.Infrastructures.Extensions;
 using Tgs.Logging;
 using Tgs.MessageQueue;
-using Tgs.ProfitRebate.Model;
+using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Service.Middlewares
 {
@@ -14,7 +14,7 @@ namespace Tgs.ProfitRebate.Service.Middlewares
         {
             "CreateAgentDividendsAsync",
             "CreatePlayerAggregateAsync",
-            "CreatePlayerRebatesAsync",
+            "CreateVipPlayerRebatesAsync",
             "CreateRoundAggregateAsync"
         };
 

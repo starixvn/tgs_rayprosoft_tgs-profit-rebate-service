@@ -18,6 +18,7 @@ namespace Tgs.ProfitRebate.Repository
         DbSet<Licensee> Licensees { get; set; }
 
         DbSet<PlayerAggregate> PlayerAggregates { get; set; }
+        DbSet<PlayerGameAggregate> PlayerGameAggregates { get; set; }
 
         DbSet<Player> Players { get; set; }
 
@@ -32,6 +33,14 @@ namespace Tgs.ProfitRebate.Repository
         DbSet<User> Users { get; set; }
 
         DbSet<WithdrawForm> WithdrawForms { get; set; }
+
+        DbSet<BrandGame> BrandGames { get; set; }
+
+        DbSet<PlayerParent> PlayerParents { get; set; }
+        DbSet<BrandAllAgent> BrandAllAgents { get; set; }
+        DbSet<BrandAllAgentGameType> BrandAllAgentGameTypes { get; set; }
+        DbSet<BrandAllAgentGameTypeCondition> BrandAllAgentGameTypeConditions { get; set; }
+        DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; }
         IDbContextTransaction CurrentTransaction { get; }
         DbSet<T> Set<T>() where T : class;
 

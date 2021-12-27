@@ -96,7 +96,7 @@ namespace Tgs.ProfitRebate.Core
             scope.Complete();
         }
 
-        public async Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>)>
+        public async Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>, int)>
             GetAgentDividends(Brand brand, int idNumber)
         {
             var agents = await _agentService.GetQueries()
@@ -342,9 +342,9 @@ namespace Tgs.ProfitRebate.Core
                         AgentDividendMultipleLayerModels =
                             parentAgentDividends.Where(p => p.AgentId == x.agent.AgentId).ToArray(),
                         CreatedOn = DateTimeOffset.UtcNow
-                    }).Where(x => x.AgentDividendAmount != 0M).ToArray();
+                    }).ToArray();
 
-            var agentIds = agentDividends.Where(x => x.AgentDividendAmount > 0M).Select(x => x.AgentId).ToArray();
+            var agentIds = agentDividends.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
 
             var noSendDividends = await _agentDividendService.GetQueries()
                 .Where(x => agentIds.Contains(x.AgentId) && x.SentOn == null).ToArrayAsync()
@@ -379,10 +379,11 @@ namespace Tgs.ProfitRebate.Core
             }
 
             return (agentDividends.Where(x =>
-                    x.AgentDividendAmount > 0 && x.AutoSend).ToList(),
+                    x.AgentDividendAmount >= 0M && x.AutoSend).ToList(),
                 agentDividends.Where(x =>
-                    x.AgentDividendAmount < 0 || !x.AutoSend).ToList(),
-                noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList());
+                    x.AgentDividendAmount < 0M || !x.AutoSend).ToList(),
+                noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList(),
+                agentDividends.Max(x => x.Id) ?? idNumber);
         }
 
         private ValueTask CreateAgentDividendsAsync(CreateAgentDividendModel[] models, DateTimeOffset? sentOn) =>

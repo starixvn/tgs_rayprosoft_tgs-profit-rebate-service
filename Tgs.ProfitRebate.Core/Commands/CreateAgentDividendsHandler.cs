@@ -55,8 +55,10 @@ namespace Tgs.ProfitRebate.Core.Commands
                                     brand.CurrentSettlementTo == x.To,
                                 cancellationToken))
                     {
-                        var (autoSendDividends, manuelOrNegativeDividends, agentDividends) =
+                        var (autoSendDividends, manuelOrNegativeDividends, agentDividends, backMaxNumber) =
                             await _agentDividendFactory.GetAgentDividends(brand, maxNumber);
+
+                        maxNumber = backMaxNumber;
 
                         createAutoSendModels.AddRange(autoSendDividends);
                         createModels.AddRange(manuelOrNegativeDividends);

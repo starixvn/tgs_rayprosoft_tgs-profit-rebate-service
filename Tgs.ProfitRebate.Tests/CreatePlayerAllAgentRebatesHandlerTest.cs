@@ -110,8 +110,6 @@ namespace Tgs.ProfitRebate.Tests
                 .CreateAllAgentPlayerRebatesAsync(Arg.Any<PlayerAllAgentRebateModel[]>(), Arg.Any<DateTimeOffset>());
             await fakePlayerRebateFactory.Received(1)
                 .CreatePlayerBucketsAsync(Arg.Any<CreatePlayerBucketRequest[]>());
-            await fakeCashServiceClient.Received(1)
-                .RebateAsync(Arg.Any<Guid>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string>());
         }
 
         private static Fixture CreatePlayerAllAgentTurnoverWinLossModelFixture(GameType type)

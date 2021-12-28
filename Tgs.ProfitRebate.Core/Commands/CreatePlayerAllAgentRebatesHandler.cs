@@ -97,7 +97,7 @@ namespace Tgs.ProfitRebate.Core.Commands
 
             foreach (var playerBonus in sentToPlayerRebates)
             {
-                var response = await _cashServiceClient.RebateAsync(
+                var response = await _cashServiceClient.AllAgentRebateAsync(
                     playerBonus.DefaultWalletId,
                     playerBonus.RebateAmount,
                     null,

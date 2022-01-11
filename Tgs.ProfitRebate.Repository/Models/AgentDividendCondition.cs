@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tgs.ProfitRebate.Repository.Models
+﻿namespace Tgs.ProfitRebate.Repository.Models
 {
     public class AgentDividendCondition
     {

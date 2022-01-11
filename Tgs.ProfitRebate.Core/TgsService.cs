@@ -24,7 +24,7 @@ namespace Tgs.ProfitRebate.Core
             Repository = repository;
         }
 
-        ITgsRepository ITgsService<T>.Repository => throw new NotImplementedException();
+        ITgsRepository ITgsService<T>.Repository => Repository;
 
         public async ValueTask CreateEntitiesAsync(T[] entities)
         {

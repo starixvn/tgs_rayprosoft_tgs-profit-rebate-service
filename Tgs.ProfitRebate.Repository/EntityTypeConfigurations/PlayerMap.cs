@@ -96,6 +96,11 @@ namespace Tgs.ProfitRebate.Repository.EntityTypeConfigurations
                 .HasConstraintName("fk_players_agents_agent_id")
                 .IsRequired(false);
 
+            builder.HasOne(p => p.Vip)
+                .WithMany(p => p.Players)
+                .HasForeignKey(p => p.VipId)
+                .HasConstraintName("fk_players_vip_levels_vip_id");
+
             builder.HasIndex(p => p.VipId)
                 .HasDatabaseName("ix_players_vip_id");
 

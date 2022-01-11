@@ -1,10 +1,10 @@
 ﻿using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Tgs.Core.Infrastructures.Utility;
-using Tgs.ProfitRebate.Model;
+using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository;
-using Tgs.ProfitRebate.Repository.Enums;
 using Tgs.ProfitRebate.Repository.Models;
+using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core
 {
@@ -160,17 +160,15 @@ namespace Tgs.ProfitRebate.Core
                 NetProfit = items.Sum(s => s.NetProfit)
             }).ToArray();
 
-            var parentAgentDividends = playerData.SelectMany(x =>
-            {
-                return brand.AgentDividendType == AgentDividendType.MultipleLayer
+            var parentAgentDividends = playerData.SelectMany(x
+                => brand.AgentDividendType == AgentDividendType.MultipleLayer
                     ? GetAgentDividendsByMultipleLayer(agents, agentCurrentConditions,
                         x.AgentId,
                         x.NetProfit,
                         brand.CheckDividendActiveCount)
                     : GetAgentDividends(agents,
                         x.AgentId,
-                        x.NetProfit);
-            }).ToArray();
+                        x.NetProfit)).ToArray();
 
             var agentData = playerData.GroupBy(x => new
                 {
@@ -342,7 +340,11 @@ namespace Tgs.ProfitRebate.Core
                         AgentDividendMultipleLayerModels =
                             parentAgentDividends.Where(p => p.AgentId == x.agent.AgentId).ToArray(),
                         CreatedOn = DateTimeOffset.UtcNow
-                    }).ToArray();
+                    }).Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AdjustmentAmount != 0M ||
+                    x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
+                    x.NetProfit != 0M || x.AgentDividendPercentage != 0M || x.AgentDividendAmount != 0M ||
+                    x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||
+                    x.ValidBetAmount != 0M).ToArray();
 
             var agentIds = agentDividends.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Tgs.ProfitRebate.Repository.Enums;
+﻿using Tgs.ProfitRebate.Enum;
 
 namespace Tgs.ProfitRebate.Repository.Models
 {
@@ -12,7 +10,7 @@ namespace Tgs.ProfitRebate.Repository.Models
 
         public Guid? AgentId { get; set; }
 
-        public string AreaCode { get; set; }
+        public string? AreaCode { get; set; }
 
         public int BetLimitId { get; set; }
 
@@ -24,7 +22,7 @@ namespace Tgs.ProfitRebate.Repository.Models
 
         public Guid DefaultWalletId { get; set; }
 
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         public DateTimeOffset? FirstDepositOn { get; set; }
 
@@ -32,21 +30,21 @@ namespace Tgs.ProfitRebate.Repository.Models
 
         public bool IdentityAuthentication { get; set; }
 
-        public string IdNumber { get; set; }
+        public string? IdNumber { get; set; }
 
         public DateTimeOffset LastActiveOn { get; set; }
 
         public byte[] Password { get; set; }
 
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
         public bool PhoneAuthentication { get; set; }
 
         public string PlayerCode { get; set; }
 
-        public string QQ { get; set; }
+        public string? QQ { get; set; }
 
-        public string RealName { get; set; }
+        public string? RealName { get; set; }
 
         public DateTimeOffset? RegisteredOn { get; set; }
 
@@ -56,7 +54,7 @@ namespace Tgs.ProfitRebate.Repository.Models
 
         public PlayerType Type { get; set; }
 
-        public string UpdatedByUsername { get; set; }
+        public string? UpdatedByUsername { get; set; }
 
         public DateTimeOffset UpdatedOn { get; set; }
 
@@ -64,10 +62,14 @@ namespace Tgs.ProfitRebate.Repository.Models
 
         public Guid? VipId { get; set; }
 
-        public string Wechat { get; set; }
+        public string? Wechat { get; set; }
 
         public byte[] WithdrawPassword { get; set; }
 
         public byte[] WithdrawSalt { get; set; }
+        public virtual VipLevel Vip { get; set; }
+
+        public virtual ICollection<PlayerBucket> PlayerBuckets { get; set; }
+        public virtual ICollection<Wallet> Wallets { get; set; }
     }
 }

@@ -75,16 +75,16 @@ namespace Tgs.ProfitRebate.Core.Commands
                 .Join(_playerService.GetQueries(), pb => pb.PlayerCode,
                     p => p.PlayerCode,
                     (pb, p) => new { pb, p }).Select(x => new
-                {
-                    x.pb.PlayerCode,
-                    x.pb.RebateAmount,
-                    x.p.DefaultWalletId
-                }).GroupBy(x => new { x.PlayerCode, x.DefaultWalletId }, (group, list) => new
-                {
-                    group.PlayerCode,
-                    group.DefaultWalletId,
-                    RebateAmount = list.Sum(x => x.RebateAmount)
-                }).ToArray();
+                    {
+                        x.pb.PlayerCode,
+                        x.pb.RebateAmount,
+                        x.p.DefaultWalletId
+                    }).GroupBy(x => new { x.PlayerCode, x.DefaultWalletId }, (group, list) => new
+                    {
+                        group.PlayerCode,
+                        group.DefaultWalletId,
+                        RebateAmount = list.Sum(x => x.RebateAmount)
+                    }).ToArray();
 
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
@@ -97,7 +97,7 @@ namespace Tgs.ProfitRebate.Core.Commands
 
             foreach (var playerBonus in sentToPlayerRebates)
             {
-                var response = await _cashServiceClient.AllAgentRebateAsync(
+                var response = await _cashServiceClient.DividendAllAgentRebateAsync(
                     playerBonus.DefaultWalletId,
                     playerBonus.RebateAmount,
                     null,

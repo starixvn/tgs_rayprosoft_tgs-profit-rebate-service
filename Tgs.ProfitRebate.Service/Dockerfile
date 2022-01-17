@@ -12,17 +12,18 @@ RUN dotnet nuget remove source 'Microsoft Visual Studio Offline Packages' || tru
 WORKDIR /src
 COPY ["nuget.config", "."]
 COPY ["Tgs.ProfitRebate.Service/Tgs.ProfitRebate.Service.csproj", "Tgs.ProfitRebate.Service/"]
-COPY ["Tgs.ProfitRebate.ApiClientLogger/Tgs.ProfitRebate.ApiClientLogger.csproj", "Tgs.ProfitRebate.ApiClientLogger/"]
 COPY ["Tgs.ProfitRebate.Core/Tgs.ProfitRebate.Core.csproj", "Tgs.ProfitRebate.Core/"]
 COPY ["Tgs.ProfitRebate.Repository/Tgs.ProfitRebate.Repository.csproj", "Tgs.ProfitRebate.Repository/"]
+COPY ["Tgs.ProfitRebate.Enum/Tgs.ProfitRebate.Enum.csproj", "Tgs.ProfitRebate.Enum/"]
+COPY ["Tgs.ProfitRebate.ViewModel/Tgs.ProfitRebate.ViewModel.csproj", "Tgs.ProfitRebate.ViewModel/"]
 RUN dotnet restore "Tgs.ProfitRebate.Service/Tgs.ProfitRebate.Service.csproj"
 COPY . .
 WORKDIR "/src/Tgs.ProfitRebate.Service"
-RUN dotnet build "Tgs.ProfitRebate.Service.csproj" -c ${BuildConfiguration} -o /app/build
+RUN dotnet build "Tgs.ProfitRebate.Service.csproj" -c $BuildConfiguration -o /app/build
 
 FROM build AS publish
 ARG BuildConfiguration
-RUN dotnet publish "Tgs.ProfitRebate.Service.csproj" -c ${BuildConfiguration} -o /app/publish
+RUN dotnet publish "Tgs.ProfitRebate.Service.csproj" -c $BuildConfiguration -o /app/publish
 
 FROM base AS final
 WORKDIR /app

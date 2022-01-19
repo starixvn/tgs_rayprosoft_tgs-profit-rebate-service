@@ -55,9 +55,8 @@ namespace Tgs.ProfitRebate.Core.Commands
                     result.Offset);
             }
 
-            reportDate = reportDate.ToUniversalTime();
-
-            if (await _playerRebateService.GetQueries().AnyAsync(x => x.ReportDate == reportDate, cancellationToken))
+            if (await _playerRebateService.GetQueries()
+                    .AnyAsync(x => x.ReportDate == reportDate.ToUniversalTime(), cancellationToken))
             {
                 return new MessageResponse
                 {
@@ -67,7 +66,7 @@ namespace Tgs.ProfitRebate.Core.Commands
             }
 
             var playerRebates = await _playerGameAggregateService
-                .GetQueries(q => q.Where(x => x.ReportDate == reportDate))
+                .GetQueries(q => q.Where(x => x.ReportDate == reportDate.ToUniversalTime()))
                 .GroupJoin(_brandGameRepository.GetQueries(),
                     aggregate => new { aggregate.BrandId, aggregate.GameId },
                     brandGame => new { brandGame.BrandId, brandGame.GameId },
@@ -93,7 +92,7 @@ namespace Tgs.ProfitRebate.Core.Commands
                         BrandId = x.BrandId,
                         PlayerCode = x.PlayerCode,
                         AgentId = x.AgentId,
-                        ReportDate = reportDate,
+                        ReportDate = reportDate.ToUniversalTime(),
                         VipCardGameRebatePercentage = x.VipCardGameRebatePercentage,
                         VipLiveDealerRebatePercentage = x.VipLiveDealerRebatePercentage,
                         VipLotteryRebatePercentage = x.VipLotteryRebatePercentage,
@@ -175,6 +174,8 @@ namespace Tgs.ProfitRebate.Core.Commands
                     new CreatePlayerBucketRequest(x.pb.PlayerCode, BucketType.Vip, x.pb.RebateAmount)).ToArray())
                 .ConfigureAwait(false);
 
+            scope.Complete();
+
             foreach (var playerBonus in autoSentPlayer.Join(players, pb => pb.PlayerCode, p => p.PlayerCode,
                          (pb, p) => new { pb, p }))
             {
@@ -184,8 +185,6 @@ namespace Tgs.ProfitRebate.Core.Commands
                     null,
                     null).ConfigureAwait(false);
             }
-
-            scope.Complete();
 
             return new MessageResponse
             {

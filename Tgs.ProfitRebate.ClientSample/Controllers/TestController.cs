@@ -18,12 +18,18 @@ namespace Tgs.ProfitRebate.ClientSample.Controllers
 
         [HttpPost("dividends")]
         [Description("Create agent dividends")]
-        public Task<MessageResponse?> CreateAgentDividendsAsync()
+        public ValueTask<MessageResponse> CreateAgentDividendsAsync()
             => _client.CreateAgentDividendAsync(new CreateAgentDividendsRequest(null));
+
+
+        [HttpPost("vipRebate")]
+        [Description("Create player rebates")]
+        public ValueTask<MessageResponse> CreatePlayerRebatesAsync()
+            => _client.CreatePlayerRebateAsync(new CreatePlayerRebateRequest());
 
         [HttpPost("allAgentRebate")]
         [Description("Create all agent rebates")]
-        public Task<MessageResponse?> CreatePlayerAllAgentRebatesAsync()
+        public ValueTask<MessageResponse> CreatePlayerAllAgentRebatesAsync()
             => _client.CreatePlayerAllAgentRebateAsync(new CreateAllAgentPlayerRebatesRequest(null));
     }
 }

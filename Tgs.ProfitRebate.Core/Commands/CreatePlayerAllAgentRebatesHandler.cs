@@ -46,10 +46,8 @@ namespace Tgs.ProfitRebate.Core.Commands
                     result.Offset);
             }
 
-            reportDate = reportDate.ToUniversalTime();
-
             if (await _playerAllAgentRebateService.GetQueries()
-                    .AnyAsync(x => x.ReportDate == reportDate, cancellationToken))
+                    .AnyAsync(x => x.ReportDate == reportDate.ToUniversalTime(), cancellationToken))
             {
                 return new MessageResponse
                 {
@@ -75,16 +73,16 @@ namespace Tgs.ProfitRebate.Core.Commands
                 .Join(_playerService.GetQueries(), pb => pb.PlayerCode,
                     p => p.PlayerCode,
                     (pb, p) => new { pb, p }).Select(x => new
-                    {
-                        x.pb.PlayerCode,
-                        x.pb.RebateAmount,
-                        x.p.DefaultWalletId
-                    }).GroupBy(x => new { x.PlayerCode, x.DefaultWalletId }, (group, list) => new
-                    {
-                        group.PlayerCode,
-                        group.DefaultWalletId,
-                        RebateAmount = list.Sum(x => x.RebateAmount)
-                    }).ToArray();
+                {
+                    x.pb.PlayerCode,
+                    x.pb.RebateAmount,
+                    x.p.DefaultWalletId
+                }).GroupBy(x => new { x.PlayerCode, x.DefaultWalletId }, (group, list) => new
+                {
+                    group.PlayerCode,
+                    group.DefaultWalletId,
+                    RebateAmount = list.Sum(x => x.RebateAmount)
+                }).ToArray();
 
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
@@ -213,7 +211,7 @@ namespace Tgs.ProfitRebate.Core.Commands
                     BrandId = model.BrandId,
                     PlayerCode = model.ParentPlayerCode,
                     AllAgentGameType = allAgentGameType,
-                    ReportDate = reportDate,
+                    ReportDate = reportDate.ToUniversalTime(),
                     GameType = model.GameType,
                     AllAgentRebateType = AllAgentRebateType.ValidBet,
                     Rank = validBetRebateCondition?.Rank ?? 0,
@@ -229,7 +227,7 @@ namespace Tgs.ProfitRebate.Core.Commands
                     BrandId = model.BrandId,
                     PlayerCode = model.ParentPlayerCode,
                     AllAgentGameType = allAgentGameType,
-                    ReportDate = reportDate,
+                    ReportDate = reportDate.ToUniversalTime(),
                     GameType = model.GameType,
                     AllAgentRebateType = AllAgentRebateType.WinLoss,
                     Rank = winLossRebateCondition?.Rank ?? 0,

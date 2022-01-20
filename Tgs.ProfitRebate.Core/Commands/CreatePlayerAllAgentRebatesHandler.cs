@@ -46,10 +46,8 @@ namespace Tgs.ProfitRebate.Core.Commands
                     result.Offset);
             }
 
-            reportDate = reportDate.ToUniversalTime();
-
             if (await _playerAllAgentRebateService.GetQueries()
-                    .AnyAsync(x => x.ReportDate == reportDate, cancellationToken))
+                    .AnyAsync(x => x.ReportDate == reportDate.ToUniversalTime(), cancellationToken))
             {
                 return new MessageResponse
                 {
@@ -97,7 +95,7 @@ namespace Tgs.ProfitRebate.Core.Commands
 
             foreach (var playerBonus in sentToPlayerRebates)
             {
-                var response = await _cashServiceClient.AllAgentRebateAsync(
+                var response = await _cashServiceClient.DividendAllAgentRebateAsync(
                     playerBonus.DefaultWalletId,
                     playerBonus.RebateAmount,
                     null,
@@ -213,7 +211,7 @@ namespace Tgs.ProfitRebate.Core.Commands
                     BrandId = model.BrandId,
                     PlayerCode = model.ParentPlayerCode,
                     AllAgentGameType = allAgentGameType,
-                    ReportDate = reportDate,
+                    ReportDate = reportDate.ToUniversalTime(),
                     GameType = model.GameType,
                     AllAgentRebateType = AllAgentRebateType.ValidBet,
                     Rank = validBetRebateCondition?.Rank ?? 0,
@@ -229,7 +227,7 @@ namespace Tgs.ProfitRebate.Core.Commands
                     BrandId = model.BrandId,
                     PlayerCode = model.ParentPlayerCode,
                     AllAgentGameType = allAgentGameType,
-                    ReportDate = reportDate,
+                    ReportDate = reportDate.ToUniversalTime(),
                     GameType = model.GameType,
                     AllAgentRebateType = AllAgentRebateType.WinLoss,
                     Rank = winLossRebateCondition?.Rank ?? 0,

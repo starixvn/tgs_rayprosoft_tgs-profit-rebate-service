@@ -18,8 +18,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="TGS.Core.Infrastructures.Json" Version="0.0.1" />
     <PackageReference Include="Tgs.Logging" Version="0.0.12" />
-    <PackageReference Include="Tgs.MessageQueue.Nats" Version="1.2.0" />
-    <PackageReference Include="Tgs.MessageQueue.RabbitMQ" Version="1.2.0" />
+    <PackageReference Include="Tgs.MessageQueue.Nats" Version="1.4.0" />
+    <PackageReference Include="Tgs.MessageQueue.RabbitMQ" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>

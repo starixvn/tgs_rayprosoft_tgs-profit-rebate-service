@@ -27,7 +27,7 @@ namespace Tgs.ProfitRebate.Core
                 AgentId = model.AgentId,
                 PlayerCode = model.PlayerCode,
                 ReportDate = model.ReportDate,
-                CreatedOn = DateTimeOffset.Now,
+                CreatedOn = DateTimeOffset.UtcNow,
                 SentOn = sentOn,
                 VipCardGameRebatePercentage = model.VipCardGameRebatePercentage,
                 VipLiveDealerRebatePercentage = model.VipLiveDealerRebatePercentage,
@@ -53,7 +53,9 @@ namespace Tgs.ProfitRebate.Core
         public async ValueTask<PlayerAllAgentTurnoverWinLossModel[]>
             GetPlayerTurnoverWinLossAsync(DateTimeOffset reportDate) => await _allAgentPlayerRebateService.Repository
             .BrandAllAgents
-            .Join(_allAgentPlayerRebateService.Repository.PlayerGameAggregates.Where(x => x.ReportDate == reportDate),
+            .Join(
+                _allAgentPlayerRebateService.Repository.PlayerGameAggregates.Where(x
+                    => x.ReportDate == reportDate.ToUniversalTime()),
                 brand => brand.BrandId, aggregate => aggregate.BrandId,
                 (brandAllAgent, aggregate) => new { Aggregate = aggregate, BrandAllAgent = brandAllAgent })
             .GroupJoin(_allAgentPlayerRebateService.Repository.BrandGames,

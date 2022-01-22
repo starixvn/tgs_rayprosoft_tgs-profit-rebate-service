@@ -46,6 +46,7 @@ builder.Services
     .AddRabbitGlobPatternExchange("report.error", "amq.direct")
     .AddNatsGlobPatternExchange("*");
 
+builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -68,5 +69,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 app.Run();

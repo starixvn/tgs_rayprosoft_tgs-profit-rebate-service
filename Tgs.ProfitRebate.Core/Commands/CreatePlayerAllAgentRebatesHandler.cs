@@ -69,8 +69,11 @@ namespace Tgs.ProfitRebate.Core.Commands
                 return new() { Valid = false, Message = "Has no player rebate data." };
             }
 
+            var players = _playerService.GetQueries()
+                .Where(x => playerRebates.Select(p => p.PlayerCode).Distinct().Contains(x.PlayerCode)).ToArray();
+
             var sentToPlayerRebates = playerRebates.Where(x => x.RebateAmount > 0)
-                .Join(_playerService.GetQueries(), pb => pb.PlayerCode,
+                .Join(players, pb => pb.PlayerCode,
                     p => p.PlayerCode,
                     (pb, p) => new { pb, p }).Select(x => new
                 {

@@ -149,7 +149,8 @@ namespace Tgs.ProfitRebate.Core
                 RebateAmount = model.RebateAmount
             }).ToArray());
 
-        public async ValueTask<BrandAllAgentGameTypeConditionModel[]> GetBrandAllAgentGameTypeConditionsAsync()
+        public async ValueTask<BrandAllAgentGameTypeConditionModel[]> GetBrandAllAgentGameTypeConditionsAsync(
+            Guid[] brandIds)
         {
             return await _allAgentPlayerRebateService.Repository.BrandAllAgents.Join(
                     _allAgentPlayerRebateService.Repository.BrandAllAgentGameTypes, brand => brand.BrandId,
@@ -159,6 +160,7 @@ namespace Tgs.ProfitRebate.Core
                     group => new { group.BrandId, group.GameType.AllAgentGameType },
                     condition => new { condition.BrandId, condition.AllAgentGameType },
                     (group, condition) => new { group.BrandId, group.GameType, Condition = condition })
+                .Where(x => brandIds.Contains(x.BrandId))
                 .Where(x => x.GameType.Switch)
                 .Where(x => x.GameType.HasValidBet || x.GameType.HasWinLoss)
                 .Select(x => new BrandAllAgentGameTypeConditionModel
@@ -168,6 +170,7 @@ namespace Tgs.ProfitRebate.Core
                     HasValidBet = x.GameType.HasValidBet,
                     HasWinLoss = x.GameType.HasWinLoss,
                     AllAgentGameType = x.GameType.AllAgentGameType,
+                    AllAgentRebateType = x.Condition.AllAgentRebateType,
                     Rank = x.Condition.Rank,
                     ActiveNumber = x.Condition.ActiveNumber,
                     NetProfit = x.Condition.NetProfit,

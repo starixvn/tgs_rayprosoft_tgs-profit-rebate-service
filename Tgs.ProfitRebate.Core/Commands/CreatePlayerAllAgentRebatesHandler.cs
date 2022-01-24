@@ -58,7 +58,10 @@ namespace Tgs.ProfitRebate.Core.Commands
 
             var playerTurnoverWinLoss = await _playerRebateFactory.GetPlayerTurnoverWinLossAsync(reportDate);
 
-            var brandAllAgentGameTypeConditions = await _playerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync();
+            var brandIds = playerTurnoverWinLoss.Select(x => x.BrandId).Distinct().ToArray();
+
+            var brandAllAgentGameTypeConditions =
+                await _playerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(brandIds);
 
             var playerRebates = playerTurnoverWinLoss
                 .Where(x => MatchConditionSetting(x, brandAllAgentGameTypeConditions))
@@ -114,22 +117,25 @@ namespace Tgs.ProfitRebate.Core.Commands
         private static bool MatchConditionSetting(PlayerAllAgentTurnoverWinLossModel model,
             IEnumerable<BrandAllAgentGameTypeConditionModel> conditions)
         {
-            return conditions.Any(x => model.BrandId == x.BrandId && ((int)model.GameType == (int)x.AllAgentGameType ||
-                model.GameType == GameType.Sportsbook && Consts.SportsGroup.Contains(model.GameType) ||
-                model.GameType == GameType.Slot && Consts.SlotGroup.Contains(model.GameType)));
+            return conditions.Any(x => model.BrandId == x.BrandId &&
+                ((short)model.GameType == (short)x.AllAgentGameType ||
+                    model.GameType == GameType.Sportsbook && Consts.SportsGroup.Contains(model.GameType) ||
+                    model.GameType == GameType.Slot && Consts.SlotGroup.Contains(model.GameType)));
         }
 
         private static IEnumerable<PlayerAllAgentRebateModel> GetRebates(PlayerAllAgentTurnoverWinLossModel model,
             IEnumerable<BrandAllAgentGameTypeConditionModel> gameTypeConditions, DateTimeOffset reportDate)
         {
             var conditions = gameTypeConditions.Where(x => model.BrandId == x.BrandId &&
-                ((int)model.GameType == (int)x.AllAgentGameType ||
+                ((short)model.GameType == (short)x.AllAgentGameType ||
                     model.GameType == GameType.Sportsbook && Consts.SportsGroup.Contains(model.GameType) ||
                     model.GameType == GameType.Slot && Consts.SlotGroup.Contains(model.GameType))).ToArray();
 
-            var validBetConditions = conditions.Where(x => x.HasValidBet).ToArray();
+            var validBetConditions = conditions.Where(x
+                => x.HasValidBet && (short)x.AllAgentRebateType == (short)AllAgentRebateType.ValidBet).ToArray();
 
-            var winLossConditions = conditions.Where(x => x.HasWinLoss).ToArray();
+            var winLossConditions = conditions.Where(x
+                => x.HasWinLoss && (short)x.AllAgentRebateType == (short)AllAgentRebateType.WinLoss).ToArray();
 
             var validBetRebateCondition = new BrandAllAgentGameTypeConditionModel();
             var winLossRebateCondition = new BrandAllAgentGameTypeConditionModel();

@@ -147,10 +147,10 @@ namespace Tgs.ProfitRebate.Core.Commands
             {
                 case GameType.Sportsbook or GameType.ESports:
                     allAgentGameType = AllAgentGameType.Sportsbook;
-                    validBetRebateCondition = validBetConditions
+                    validBetRebateCondition = validBetConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.SportsTurnover >= x.NetProfit);
-                    winLossRebateCondition = winLossConditions
+                    winLossRebateCondition = winLossConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.SportsWinLoss >= x.NetProfit);
                     actualTurnoverAmount = model.SportsTurnover;
@@ -158,10 +158,10 @@ namespace Tgs.ProfitRebate.Core.Commands
                     break;
                 case GameType.VirtualSports:
                     allAgentGameType = AllAgentGameType.VirtualSports;
-                    validBetRebateCondition = validBetConditions
+                    validBetRebateCondition = validBetConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.VirtualSportsTurnover >= x.NetProfit);
-                    winLossRebateCondition = winLossConditions
+                    winLossRebateCondition = winLossConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.VirtualSportsWinLoss >= x.NetProfit);
                     actualTurnoverAmount = model.VirtualSportsTurnover;
@@ -169,10 +169,10 @@ namespace Tgs.ProfitRebate.Core.Commands
                     break;
                 case GameType.LiveDealer:
                     allAgentGameType = AllAgentGameType.LiveDealer;
-                    validBetRebateCondition = validBetConditions
+                    validBetRebateCondition = validBetConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.LiveDealerTurnover >= x.NetProfit);
-                    winLossRebateCondition = winLossConditions
+                    winLossRebateCondition = winLossConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.LiveDealerWinLoss >= x.NetProfit);
                     actualTurnoverAmount = model.LiveDealerTurnover;
@@ -180,10 +180,10 @@ namespace Tgs.ProfitRebate.Core.Commands
                     break;
                 case GameType.CardGame:
                     allAgentGameType = AllAgentGameType.CardGame;
-                    validBetRebateCondition = validBetConditions
+                    validBetRebateCondition = validBetConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.CardGameTurnover >= x.NetProfit);
-                    winLossRebateCondition = winLossConditions
+                    winLossRebateCondition = winLossConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.CardGameWinLoss >= x.NetProfit);
                     actualTurnoverAmount = model.CardGameTurnover;
@@ -191,10 +191,10 @@ namespace Tgs.ProfitRebate.Core.Commands
                     break;
                 case GameType.Fishing or GameType.Arcade or GameType.Slot or GameType.TableGame:
                     allAgentGameType = AllAgentGameType.Slot;
-                    validBetRebateCondition = validBetConditions
+                    validBetRebateCondition = validBetConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.SlotTurnover >= x.NetProfit);
-                    winLossRebateCondition = winLossConditions
+                    winLossRebateCondition = winLossConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.SlotWinLoss >= x.NetProfit);
                     actualTurnoverAmount = model.SlotTurnover;
@@ -202,10 +202,10 @@ namespace Tgs.ProfitRebate.Core.Commands
                     break;
                 case GameType.Lottery:
                     allAgentGameType = AllAgentGameType.Lottery;
-                    validBetRebateCondition = validBetConditions
+                    validBetRebateCondition = validBetConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.LotteryTurnover >= x.NetProfit);
-                    winLossRebateCondition = winLossConditions
+                    winLossRebateCondition = winLossConditions.Where(x => x.AllAgentGameType == allAgentGameType)
                         .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                             model.LotteryWinLoss >= x.NetProfit);
                     actualTurnoverAmount = model.LotteryTurnover;

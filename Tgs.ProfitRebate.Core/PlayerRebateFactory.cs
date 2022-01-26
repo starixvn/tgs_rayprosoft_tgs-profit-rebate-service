@@ -27,7 +27,7 @@ namespace Tgs.ProfitRebate.Core
                 AgentId = model.AgentId,
                 PlayerCode = model.PlayerCode,
                 ReportDate = model.ReportDate,
-                CreatedOn = DateTimeOffset.Now,
+                CreatedOn = DateTimeOffset.UtcNow,
                 SentOn = sentOn,
                 VipCardGameRebatePercentage = model.VipCardGameRebatePercentage,
                 VipLiveDealerRebatePercentage = model.VipLiveDealerRebatePercentage,
@@ -53,7 +53,9 @@ namespace Tgs.ProfitRebate.Core
         public async ValueTask<PlayerAllAgentTurnoverWinLossModel[]>
             GetPlayerTurnoverWinLossAsync(DateTimeOffset reportDate) => await _allAgentPlayerRebateService.Repository
             .BrandAllAgents
-            .Join(_allAgentPlayerRebateService.Repository.PlayerGameAggregates.Where(x => x.ReportDate == reportDate),
+            .Join(
+                _allAgentPlayerRebateService.Repository.PlayerGameAggregates.Where(x
+                    => x.ReportDate == reportDate.ToUniversalTime()),
                 brand => brand.BrandId, aggregate => aggregate.BrandId,
                 (brandAllAgent, aggregate) => new { Aggregate = aggregate, BrandAllAgent = brandAllAgent })
             .GroupJoin(_allAgentPlayerRebateService.Repository.BrandGames,
@@ -147,7 +149,8 @@ namespace Tgs.ProfitRebate.Core
                 RebateAmount = model.RebateAmount
             }).ToArray());
 
-        public async ValueTask<BrandAllAgentGameTypeConditionModel[]> GetBrandAllAgentGameTypeConditionsAsync()
+        public async ValueTask<BrandAllAgentGameTypeConditionModel[]> GetBrandAllAgentGameTypeConditionsAsync(
+            Guid[] brandIds)
         {
             return await _allAgentPlayerRebateService.Repository.BrandAllAgents.Join(
                     _allAgentPlayerRebateService.Repository.BrandAllAgentGameTypes, brand => brand.BrandId,
@@ -157,6 +160,7 @@ namespace Tgs.ProfitRebate.Core
                     group => new { group.BrandId, group.GameType.AllAgentGameType },
                     condition => new { condition.BrandId, condition.AllAgentGameType },
                     (group, condition) => new { group.BrandId, group.GameType, Condition = condition })
+                .Where(x => brandIds.Contains(x.BrandId))
                 .Where(x => x.GameType.Switch)
                 .Where(x => x.GameType.HasValidBet || x.GameType.HasWinLoss)
                 .Select(x => new BrandAllAgentGameTypeConditionModel
@@ -166,6 +170,7 @@ namespace Tgs.ProfitRebate.Core
                     HasValidBet = x.GameType.HasValidBet,
                     HasWinLoss = x.GameType.HasWinLoss,
                     AllAgentGameType = x.GameType.AllAgentGameType,
+                    AllAgentRebateType = x.Condition.AllAgentRebateType,
                     Rank = x.Condition.Rank,
                     ActiveNumber = x.Condition.ActiveNumber,
                     NetProfit = x.Condition.NetProfit,

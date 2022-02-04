@@ -41,8 +41,8 @@ namespace Tgs.ProfitRebate.Core
                 DateGenerator.GetLastDayOfWeek(startDate)),
             SettlementIntervalType.Monthly => (startDate,
                 dayOfMonth == null
-                    ? DateGenerator.GetLastDayOfMonth(startDate.AddMonths(1))
-                    : DateGenerator.GetSpecifyDayOfMonth(startDate.AddMonths(1), dayOfMonth.Value!)),
+                    ? DateGenerator.GetLastDayOfMonth(startDate)
+                    : DateGenerator.GetSpecifyDayOfMonth(startDate, dayOfMonth.Value!)),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
 

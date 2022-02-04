@@ -10,14 +10,6 @@ namespace Tgs.ProfitRebate.Service.Middlewares
 {
     public class ExceptionMiddleware
     {
-        private static readonly string[] _MethodNotifies =
-        {
-            "CreateAgentDividendsAsync",
-            "CreatePlayerAggregateAsync",
-            "CreateVipPlayerRebatesAsync",
-            "CreateRoundAggregateAsync"
-        };
-
         private readonly IMessageSender _messageSender;
 
         private readonly RequestDelegate _next;
@@ -43,12 +35,9 @@ namespace Tgs.ProfitRebate.Service.Middlewares
                 log.SetLogger(name);
                 log.LogError($"Report api error on :{context.Request.Host} with message: {message}", exception);
 
-                if (_MethodNotifies.Contains(name))
-                {
-                    await _messageSender.PublishAsync("report.error",
-                            Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new ErrorMessage(message))))
-                        .ConfigureAwait(false);
-                }
+                await _messageSender.PublishAsync("report.error",
+                        Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new ErrorMessage(message))))
+                    .ConfigureAwait(false);
 
                 await context.Response.WriteAsJsonAsync(new MessageResponse
                 {

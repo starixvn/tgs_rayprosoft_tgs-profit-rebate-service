@@ -38,7 +38,7 @@ namespace Tgs.ProfitRebate.Tests
             fakePlayerRebateFactory.GetPlayerTurnoverWinLossAsync(Arg.Any<DateTimeOffset>())
                 .Returns(ValueTask.FromResult(allAgentPlayerTurnoverWinLoss.ToArray()));
 
-            fakePlayerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync()
+            fakePlayerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(Arg.Any<Guid[]>())
                 .Returns(ValueTask.FromResult(brandAllAgentGameTypeConditions.ToArray()));
 
             var players = CreatePlayerFixture("playerCode")
@@ -89,7 +89,7 @@ namespace Tgs.ProfitRebate.Tests
             fakePlayerRebateFactory.GetPlayerTurnoverWinLossAsync(Arg.Any<DateTimeOffset>())
                 .Returns(ValueTask.FromResult(playerAllAgentTurnoverWinLoss.ToArray()));
 
-            fakePlayerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync()
+            fakePlayerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(Arg.Any<Guid[]>())
                 .Returns(ValueTask.FromResult(brandAllAgentGameTypeConditions.ToArray()));
 
             var players = CreatePlayerFixture("playerCode")

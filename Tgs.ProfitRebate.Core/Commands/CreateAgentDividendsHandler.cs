@@ -67,7 +67,7 @@ namespace Tgs.ProfitRebate.Core.Commands
 
                     var (nextFrom, nextTo) =
                         _agentDividendFactory.GetInterval(brand.SettlementIntervalType,
-                            brand.NextSettlementTo.ToOffset(new(8, 0, 0)).AddDays(1),
+                            brand.NextSettlementTo.ToOffset(new(8, 0, 0)),
                             brand.SettlementDay);
 
                     brand.PreviousSettlementFrom = brand.CurrentSettlementFrom;

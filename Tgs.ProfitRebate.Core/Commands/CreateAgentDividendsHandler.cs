@@ -74,8 +74,8 @@ namespace Tgs.ProfitRebate.Core.Commands
                     brand.PreviousSettlementTo = brand.CurrentSettlementTo;
                     brand.CurrentSettlementFrom = brand.NextSettlementFrom;
                     brand.CurrentSettlementTo = brand.NextSettlementTo;
-                    brand.NextSettlementFrom = nextFrom;
-                    brand.NextSettlementTo = nextTo;
+                    brand.NextSettlementFrom = nextFrom.ToUniversalTime();
+                    brand.NextSettlementTo = nextTo.ToUniversalTime();
                 }
 
                 await _agentDividendFactory.SaveAgentDividendData(brands,

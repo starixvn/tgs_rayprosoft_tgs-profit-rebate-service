@@ -219,7 +219,7 @@ namespace Tgs.ProfitRebate.Core
                     AgentId = x.agent.Id,
                     x.agent.Username,
                     x.agent.BrandId,
-                    DividendPercentage =
+                    DividendPercentage = brand.AgentDividendType == AgentDividendType.OneLayer ? x.agent.DividendPercentage :
                         x.agent.AgentDividendConditions.FirstOrDefault(c => c.Rank == 1)?.DividendPercentage ?? 0M,
                     data?.PromotionAmount,
                     data?.RebateAmount,

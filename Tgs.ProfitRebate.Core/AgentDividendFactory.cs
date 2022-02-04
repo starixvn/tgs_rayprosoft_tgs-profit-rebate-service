@@ -34,17 +34,22 @@ namespace Tgs.ProfitRebate.Core
         }
 
         public (DateTimeOffset, DateTimeOffset) GetInterval(SettlementIntervalType type, DateTimeOffset startDate,
-            int? dayOfMonth) => type switch
+            int? dayOfMonth)
         {
-            SettlementIntervalType.Daily => (startDate, startDate),
-            SettlementIntervalType.Weekly => (DateGenerator.GetFirstDayOfWeek(startDate),
-                DateGenerator.GetLastDayOfWeek(startDate)),
-            SettlementIntervalType.Monthly => (startDate,
-                dayOfMonth == null
-                    ? DateGenerator.GetLastDayOfMonth(startDate.AddMonths(1))
-                    : DateGenerator.GetSpecifyDayOfMonth(startDate.AddMonths(1), dayOfMonth.Value!)),
-            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-        };
+            var date = startDate.AddDays(1);
+
+            return type switch
+            {
+                SettlementIntervalType.Daily => (date, date),
+                SettlementIntervalType.Weekly => (DateGenerator.GetFirstDayOfWeek(date),
+                    DateGenerator.GetLastDayOfWeek(date)),
+                SettlementIntervalType.Monthly => (date,
+                    dayOfMonth == null
+                        ? DateGenerator.GetLastDayOfMonth(date)
+                        : DateGenerator.GetSpecifyDayOfMonth(startDate.AddMonths(1), dayOfMonth.Value!)),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+        }
 
         public async IAsyncEnumerable<Brand[]> GetSettlementIntervalBrands(string brandCode, DateTimeOffset queryDate)
         {

@@ -67,15 +67,15 @@ namespace Tgs.ProfitRebate.Core.Commands
 
                     var (nextFrom, nextTo) =
                         _agentDividendFactory.GetInterval(brand.SettlementIntervalType,
-                            brand.NextSettlementTo.AddDays(1),
+                            brand.NextSettlementTo.ToOffset(new(8, 0, 0)),
                             brand.SettlementDay);
 
                     brand.PreviousSettlementFrom = brand.CurrentSettlementFrom;
                     brand.PreviousSettlementTo = brand.CurrentSettlementTo;
                     brand.CurrentSettlementFrom = brand.NextSettlementFrom;
                     brand.CurrentSettlementTo = brand.NextSettlementTo;
-                    brand.NextSettlementFrom = nextFrom;
-                    brand.NextSettlementTo = nextTo;
+                    brand.NextSettlementFrom = nextFrom.ToUniversalTime();
+                    brand.NextSettlementTo = nextTo.ToUniversalTime();
                 }
 
                 await _agentDividendFactory.SaveAgentDividendData(brands,

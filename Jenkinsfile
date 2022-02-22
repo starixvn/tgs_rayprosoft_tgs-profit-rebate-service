@@ -118,7 +118,6 @@ pipeline {
                                     --set rabbit.user="$tgs_rabbit_user" \
                                     --set rabbit.password="$tgs_rabbit_pass" \
                                     --set rabbit.vhost="$tgs_rabbit_vhost" \
-                                    --set cash.url="$tgs_cash_url" \
                                     -f -
                                 {
                                     "nodeSelector": $node_selector,
@@ -138,7 +137,6 @@ pipeline {
                                     --set rabbit.user="$tgs_rabbit_user" \
                                     --set rabbit.password="$tgs_rabbit_pass" \
                                     --set rabbit.vhost="$tgs_rabbit_vhost" \
-                                    --set cash.url="$tgs_cash_url" \
                                     -f - | kubectl -n ${kube_ns} apply -f -
                                 {
                                     "nodeSelector": $node_selector,

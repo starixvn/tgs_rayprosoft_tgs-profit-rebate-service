@@ -118,7 +118,7 @@ pipeline {
                                     --set rabbit.user="$tgs_rabbit_user" \
                                     --set rabbit.password="$tgs_rabbit_pass" \
                                     --set rabbit.vhost="$tgs_rabbit_vhost" \
-                                    --set cash.url="$tgs_cash_url"
+                                    --set cash.url="$tgs_cash_url" \
                                     -f -
                                 {
                                     "nodeSelector": $node_selector,

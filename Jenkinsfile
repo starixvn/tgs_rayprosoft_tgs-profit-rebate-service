@@ -105,6 +105,10 @@ pipeline {
                             def resources = getResources(env.k8s_config, env.kube_ns, "profit-rebate-service")
                             def dedicated = getTgsSettings(env.k8s_config, env.kube_ns, "dedicated")
                             def node_selector = getTgsSettings(env.k8s_config, env.kube_ns, "node-selector")
+                            
+                            println resources
+                            println dedicated
+                            println node_selector
 
                             sh """
                                 cat << EOF | yq e -P |  helm template deployment/k8s/profit-rebate-service \

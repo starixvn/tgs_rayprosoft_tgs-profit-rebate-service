@@ -55,6 +55,18 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: Profit-Rebate-Service({{ .Release.Namespace }})
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ConnectionStrings__Tgs
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: tgs
           volumeMounts:
             - mountPath: /config/appsettings.json
               name: appsettings

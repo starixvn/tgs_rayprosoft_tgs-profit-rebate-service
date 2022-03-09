@@ -4,16 +4,16 @@ namespace Tgs.ProfitRebate.Core.Workers
 {
     public interface IAgentDividendTaskQueue
     {
-        ValueTask QueueBackgroundWorkItemAsync(
-            (Func<AgentDividendQueueModel, ValueTask> func, AgentDividendQueueModel model) workItem);
+        ValueTask QueueAgentDividendAsync(
+            AgentDividendQueueModel model);
 
-        ValueTask<(Func<AgentDividendQueueModel, ValueTask> func, AgentDividendQueueModel model)> DequeueAsync(
+        ValueTask<AgentDividendQueueModel> DequeueAsync(
             CancellationToken cancellationToken);
     }
 
     public class AgentDividendTaskQueue : IAgentDividendTaskQueue
     {
-        private readonly Channel<(Func<AgentDividendQueueModel, ValueTask>, AgentDividendQueueModel)> _queue;
+        private readonly Channel<AgentDividendQueueModel> _queue;
 
         public AgentDividendTaskQueue(int capacity)
         {
@@ -22,27 +22,27 @@ namespace Tgs.ProfitRebate.Core.Workers
                 FullMode = BoundedChannelFullMode.Wait
             };
             _queue = Channel
-                .CreateBounded<(Func<AgentDividendQueueModel, ValueTask>, AgentDividendQueueModel)>(options);
+                .CreateBounded<AgentDividendQueueModel>(options);
         }
 
-        public async ValueTask QueueBackgroundWorkItemAsync(
-            (Func<AgentDividendQueueModel, ValueTask> func, AgentDividendQueueModel model) workItem)
+        public async ValueTask QueueAgentDividendAsync(
+            AgentDividendQueueModel model)
         {
-            if (workItem.func == null)
+            if (model == null)
             {
-                throw new ArgumentNullException(nameof(workItem));
+                throw new ArgumentNullException(nameof(model));
             }
 
-            await _queue.Writer.WriteAsync(workItem);
+            await _queue.Writer.WriteAsync(model);
         }
 
-        public async ValueTask<(Func<AgentDividendQueueModel, ValueTask> func, AgentDividendQueueModel model)>
+        public async ValueTask<AgentDividendQueueModel>
             DequeueAsync(
                 CancellationToken cancellationToken)
         {
             var workItem = await _queue.Reader.ReadAsync(cancellationToken);
 
-            return (workItem.Item1, workItem.Item2);
+            return workItem;
         }
     }
 }

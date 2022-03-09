@@ -1,3 +1,4 @@
+using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.Service.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureAppConfiguration((_, builder) =>
 {
     builder.AddJsonFile("/config/appsettings.json", true);
+}).ConfigureServices((context, services) =>
+{
+    services.AddHostedService<AgentDividendBackground>();
+    services.AddSingleton<IAgentDividendTaskQueue>(_ =>
+    {
+        if (!int.TryParse(context.Configuration["QueueCapacity"], out var queueCapacity))
+        {
+            queueCapacity = 100;
+        }
+
+        return new AgentDividendTaskQueue(queueCapacity);
+    });
 });
 
 // Add services to the container.

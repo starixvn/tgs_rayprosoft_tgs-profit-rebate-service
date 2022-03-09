@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.Repository.Models;
 using Tgs.ProfitRebate.ViewModel;
 
@@ -8,25 +10,23 @@ namespace Tgs.ProfitRebate.Core.Commands
     public class CreateAgentDividendsHandler : IRequestHandler<CreateAgentDividendsRequest,
         MessageResponse>
     {
-        private readonly IAgentDividendFactory _agentDividendFactory;
-        private readonly ITgsService<AgentDividend> _agentDividendService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IAgentDividendTaskQueue _taskQueue;
 
         public CreateAgentDividendsHandler(
-            ITgsService<AgentDividend> agentDividendService,
-            IAgentDividendFactory agentDividendFactory)
+            IAgentDividendTaskQueue taskQueue,
+            IServiceProvider serviceProvider)
         {
-            _agentDividendService = agentDividendService;
-            _agentDividendFactory = agentDividendFactory;
+            _taskQueue = taskQueue;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<MessageResponse> Handle(
             CreateAgentDividendsRequest request,
             CancellationToken cancellationToken)
         {
-            var now = DateTimeOffset.Now.ToOffset(new(8, 0, 0));
-            var queryDate = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, new(8, 0, 0));
-
-            await SendAgentDividend(request.BrandCode, queryDate, cancellationToken);
+            await _taskQueue.QueueBackgroundWorkItemAsync((SendAgentDividend,
+                new AgentDividendQueueModel(request.BrandCode, cancellationToken)));
 
             return new MessageResponse
             {
@@ -34,29 +34,36 @@ namespace Tgs.ProfitRebate.Core.Commands
             };
         }
 
-        private async Task SendAgentDividend(
-            string? brandCode, DateTimeOffset queryDate,
-            CancellationToken cancellationToken)
+        private async ValueTask SendAgentDividend(AgentDividendQueueModel request)
         {
-            await foreach (var brands in _agentDividendFactory.GetSettlementIntervalBrands(brandCode, queryDate))
+            using var scope = _serviceProvider.CreateScope();
+
+            var agentDividendFactory = scope.ServiceProvider.GetRequiredService<IAgentDividendFactory>();
+            var agentDividendService = scope.ServiceProvider.GetRequiredService<ITgsService<AgentDividend>>();
+
+            var now = DateTimeOffset.Now.ToOffset(new(8, 0, 0));
+            var queryDate = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, new(8, 0, 0));
+
+            await foreach (var brands in
+                           agentDividendFactory.GetSettlementIntervalBrands(request.BrandCode, queryDate))
             {
                 var createModels = new List<CreateAgentDividendModel>();
                 var createAutoSendModels = new List<CreateAgentDividendModel>();
                 var updateAgentDividends = new List<AgentDividend>();
 
-                var maxNumber = await _agentDividendService.GetQueries()
-                    .MaxAsync(x => (int?)x.Id, cancellationToken) ?? 0;
+                var maxNumber = await agentDividendService.GetQueries()
+                    .MaxAsync(x => (int?)x.Id, request.CancellationToken) ?? 0;
 
                 foreach (var brand in brands)
                 {
-                    if (!await _agentDividendService.GetQueries()
+                    if (!await agentDividendService.GetQueries()
                             .AnyAsync(
                                 x => x.BrandId == brand.Id && brand.CurrentSettlementFrom == x.From &&
                                     brand.CurrentSettlementTo == x.To,
-                                cancellationToken))
+                                request.CancellationToken))
                     {
                         var (autoSendDividends, manuelOrNegativeDividends, agentDividends, backMaxNumber) =
-                            await _agentDividendFactory.GetAgentDividends(brand, maxNumber);
+                            await agentDividendFactory.GetAgentDividends(brand, maxNumber);
 
                         maxNumber = backMaxNumber;
 
@@ -66,7 +73,7 @@ namespace Tgs.ProfitRebate.Core.Commands
                     }
 
                     var (nextFrom, nextTo) =
-                        _agentDividendFactory.GetInterval(brand.SettlementIntervalType,
+                        agentDividendFactory.GetInterval(brand.SettlementIntervalType,
                             brand.NextSettlementTo.ToOffset(new(8, 0, 0)),
                             brand.SettlementDay);
 
@@ -78,7 +85,7 @@ namespace Tgs.ProfitRebate.Core.Commands
                     brand.NextSettlementTo = nextTo.ToUniversalTime();
                 }
 
-                await _agentDividendFactory.SaveAgentDividendData(brands,
+                await agentDividendFactory.SaveAgentDividendData(brands,
                     createModels,
                     createAutoSendModels,
                     updateAgentDividends);

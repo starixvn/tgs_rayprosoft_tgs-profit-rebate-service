@@ -76,7 +76,7 @@ pipeline {
 
         stage('Push Docker Image') {
 			steps {
-                sh 'sudo docker push $ImageName:${TAG}'
+                sh 'docker push $ImageName:${TAG}'
 			}
 		}
 

@@ -4,6 +4,6 @@ namespace Tgs.ProfitRebate.ViewModel
 {
     public class CreateAgentDividendsRequest : IRequest<MessageResponse>
     {
-        public string? BrandCode { get; set; }
+        public string BrandCode { get; init; } = default!;
     }
 }

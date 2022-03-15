@@ -34,7 +34,15 @@ namespace Tgs.ProfitRebate.Repository.EntityTypeConfigurations
                 .HasPrecision(18, 6)
                 .IsRequired();
 
-            builder.Property(b => b.AdjustmentAmount)
+            builder.Property(b => b.CompanyAdjustAmount)
+                .HasPrecision(18, 6)
+                .IsRequired();
+
+            builder.Property(b => b.AgentAdjustAmount)
+                .HasPrecision(18, 6)
+                .IsRequired();
+
+            builder.Property(b => b.SystemAdjustAmount)
                 .HasPrecision(18, 6)
                 .IsRequired();
 
@@ -81,12 +89,12 @@ namespace Tgs.ProfitRebate.Repository.EntityTypeConfigurations
                 .IsRequired();
 
             builder.HasIndex(b => new
-            {
-                b.ReportDate,
-                b.BrandId,
-                b.AgentId,
-                b.PlayerCode
-            })
+                {
+                    b.ReportDate,
+                    b.BrandId,
+                    b.AgentId,
+                    b.PlayerCode
+                })
                 .HasDatabaseName("ix_player_aggregates_multiple_keys");
 
             builder.HasIndex(b => new { b.AgentId })

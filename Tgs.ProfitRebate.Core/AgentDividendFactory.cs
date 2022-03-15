@@ -129,7 +129,8 @@ namespace Tgs.ProfitRebate.Core
                         RebateAmount = playerAggregates.Sum(p => p.RebateAmount),
                         DepositAmount = playerAggregates.Sum(p => p.DepositAmount),
                         WithdrawalAmount = playerAggregates.Sum(p => p.WithdrawalAmount),
-                        AdjustmentAmount = playerAggregates.Sum(p => p.AdjustmentAmount),
+                        CompanyAdjustAmount = playerAggregates.Sum(p => p.CompanyAdjustAmount),
+                        AgentAdjustAmount = playerAggregates.Sum(p => p.AgentAdjustAmount),
                         BonusAmount = playerAggregates.Sum(p => p.RebateAmount + p.PromotionAmount),
                         BetAmount = playerAggregates.Sum(p => p.BetAmount),
                         ValidBetAmount = playerAggregates.Sum(p => p.ValidBetAmount),
@@ -147,14 +148,15 @@ namespace Tgs.ProfitRebate.Core
                 RebateAmount = x.RebateAmount,
                 DepositAmount = x.DepositAmount,
                 WithdrawalAmount = x.WithdrawalAmount,
-                AdjustmentAmount = x.AdjustmentAmount,
+                CompanyAdjustAmount = x.CompanyAdjustAmount,
+                AgentAdjustAmount = x.AgentAdjustAmount,
                 BonusAmount = x.BonusAmount,
                 ValidBetAmount = x.ValidBetAmount,
                 OriginalTurnover = x.OriginalTurnover,
                 BetAmount = x.BetAmount,
                 Turnover = x.Turnover,
                 WinLossAmount = x.WinLossAmount,
-                NetProfit = x.WinLossAmount - x.AdjustmentAmount - x.RebateAmount - x.PromotionAmount -
+                NetProfit = x.WinLossAmount - x.AgentAdjustAmount - x.RebateAmount - x.PromotionAmount -
                     x.WinLossAmount * brand.PlatformCharge / 100
             }).ToArray();
 
@@ -188,7 +190,8 @@ namespace Tgs.ProfitRebate.Core
                     RebateAmount = playerAggregates.Sum(p => p.RebateAmount),
                     DepositAmount = playerAggregates.Sum(p => p.DepositAmount),
                     WithdrawalAmount = playerAggregates.Sum(p => p.WithdrawalAmount),
-                    AdjustmentAmount = playerAggregates.Sum(p => p.AdjustmentAmount),
+                    CompanyAdjustAmount = playerAggregates.Sum(p => p.CompanyAdjustAmount),
+                    AgentAdjustAmount = playerAggregates.Sum(p => p.AgentAdjustAmount),
                     BonusAmount = playerAggregates.Sum(p => p.BonusAmount),
                     BetAmount = playerAggregates.Sum(p => p.BetAmount),
                     ValidBetAmount = playerAggregates.Sum(p => p.ValidBetAmount),
@@ -219,13 +222,15 @@ namespace Tgs.ProfitRebate.Core
                     AgentId = x.agent.Id,
                     x.agent.Username,
                     x.agent.BrandId,
-                    DividendPercentage = brand.AgentDividendType == AgentDividendType.OneLayer ? x.agent.DividendPercentage :
-                        x.agent.AgentDividendConditions.FirstOrDefault(c => c.Rank == 1)?.DividendPercentage ?? 0M,
+                    DividendPercentage = brand.AgentDividendType == AgentDividendType.OneLayer
+                        ? x.agent.DividendPercentage
+                        : x.agent.AgentDividendConditions.FirstOrDefault(c => c.Rank == 1)?.DividendPercentage ?? 0M,
                     data?.PromotionAmount,
                     data?.RebateAmount,
                     data?.DepositAmount,
                     data?.WithdrawalAmount,
-                    data?.AdjustmentAmount,
+                    data?.CompanyAdjustAmount,
+                    data?.AgentAdjustAmount,
                     data?.BonusAmount,
                     data?.BetAmount,
                     data?.ValidBetAmount,
@@ -321,7 +326,8 @@ namespace Tgs.ProfitRebate.Core
                         RebateAmount = x.agent?.RebateAmount ?? 0M,
                         DepositAmount = x.agent?.DepositAmount ?? 0M,
                         WithdrawalAmount = x.agent?.WithdrawalAmount ?? 0M,
-                        AdjustmentAmount = x.agent?.AdjustmentAmount ?? 0M,
+                        CompanyAdjustAmount = x.agent?.CompanyAdjustAmount ?? 0M,
+                        AgentAdjustAmount = x.agent?.AgentAdjustAmount ?? 0M,
                         BonusAmount = x.agent?.BonusAmount ?? 0M,
                         BetAmount = x.agent?.BetAmount ?? 0M,
                         ValidBetAmount = x.agent?.ValidBetAmount ?? 0M,
@@ -345,7 +351,7 @@ namespace Tgs.ProfitRebate.Core
                         AgentDividendMultipleLayerModels =
                             parentAgentDividends.Where(p => p.AgentId == x.agent.AgentId).ToArray(),
                         CreatedOn = DateTimeOffset.UtcNow
-                    }).Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AdjustmentAmount != 0M ||
+                    }).Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.CompanyAdjustAmount != 0M ||
                     x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
                     x.NetProfit != 0M || x.AgentDividendPercentage != 0M || x.AgentDividendAmount != 0M ||
                     x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||
@@ -406,7 +412,8 @@ namespace Tgs.ProfitRebate.Core
                 RebateAmount = model.RebateAmount,
                 DepositAmount = model.DepositAmount,
                 WithdrawalAmount = model.WithdrawalAmount,
-                AdjustmentAmount = model.AdjustmentAmount,
+                CompanyAdjustAmount = model.CompanyAdjustAmount,
+                AgentAdjustAmount = model.AgentAdjustAmount,
                 BonusAmount = model.BonusAmount,
                 BetAmount = model.BetAmount,
                 ValidBetAmount = model.ValidBetAmount,

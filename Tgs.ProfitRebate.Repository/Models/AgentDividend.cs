@@ -12,7 +12,8 @@
         public decimal RebateAmount { get; set; }
         public decimal DepositAmount { get; set; }
         public decimal WithdrawalAmount { get; set; }
-        public decimal AdjustmentAmount { get; set; }
+        public decimal CompanyAdjustAmount { get; set; }
+        public decimal AgentAdjustAmount { get; set; }
         public decimal BonusAmount { get; set; }
         public decimal BetAmount { get; set; }
         public decimal Turnover { get; set; }

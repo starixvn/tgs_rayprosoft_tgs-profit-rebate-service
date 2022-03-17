@@ -26,7 +26,7 @@
 
         public decimal WithdrawalAmount { get; set; }
 
-        public decimal AdjustmentAmount { get; set; }
+        public decimal CompanyAdjustAmount { get; set; }
 
         public decimal BonusAmount { get; set; }
 
@@ -45,5 +45,9 @@
         public decimal Turnover { get; set; }
 
         public decimal WinLossAmount { get; set; }
+
+        public decimal AgentAdjustAmount { get; set; }
+
+        public decimal SystemAdjustAmount { get; set; }
     }
 }

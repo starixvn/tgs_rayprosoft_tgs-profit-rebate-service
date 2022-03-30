@@ -18,34 +18,54 @@ namespace Tgs.ProfitRebate.Core
                     select x).Single();
         }
 
-        public static async Task<PagedResponse<TModel>> CreatePagedResponseAsync<TModel>(this IQueryable<TModel> query,
+        public static async Task<PagedResponse<TModel>> CreatePagedResponseAsync<TModel>(this IQueryable<TModel>? query,
             PageableRequest request)
         {
+            if (query == null)
+            {
+                return new()
+                {
+                    Valid = true,
+                    TotalCount = 0,
+                    Items = Array.Empty<TModel>()
+                };
+            }
+
             var result = request.SortBy == null ? query : query.OrderBy(request.GetSortOption());
 
             if (request.ShowAll || request.Rows == 0)
             {
-                var allResult = await result.ToArrayAsync();
+                var allResult = await result!.ToArrayAsync();
                 return new() { Valid = true, TotalCount = allResult.Length, Items = allResult };
             }
 
-            var pagedResult = await result.ToPagedArrayAsync(request.Page, request.Rows);
+            var pagedResult = await result!.ToPagedArrayAsync(request.Page, request.Rows);
 
             return new() { Valid = true, TotalCount = pagedResult.TotalCount, Items = pagedResult.Items };
         }
 
-        public static PagedResponse<TModel> CreatePagedResponse<TModel>(this IQueryable<TModel> query,
+        public static PagedResponse<TModel> CreatePagedResponse<TModel>(this IQueryable<TModel>? query,
             PageableRequest request)
         {
+            if (query == null)
+            {
+                return new()
+                {
+                    Valid = true,
+                    TotalCount = 0,
+                    Items = Array.Empty<TModel>()
+                };
+            }
+
             var result = request.SortBy == null ? query : query.OrderBy(request.GetSortOption());
 
             if (request.ShowAll || request.Rows == 0)
             {
-                var allResult = result.ToArray();
+                var allResult = result!.ToArray();
                 return new() { Valid = true, TotalCount = allResult.Length, Items = allResult };
             }
 
-            var pagedResult = result.ToPagedArray(request.Page, request.Rows);
+            var pagedResult = result!.ToPagedArray(request.Page, request.Rows);
 
             return new() { Valid = true, TotalCount = pagedResult.TotalCount, Items = pagedResult.Items };
         }
@@ -73,12 +93,13 @@ namespace Tgs.ProfitRebate.Core
             return new(totalCount, items);
         }
 
-        public static IQueryable<T> OrderBy<T>(this IQueryable<T> query, SortOption sortOption) =>
+        public static IQueryable<T>? OrderBy<T>(this IQueryable<T>? query, SortOption sortOption) =>
             !string.IsNullOrEmpty(sortOption.PropertyName)
-                ? query.OrderByProperty(sortOption.PropertyName, sortOption.IsDescending)
+                ? query?.OrderByProperty(sortOption.PropertyName, sortOption.IsDescending)
                 : query;
 
-        public static IQueryable<TSource> OrderByProperty<TSource>(this IQueryable<TSource> source, string propertyName,
+        public static IQueryable<TSource>? OrderByProperty<TSource>(this IQueryable<TSource> source,
+            string propertyName,
             bool descending)
         {
             var parameter = Expression.Parameter(typeof(TSource), "t");
@@ -90,7 +111,7 @@ namespace Tgs.ProfitRebate.Core
 
             var result = genericMethod.Invoke(null, new object[] { source, lambda });
 
-            return (IQueryable<TSource>)result;
+            return (IQueryable<TSource>?)result;
         }
 
 

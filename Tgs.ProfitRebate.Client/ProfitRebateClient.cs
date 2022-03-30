@@ -1,7 +1,5 @@
-﻿using System.Net.Http;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Tgs.ProfitRebate.Client.Models;
 
 namespace Tgs.ProfitRebate.Client
@@ -27,7 +25,7 @@ namespace Tgs.ProfitRebate.Client
             response.EnsureSuccessStatusCode();
 
             return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
-                new() { PropertyNameCaseInsensitive = true })!;
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
 
@@ -43,7 +41,7 @@ namespace Tgs.ProfitRebate.Client
             response.EnsureSuccessStatusCode();
 
             return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
-                new() { PropertyNameCaseInsensitive = true })!;
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
         public async ValueTask<MessageResponse> CreatePlayerAllAgentRebateAsync(
@@ -59,7 +57,7 @@ namespace Tgs.ProfitRebate.Client
             response.EnsureSuccessStatusCode();
 
             return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
-                new() { PropertyNameCaseInsensitive = true })!;
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
 
         public async ValueTask<MessageResponse> CreatePlayerVipRebateAsync(CreateVipPlayerRebatesRequest request)
@@ -74,7 +72,7 @@ namespace Tgs.ProfitRebate.Client
             response.EnsureSuccessStatusCode();
 
             return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
-                new() { PropertyNameCaseInsensitive = true })!;
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
     }
 }

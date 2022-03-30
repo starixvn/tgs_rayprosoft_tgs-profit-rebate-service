@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Tgs.Core.Infrastructures.Utility;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository;
-using Tgs.ProfitRebate.Repository.Models;
+using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core
@@ -15,14 +15,16 @@ namespace Tgs.ProfitRebate.Core
         private readonly IAgentWalletRepository _agentWalletRepository;
         private readonly ITgsService<Brand> _brandService;
         private readonly ITgsService<PlayerAggregate> _playerAggregateService;
-        private readonly ITgsService<PlayerGameAggregate> _playerGameAggregateService;
+        private readonly ITgsService<PlayerGameRebateAggregate> _playerGameAggregateService;
+        private readonly ITgsService<AdjustPlayerRecord> _adjustPlayerRecordService;
 
         public AgentDividendFactory(
             ITgsService<Agent> agentService,
             ITgsService<Brand> brandService,
             ITgsService<AgentDividend> agentDividendService,
             ITgsService<PlayerAggregate> playerAggregateService,
-            ITgsService<PlayerGameAggregate> playerGameAggregateService,
+            ITgsService<PlayerGameRebateAggregate> playerGameAggregateService,
+            ITgsService<AdjustPlayerRecord> adjustPlayerRecordService,
             IAgentWalletRepository agentWalletRepository)
         {
             _agentService = agentService;
@@ -31,6 +33,7 @@ namespace Tgs.ProfitRebate.Core
             _playerAggregateService = playerAggregateService;
             _playerGameAggregateService = playerGameAggregateService;
             _agentWalletRepository = agentWalletRepository;
+            _adjustPlayerRecordService = adjustPlayerRecordService;
         }
 
         public (DateTimeOffset, DateTimeOffset) GetInterval(SettlementIntervalType type, DateTimeOffset startDate,
@@ -136,28 +139,39 @@ namespace Tgs.ProfitRebate.Core
                         ValidBetAmount = playerAggregates.Sum(p => p.ValidBetAmount),
                         OriginalTurnover = playerAggregates.Sum(p => p.OriginalTurnover),
                         Turnover = playerAggregates.Sum(p => p.Turnover),
-                        WinLossAmount = playerAggregates.Sum(p => p.WinLossAmount)
+                        WinLossAmount = playerAggregates.Sum(p => p.WinLossAmount),
+                        NoIncludeNetProfitCompanyAdjustAmount =
+                            playerAggregates.Sum(p => p.NoIncludeNetProfitCompanyAdjustAmount),
+                        NoIncludeNetProfitAgentAdjustAmount =
+                            playerAggregates.Sum(p => p.NoIncludeNetProfitAgentAdjustAmount)
                     }).ToArrayAsync();
 
-            var playerData = playerDataModels.Select(x => new PlayerGroupDataModel
+            var playerData = playerDataModels.Select(x =>
             {
-                AgentId = x.AgentId.Value,
-                PlayerCode = x.PlayerCode,
-                BrandId = x.BrandId,
-                PromotionAmount = x.PromotionAmount,
-                RebateAmount = x.RebateAmount,
-                DepositAmount = x.DepositAmount,
-                WithdrawalAmount = x.WithdrawalAmount,
-                CompanyAdjustAmount = x.CompanyAdjustAmount,
-                AgentAdjustAmount = x.AgentAdjustAmount,
-                BonusAmount = x.BonusAmount,
-                ValidBetAmount = x.ValidBetAmount,
-                OriginalTurnover = x.OriginalTurnover,
-                BetAmount = x.BetAmount,
-                Turnover = x.Turnover,
-                WinLossAmount = x.WinLossAmount,
-                NetProfit = x.WinLossAmount - x.AgentAdjustAmount - x.RebateAmount - x.PromotionAmount -
-                    x.WinLossAmount * brand.PlatformCharge / 100
+                return new PlayerGroupDataModel
+                {
+                    AgentId = x.AgentId!.Value,
+                    PlayerCode = x.PlayerCode,
+                    BrandId = x.BrandId,
+                    PromotionAmount = x.PromotionAmount,
+                    RebateAmount = x.RebateAmount,
+                    DepositAmount = x.DepositAmount,
+                    WithdrawalAmount = x.WithdrawalAmount,
+                    CompanyAdjustAmount = x.CompanyAdjustAmount,
+                    AgentAdjustAmount = x.AgentAdjustAmount,
+                    BonusAmount = x.BonusAmount,
+                    ValidBetAmount = x.ValidBetAmount,
+                    OriginalTurnover = x.OriginalTurnover,
+                    BetAmount = x.BetAmount,
+                    Turnover = x.Turnover,
+                    WinLossAmount = x.WinLossAmount,
+                    NoIncludeNetProfitCompanyAdjustAmount = x.NoIncludeNetProfitCompanyAdjustAmount,
+                    NoIncludeNetProfitAgentAdjustAmount = x.NoIncludeNetProfitAgentAdjustAmount,
+                    NetProfit = x.WinLossAmount -
+                        (x.AgentAdjustAmount - x.NoIncludeNetProfitAgentAdjustAmount) -
+                        x.RebateAmount - x.PromotionAmount -
+                        x.WinLossAmount * brand.PlatformCharge / 100
+                };
             }).ToArray();
 
             var agentCurrentConditions = playerData.GroupBy(x => x.AgentId, (agentId, items) => new AgentConditionModel
@@ -168,7 +182,7 @@ namespace Tgs.ProfitRebate.Core
             }).ToArray();
 
             var parentAgentDividends = playerData.SelectMany(x
-                => brand.AgentDividendType == AgentDividendType.MultipleLayer
+                => brand.AgentDividendType == (short)AgentDividendType.MultipleLayer
                     ? GetAgentDividendsByMultipleLayer(agents, agentCurrentConditions,
                         x.AgentId,
                         x.NetProfit,
@@ -198,6 +212,10 @@ namespace Tgs.ProfitRebate.Core
                     OriginalTurnover = playerAggregates.Sum(p => p.OriginalTurnover),
                     Turnover = playerAggregates.Sum(p => p.Turnover),
                     WinLossAmount = playerAggregates.Sum(p => p.WinLossAmount),
+                    NoIncludeNetProfitCompanyAdjustAmount =
+                        playerAggregates.Sum(p => p.NoIncludeNetProfitCompanyAdjustAmount),
+                    NoIncludeNetProfitAgentAdjustAmount =
+                        playerAggregates.Sum(p => p.NoIncludeNetProfitAgentAdjustAmount),
                     NetProfit = playerAggregates.Sum(p => p.NetProfit)
                 });
 
@@ -222,7 +240,7 @@ namespace Tgs.ProfitRebate.Core
                     AgentId = x.agent.Id,
                     x.agent.Username,
                     x.agent.BrandId,
-                    DividendPercentage = brand.AgentDividendType == AgentDividendType.OneLayer
+                    DividendPercentage = brand.AgentDividendType == (short)AgentDividendType.OneLayer
                         ? x.agent.DividendPercentage
                         : x.agent.AgentDividendConditions.FirstOrDefault(c => c.Rank == 1)?.DividendPercentage ?? 0M,
                     data?.PromotionAmount,
@@ -237,6 +255,8 @@ namespace Tgs.ProfitRebate.Core
                     data?.OriginalTurnover,
                     data?.Turnover,
                     data?.WinLossAmount,
+                    data?.NoIncludeNetProfitCompanyAdjustAmount,
+                    data?.NoIncludeNetProfitAgentAdjustAmount,
                     data?.NetProfit
                 });
 
@@ -251,47 +271,47 @@ namespace Tgs.ProfitRebate.Core
                     },
                     (agent, playerGames) => new
                     {
-                        AgentId = agent.AgentId.Value,
+                        AgentId = agent.AgentId!.Value,
                         agent.BrandId,
                         LiveDealerWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.LiveDealer)
+                                .Where(l => l.GameType == (short)GameType.LiveDealer)
                                 .Sum(l => l.WinLoss),
                         SlotWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.Slot)
+                                .Where(l => l.GameType == (short)GameType.Slot)
                                 .Sum(l => l.WinLoss),
                         FishingWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.Fishing)
+                                .Where(l => l.GameType == (short)GameType.Fishing)
                                 .Sum(l => l.WinLoss),
                         ArcadeWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.Arcade)
+                                .Where(l => l.GameType == (short)GameType.Arcade)
                                 .Sum(l => l.WinLoss),
                         TableGameWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.TableGame)
+                                .Where(l => l.GameType == (short)GameType.TableGame)
                                 .Sum(l => l.WinLoss),
                         LotteryWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.Lottery)
+                                .Where(l => l.GameType == (short)GameType.Lottery)
                                 .Sum(l => l.WinLoss),
                         CardGameWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.CardGame)
+                                .Where(l => l.GameType == (short)GameType.CardGame)
                                 .Sum(l => l.WinLoss),
                         SportsWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.Sportsbook)
+                                .Where(l => l.GameType == (short)GameType.Sportsbook)
                                 .Sum(l => l.WinLoss),
                         ESportsWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.ESports)
+                                .Where(l => l.GameType == (short)GameType.ESports)
                                 .Sum(l => l.WinLoss),
                         VirtualSportsWinLoss =
                             playerGames
-                                .Where(l => l.GameType == GameType.VirtualSports)
+                                .Where(l => l.GameType == (short)GameType.VirtualSports)
                                 .Sum(l => l.WinLoss),
                         WinLoss = playerGames
                             .Sum(l => l.WinLoss)
@@ -334,6 +354,8 @@ namespace Tgs.ProfitRebate.Core
                         OriginalTurnover = x.agent?.OriginalTurnover ?? 0M,
                         Turnover = x.agent?.Turnover ?? 0M,
                         WinLossAmount = x.agent?.WinLossAmount ?? 0M,
+                        NoIncludeNetProfitCompanyAdjustAmount = x.agent?.NoIncludeNetProfitCompanyAdjustAmount ?? 0M,
+                        NoIncludeNetProfitAgentAdjustAmount = x.agent?.NoIncludeNetProfitAgentAdjustAmount ?? 0M,
                         NetProfit = x.agent?.NetProfit ?? 0M,
                         LiveDealerWinLoss = games?.LiveDealerWinLoss ?? 0M,
                         SlotWinLoss = games?.SlotWinLoss ?? 0M,
@@ -347,9 +369,9 @@ namespace Tgs.ProfitRebate.Core
                         VirtualSportsWinLoss = games?.VirtualSportsWinLoss ?? 0M,
                         AgentDividendPercentage = x.agent?.DividendPercentage ?? 0M,
                         AgentDividendAmount =
-                            parentAgentDividends.Where(p => p.AgentId == x.agent.AgentId).Sum(s => s.Dividend),
+                            parentAgentDividends.Where(p => p.AgentId == x.agent!.AgentId).Sum(s => s.Dividend),
                         AgentDividendMultipleLayerModels =
-                            parentAgentDividends.Where(p => p.AgentId == x.agent.AgentId).ToArray(),
+                            parentAgentDividends.Where(p => p.AgentId == x.agent!.AgentId).ToArray(),
                         CreatedOn = DateTimeOffset.UtcNow
                     }).Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.CompanyAdjustAmount != 0M ||
                     x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
@@ -402,7 +424,7 @@ namespace Tgs.ProfitRebate.Core
         private ValueTask CreateAgentDividendsAsync(CreateAgentDividendModel[] models, DateTimeOffset? sentOn) =>
             _agentDividendService.CreateEntitiesAsync(models.Select(model => new AgentDividend
             {
-                Id = model.Id.Value,
+                Id = model.Id!.Value,
                 BrandId = model.BrandId,
                 AgentId = model.AgentId,
                 From = model.From,
@@ -420,6 +442,8 @@ namespace Tgs.ProfitRebate.Core
                 OriginalTurnover = model.OriginalTurnover,
                 Turnover = model.Turnover,
                 WinLossAmount = model.WinLossAmount,
+                NoIncludeNetProfitCompanyAdjustAmount = model.NoIncludeNetProfitCompanyAdjustAmount,
+                NoIncludeNetProfitAgentAdjustAmount = model.NoIncludeNetProfitAgentAdjustAmount,
                 NetProfit = model.NetProfit,
                 LiveDealerWinLoss = model.LiveDealerWinLoss,
                 SlotWinLoss = model.SlotWinLoss,

@@ -32,7 +32,7 @@ namespace Tgs.ProfitRebate.Core
             await Repository.SaveChangesAsync();
         }
 
-        public IQueryable<T> GetQueries(Func<IQueryable<T>, IQueryable<T>> preQuery, bool tracking)
+        public IQueryable<T> GetQueries(Func<IQueryable<T>, IQueryable<T>>? preQuery, bool tracking)
         {
             preQuery ??= c => c;
             return tracking ? preQuery(Repository.Set<T>()) : preQuery(Repository.Set<T>()).AsNoTracking();

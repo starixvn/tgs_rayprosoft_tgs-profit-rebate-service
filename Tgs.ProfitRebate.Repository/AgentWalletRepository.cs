@@ -46,7 +46,7 @@ namespace Tgs.ProfitRebate.Repository
                     BrandId = brandId,
                     Amount = amount,
                     Balance = postBalance,
-                    Type = transactionType,
+                    Type = (short)transactionType,
                     Description = description,
                     RecordedOn = DateTimeOffset.UtcNow
                 })
@@ -65,7 +65,7 @@ namespace Tgs.ProfitRebate.Repository
                 .FindAsync(walletId)
                 .ConfigureAwait(false);
 
-            if (agentWallet.AgentId == agentId)
+            if (agentWallet?.AgentId == agentId)
                 return agentWallet.Balance;
             throw new Exception("Can't find agent wallet.");
         }

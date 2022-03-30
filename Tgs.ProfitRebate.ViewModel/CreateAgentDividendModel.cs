@@ -8,7 +8,7 @@ namespace Tgs.ProfitRebate.ViewModel
 
         public int? ReferencedAgentDividendId { get; set; }
 
-        public string AgentUsername { get; set; }
+        public string AgentUsername { get; set; } = default!;
 
         public Guid AgentId { get; set; }
 
@@ -41,6 +41,8 @@ namespace Tgs.ProfitRebate.ViewModel
         public decimal Turnover { get; set; }
 
         public decimal WinLossAmount { get; set; }
+        public decimal NoIncludeNetProfitCompanyAdjustAmount { get; set; }
+        public decimal NoIncludeNetProfitAgentAdjustAmount { get; set; }
 
         public decimal NetProfit { get; set; }
 
@@ -74,6 +76,6 @@ namespace Tgs.ProfitRebate.ViewModel
 
         public bool AutoSend { get; set; }
 
-        public AgentDividendMultipleLayerModel[] AgentDividendMultipleLayerModels { get; set; }
+        public AgentDividendMultipleLayerModel[] AgentDividendMultipleLayerModels { get; set; } = default!;
     }
 }

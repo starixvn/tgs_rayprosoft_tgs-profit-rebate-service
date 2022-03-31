@@ -6,7 +6,7 @@ namespace Tgs.ProfitRebate.ViewModel
     public class PlayerAllAgentRebateModel
     {
         public Guid BrandId { get; set; }
-        public string PlayerCode { get; set; }
+        public string PlayerCode { get; set; } = default!;
         public DateTimeOffset ReportDate { get; set; }
         public AllAgentGameType AllAgentGameType { get; set; }
         public GameType GameType { get; set; }

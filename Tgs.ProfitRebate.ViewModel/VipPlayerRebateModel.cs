@@ -8,7 +8,7 @@ namespace Tgs.ProfitRebate.ViewModel
         public Guid BrandId { get; set; }
         public Guid? AgentId { get; set; }
         public int GameId { get; set; }
-        public string PlayerCode { get; set; }
+        public string PlayerCode { get; set; } = default!;
         public DateTimeOffset CreatedOn { get; set; }
         public DateTimeOffset ReportDate { get; set; }
         public decimal SportsTurnover { get; set; }

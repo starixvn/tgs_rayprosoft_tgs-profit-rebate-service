@@ -1,5 +1,5 @@
 ﻿using Tgs.ProfitRebate.Enum;
-using Tgs.ProfitRebate.Repository.Models;
+using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core

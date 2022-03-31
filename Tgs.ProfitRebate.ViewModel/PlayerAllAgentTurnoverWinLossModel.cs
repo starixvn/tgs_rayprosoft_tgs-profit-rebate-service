@@ -6,7 +6,7 @@ namespace Tgs.ProfitRebate.ViewModel
     public class PlayerAllAgentTurnoverWinLossModel
     {
         public Guid BrandId { get; set; }
-        public string ParentPlayerCode { get; set; }
+        public string ParentPlayerCode { get; set; } = default!;
         public GameType GameType { get; set; }
         public int PlayerNumber { get; set; }
         public decimal SportsTurnover { get; set; }

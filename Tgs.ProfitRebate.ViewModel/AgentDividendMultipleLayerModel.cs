@@ -6,7 +6,7 @@ namespace Tgs.ProfitRebate.ViewModel
     {
         public Guid AgentId { get; set; }
         public Guid DividendProviderAgentId { get; set; }
-        public string Layer { get; set; }
+        public string Layer { get; set; } = default!;
         public decimal Dividend { get; set; }
     }
 }

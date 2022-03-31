@@ -3,20 +3,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services
     .AddSystemJsonSerializer()
-    .AddTgsLog()
     .AddProfitRebateClient(builder.Configuration);
 
-builder.Services.AddNatsMessageQueue(natsConfig =>
-{
-    natsConfig
-        .ConfigQueueOptions((options, sp) =>
-        {
-            var config = sp.GetRequiredService<IConfiguration>();
+builder.Services
+    .AddMessageQueue()
+    .AddNatsMessageQueue(natsConfig =>
+    {
+        natsConfig
+            .ConfigQueueOptions((options, sp) =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
 
-            options.Url = config.GetValue<string>("NatsSetting:Urls");
-        })
-        .ProcessAllSubjects();
-});
+                options.Url = config.GetValue<string>("NatsSetting:Urls");
+            });
+    })
+    .ClearAllExchanges()
+    .AddNatsGlobPatternExchange("*");
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

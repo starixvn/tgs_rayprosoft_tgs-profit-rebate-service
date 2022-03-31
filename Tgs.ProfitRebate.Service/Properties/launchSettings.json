@@ -8,7 +8,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "OTEL_SERVICE_NAME": "Profit-Rebate-Service(local)",
-        "NODE_IP": "192.168.50.112"
+        "NODE_IP": "otel.rpgp.cc"
       },
       "applicationUrl": "https://localhost:7145;http://localhost:5145",
       "dotnetRunMessages": true
@@ -22,7 +22,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "OTEL_SERVICE_NAME": "Profit-Rebate-Service(local)",
-        "NODE_IP": "192.168.50.112"
+        "NODE_IP": "otel.rpgp.cc"
       }
     }
   }

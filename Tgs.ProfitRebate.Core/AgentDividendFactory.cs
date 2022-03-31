@@ -16,7 +16,6 @@ namespace Tgs.ProfitRebate.Core
         private readonly ITgsService<Brand> _brandService;
         private readonly ITgsService<PlayerAggregate> _playerAggregateService;
         private readonly ITgsService<PlayerGameRebateAggregate> _playerGameAggregateService;
-        private readonly ITgsService<AdjustPlayerRecord> _adjustPlayerRecordService;
 
         public AgentDividendFactory(
             ITgsService<Agent> agentService,
@@ -24,7 +23,6 @@ namespace Tgs.ProfitRebate.Core
             ITgsService<AgentDividend> agentDividendService,
             ITgsService<PlayerAggregate> playerAggregateService,
             ITgsService<PlayerGameRebateAggregate> playerGameAggregateService,
-            ITgsService<AdjustPlayerRecord> adjustPlayerRecordService,
             IAgentWalletRepository agentWalletRepository)
         {
             _agentService = agentService;
@@ -33,7 +31,6 @@ namespace Tgs.ProfitRebate.Core
             _playerAggregateService = playerAggregateService;
             _playerGameAggregateService = playerGameAggregateService;
             _agentWalletRepository = agentWalletRepository;
-            _adjustPlayerRecordService = adjustPlayerRecordService;
         }
 
         public (DateTimeOffset, DateTimeOffset) GetInterval(SettlementIntervalType type, DateTimeOffset startDate,

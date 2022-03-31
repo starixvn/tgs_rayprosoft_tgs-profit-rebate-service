@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Tgs.CashService.Client;
 using TGS.Core.Infrastructures.Extensions;
 using Tgs.ProfitRebate.Enum;
-using Tgs.ProfitRebate.Repository.Models;
+using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Commands

@@ -2,7 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Tgs.ProfitRebate.Repository.Models;
+using Tgs.ProfitRebate.Enum;
+using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Workers
@@ -50,7 +51,8 @@ namespace Tgs.ProfitRebate.Core.Workers
                     var queryDate = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, new(8, 0, 0));
 
                     await foreach (var brands in
-                                   agentDividendFactory.GetSettlementIntervalBrands(request.BrandCode, queryDate))
+                                   agentDividendFactory.GetSettlementIntervalBrands(request.BrandCode, queryDate)
+                                       .WithCancellation(stoppingToken))
                     {
                         var createModels = new List<CreateAgentDividendModel>();
                         var createAutoSendModels = new List<CreateAgentDividendModel>();
@@ -78,7 +80,7 @@ namespace Tgs.ProfitRebate.Core.Workers
                             }
 
                             var (nextFrom, nextTo) =
-                                agentDividendFactory.GetInterval(brand.SettlementIntervalType,
+                                agentDividendFactory.GetInterval((SettlementIntervalType)brand.SettlementIntervalType,
                                     brand.NextSettlementTo.ToOffset(new(8, 0, 0)),
                                     brand.SettlementDay);
 

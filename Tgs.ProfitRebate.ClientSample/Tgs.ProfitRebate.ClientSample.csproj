@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tgs.ProfitRebate.Client\Tgs.ProfitRebate.Client.csproj" />
+    <ProjectReference Include="..\Tgs.ProfitRebate.ViewModel\Tgs.ProfitRebate.ViewModel.csproj" />
   </ItemGroup>
 
 </Project>

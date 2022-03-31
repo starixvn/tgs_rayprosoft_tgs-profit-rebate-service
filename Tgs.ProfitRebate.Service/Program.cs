@@ -151,9 +151,9 @@ app.UseExceptionHandler(new ExceptionHandlerOptions
 
             var messageSender = app.Services.GetRequiredService<IMessageSender>();
 
-            await messageSender.PublishAsync("profit.rebate.error",
+            await messageSender.PublishAsync("report.error",
                     Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new ReportErrorMessage(
-                        $"{app.Environment}: {exceptionFeature.Error.Message}"))))
+                        $"{app.Environment}.profit.rebate: {exceptionFeature.Error.Message}"))))
                 .ConfigureAwait(false);
         }
     }

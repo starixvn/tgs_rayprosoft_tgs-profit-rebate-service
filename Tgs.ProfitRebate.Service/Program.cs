@@ -155,6 +155,12 @@ app.UseExceptionHandler(new ExceptionHandlerOptions
                     Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new ReportErrorMessage(
                         $"{app.Environment}.profit.rebate: {exceptionFeature.Error.Message}"))))
                 .ConfigureAwait(false);
+
+            await context.Response.WriteAsJsonAsync(new MessageResponse
+            {
+                Message = exceptionFeature.Error.Message,
+                Valid = false
+            });
         }
     }
 });

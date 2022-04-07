@@ -1,16 +1,21 @@
+using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Diagnostics;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Tgs.MessageQueue;
 using Tgs.ProfitRebate.Core.Workers;
-using Tgs.ProfitRebate.Service.Middlewares;
+using Tgs.ProfitRebate.ViewModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureAppConfiguration((_, builder) =>
-{
-    builder.AddJsonFile("/config/appsettings.json", true);
-}).ConfigureServices((context, services) =>
+builder.Configuration
+    .AddJsonFile("/config/appsettings.json", true)
+    .AddEnvironmentVariables();
+
+builder.Host.ConfigureServices((context, services) =>
 {
     services.AddHostedService<AgentDividendBackground>();
     services.AddSingleton<IAgentDividendTaskQueue>(_ =>
@@ -132,21 +137,38 @@ builder.Services.AddProfileViewer();
 
 var app = builder.Build();
 
-app.UseMiddleware<ExceptionMiddleware>();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseExceptionHandler(new ExceptionHandlerOptions
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    ExceptionHandler = async context =>
+    {
+        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+        if (exceptionFeature?.Error != null)
+        {
+            var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("ExceptionHandler");
 
-app.UseHttpsRedirection();
+            logger.LogError(exceptionFeature.Error, exceptionFeature.Error.Message);
 
-app.UseAuthorization();
+            var messageSender = app.Services.GetRequiredService<IMessageSender>();
+
+            await messageSender.PublishAsync("report.error",
+                    Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new ReportErrorMessage(
+                        $"{app.Environment}.profit.rebate: {exceptionFeature.Error.Message}"))))
+                .ConfigureAwait(false);
+
+            await context.Response.WriteAsJsonAsync(new MessageResponse
+            {
+                Message = exceptionFeature.Error.Message,
+                Valid = false
+            });
+        }
+    }
+});
+
+app.UseSwaggerUI();
 
 app.MapControllers();
-
+app.MapSwagger();
 app.MapHealthChecks("/health");
 
 app.Run();

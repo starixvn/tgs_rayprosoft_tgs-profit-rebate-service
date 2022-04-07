@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Tgs.ProfitRebate.Repository.Models;
+using Tgs.ProfitRebate.Repository.Entities;
 
 namespace Tgs.ProfitRebate.Repository
 {
@@ -18,7 +18,7 @@ namespace Tgs.ProfitRebate.Repository
         DbSet<Licensee> Licensees { get; set; }
 
         DbSet<PlayerAggregate> PlayerAggregates { get; set; }
-        DbSet<PlayerGameAggregate> PlayerGameAggregates { get; set; }
+        DbSet<PlayerGameRebateAggregate> PlayerGameRebateAggregates { get; set; }
 
         DbSet<Player> Players { get; set; }
 
@@ -41,7 +41,7 @@ namespace Tgs.ProfitRebate.Repository
         DbSet<BrandAllAgentGameType> BrandAllAgentGameTypes { get; set; }
         DbSet<BrandAllAgentGameTypeCondition> BrandAllAgentGameTypeConditions { get; set; }
         DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; }
-        IDbContextTransaction CurrentTransaction { get; }
+        IDbContextTransaction? CurrentTransaction { get; }
         DbSet<T> Set<T>() where T : class;
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

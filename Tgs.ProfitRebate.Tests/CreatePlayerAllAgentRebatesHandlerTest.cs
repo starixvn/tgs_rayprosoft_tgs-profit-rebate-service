@@ -9,7 +9,7 @@ using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Core;
 using Tgs.ProfitRebate.Core.Commands;
 using Tgs.ProfitRebate.Enum;
-using Tgs.ProfitRebate.Repository.Models;
+using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Tests

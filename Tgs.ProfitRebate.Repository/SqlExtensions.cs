@@ -8,7 +8,7 @@ namespace Tgs.ProfitRebate.Repository
     {
         public static Task<IEnumerable<TEntity>> SqlQueryMultipleAsync<TEntity>(this ITgsRepository repository,
             string sql, CommandType commandType = CommandType.StoredProcedure,
-            IEnumerable<KeyValuePair<string, object>> parameters = null)
+            IEnumerable<KeyValuePair<string, object>>? parameters = null)
         {
             var conn = repository.GetDbConnection();
             var transaction = repository.CurrentTransaction?.GetDbTransaction();
@@ -17,7 +17,7 @@ namespace Tgs.ProfitRebate.Repository
 
         public static async Task<(IEnumerable<TEntity>, int)> SqlQueryByPagingAsync<TEntity>(
             this ITgsRepository repository, string sql, CommandType commandType = CommandType.StoredProcedure,
-            IEnumerable<KeyValuePair<string, object>> parameters = null)
+            IEnumerable<KeyValuePair<string, object>>? parameters = null)
         {
             var conn = repository.GetDbConnection();
             var transaction = repository.CurrentTransaction?.GetDbTransaction();
@@ -29,7 +29,7 @@ namespace Tgs.ProfitRebate.Repository
 
         public static Task<TEntity> SqlQuerySingleAsync<TEntity>(this ITgsRepository repository, string sql,
             CommandType commandType = CommandType.StoredProcedure,
-            IEnumerable<KeyValuePair<string, object>> parameters = null)
+            IEnumerable<KeyValuePair<string, object>>? parameters = null)
         {
             var conn = repository.GetDbConnection();
             var transaction = repository.CurrentTransaction?.GetDbTransaction();
@@ -40,7 +40,7 @@ namespace Tgs.ProfitRebate.Repository
 
         public static Task<int> ExecuteSqlCommandAsync(this ITgsRepository repository, string sql,
             CommandType commandType = CommandType.StoredProcedure,
-            IEnumerable<KeyValuePair<string, object>> parameters = null)
+            IEnumerable<KeyValuePair<string, object>>? parameters = null)
         {
             var conn = repository.GetDbConnection();
             var transaction = repository.CurrentTransaction?.GetDbTransaction();

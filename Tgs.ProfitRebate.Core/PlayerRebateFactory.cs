@@ -129,6 +129,7 @@ namespace Tgs.ProfitRebate.Core
         {
             var buckets = requests.Select(x => new PlayerBucket
             {
+                Id = Guid.NewGuid(),
                 PlayerCode = x.PlayerCode,
                 BucketAmount = x.BucketAmount,
                 BucketType = (short)x.BucketType,

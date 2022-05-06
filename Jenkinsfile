@@ -112,8 +112,8 @@ pipeline {
 
                             sh """
                                 cat << EOF | yq e -P |  helm template deployment/k8s/profit-rebate-service \
+                                    -n ${kube_ns} \
                                     --set image.tag=${TAG} \
-                                    --set namespace=${kube_ns} \
                                     --set autoscaling.enabled=${tgs_autoscaling} \
                                     --set connectionStrings.tgs="$tgs_tgs" \
                                     --set connectionStrings.redis="$tgs_redis" \
@@ -131,8 +131,8 @@ pipeline {
                             """
                             sh """
                                 cat << EOF | yq e -P | helm template deployment/k8s/profit-rebate-service \
+                                    -n ${kube_ns} \
                                     --set image.tag=${TAG} \
-                                    --set namespace=${kube_ns} \
                                     --set autoscaling.enabled=${tgs_autoscaling} \
                                     --set connectionStrings.tgs="$tgs_tgs" \
                                     --set connectionStrings.redis="$tgs_redis" \

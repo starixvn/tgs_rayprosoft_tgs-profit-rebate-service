@@ -1,4 +1,4 @@
 ﻿namespace Tgs.ProfitRebate.Client.Models
 {
-    public record CreateVipPlayerRebatesRequest(string? Date,Guid BrandId);
+    public record CreateVipPlayerRebatesRequest(string? Date);
 }

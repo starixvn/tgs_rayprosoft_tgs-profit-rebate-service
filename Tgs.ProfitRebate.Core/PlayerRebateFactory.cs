@@ -20,8 +20,10 @@ namespace Tgs.ProfitRebate.Core
             _allAgentPlayerRebateService = allAgentPlayerRebateService;
         }
 
-        public ValueTask CreateVipPlayerRebatesAsync(VipPlayerRebateModel[] models, DateTimeOffset? sentOn) =>
-            _playerRebateService.CreateEntitiesAsync(models.Select(model => new PlayerRebate
+        public async ValueTask<PlayerRebate[]> CreateVipPlayerRebatesAsync(VipPlayerRebateModel[] models,
+            DateTimeOffset? sentOn)
+        {
+            var rebates = models.Select(model => new PlayerRebate
             {
                 BrandId = model.BrandId,
                 AgentId = model.AgentId,
@@ -48,7 +50,12 @@ namespace Tgs.ProfitRebate.Core
                 LotteryTurnover = model.LotteryTurnover,
                 LotteryRebateAmount = model.LotteryRebateAmount,
                 RebateAmount = model.RebateAmount
-            }).ToArray());
+            }).ToArray();
+
+            await _playerRebateService.CreateEntitiesAsync(rebates);
+
+            return rebates;
+        }
 
         public async ValueTask<PlayerAllAgentTurnoverWinLossModel[]>
             GetPlayerTurnoverWinLossAsync(DateTimeOffset reportDate)

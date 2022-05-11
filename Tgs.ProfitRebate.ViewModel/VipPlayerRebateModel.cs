@@ -30,5 +30,6 @@ namespace Tgs.ProfitRebate.ViewModel
         public decimal VipVirtualSportsRebatePercentage { get; set; }
         public decimal VipLotteryRebatePercentage { get; set; }
         public decimal RebateAmount { get; set; }
+        public Guid DefaultWalletId { get; set; }
     }
 }

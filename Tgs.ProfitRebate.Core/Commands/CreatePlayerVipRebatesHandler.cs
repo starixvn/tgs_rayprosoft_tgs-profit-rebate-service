@@ -1,6 +1,7 @@
 ﻿using System.Transactions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
 using TGS.Core.Infrastructures.Extensions;
 using Tgs.ProfitRebate.Enum;
@@ -20,6 +21,7 @@ namespace Tgs.ProfitRebate.Core.Commands
         private readonly ITgsService<PlayerRebate> _playerRebateService;
         private readonly ITgsService<Player> _playerService;
         private readonly IPlayerRebateFactory _vipPlayerRebateFactory;
+        private readonly ILogger<CreatePlayerVipRebatesHandler> _logger;
 
         public CreatePlayerVipRebatesHandler(ITgsService<Brand> brandService,
             ITgsService<PlayerRebate> playerRebateService,
@@ -27,7 +29,8 @@ namespace Tgs.ProfitRebate.Core.Commands
             ICashServiceClient cashServiceClient,
             ITgsService<Player> playerService,
             ITgsService<BrandGame> brandGameRepository,
-            IPlayerRebateFactory vipPlayerRebateFactory)
+            IPlayerRebateFactory vipPlayerRebateFactory,
+            ILogger<CreatePlayerVipRebatesHandler> logger)
         {
             _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));
             _playerRebateService = playerRebateService ?? throw new ArgumentNullException(nameof(playerRebateService));
@@ -39,11 +42,22 @@ namespace Tgs.ProfitRebate.Core.Commands
                 brandGameRepository ?? throw new ArgumentNullException(nameof(brandGameRepository));
             _vipPlayerRebateFactory =
                 vipPlayerRebateFactory ?? throw new ArgumentNullException(nameof(vipPlayerRebateFactory));
+            _logger =
+                logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<MessageResponse> Handle(CreateVipPlayerRebatesRequest request,
             CancellationToken cancellationToken)
         {
+            var brand = await _brandService.GetQueries().Where(x => x.Id == request.BrandId)
+                .Select(x => new { x.Id, x.AutoSentPlayerBonus })
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+
+            if (brand is null)
+            {
+                return new() { Valid = false, Message = "Can't find brand." };
+            }
+
             var previousDay = DateTimeOffset.Now.ToOffset(new(8, 0, 0)).AddDays(-1);
             var reportDate = new DateTimeOffset(previousDay.Year, previousDay.Month, previousDay.Day, 0, 0, 0,
                 previousDay.Offset);
@@ -56,7 +70,7 @@ namespace Tgs.ProfitRebate.Core.Commands
             }
 
             if (await _playerRebateService.GetQueries()
-                    .AnyAsync(x => x.ReportDate == reportDate.ToUniversalTime(), cancellationToken))
+                    .AnyAsync(x => x.BrandId == request.BrandId && x.ReportDate == reportDate.ToUniversalTime(), cancellationToken).ConfigureAwait(false))
             {
                 return new MessageResponse
                 {
@@ -69,7 +83,7 @@ namespace Tgs.ProfitRebate.Core.Commands
             var slotGroup = Consts.SlotGroup.Select(x => (short)x).ToArray();
 
             var playerRebates = await _playerGameAggregateService
-                .GetQueries(q => q.Where(x => x.ReportDate == reportDate.ToUniversalTime()))
+                .GetQueries(q => q.Where(x => x.BrandId == request.BrandId && x.ReportDate == reportDate.ToUniversalTime()))
                 .GroupJoin(_brandGameRepository.GetQueries(),
                     aggregate => new { aggregate.BrandId, aggregate.GameId },
                     brandGame => new { brandGame.BrandId, brandGame.GameId },
@@ -143,54 +157,71 @@ namespace Tgs.ProfitRebate.Core.Commands
                             x.VipLotteryRebatePercentage * list
                                 .Where(a => a.aggregate.GameType == (short)GameType.Lottery)
                                 .Sum(a => a.aggregate.Turnover) / 100M,
-                        RebateAmount = list.Sum(l => l.aggregate.VipRebateAmount)
+                        RebateAmount = list.Sum(l => l.aggregate.VipRebateAmount),
+
                     })
                 .Where(x => x.RebateAmount > 0)
-                .ToArrayAsync(cancellationToken);
+                .GroupJoin(_playerService.GetQueries().Where(x => x.BrandId == request.BrandId), group => group.PlayerCode, player => player.PlayerCode, (group, players) => new { group, players })
+                .SelectMany(x => x.players.DefaultIfEmpty(), (group, player) => new { group.group, player })
+                .Select(x => new VipPlayerRebateModel
+                {
+                    BrandId = x.group.BrandId,
+                    PlayerCode = x.group.PlayerCode,
+                    AgentId = x.group.AgentId,
+                    ReportDate = x.group.ReportDate,
+                    VipCardGameRebatePercentage = x.group.VipCardGameRebatePercentage,
+                    VipLiveDealerRebatePercentage = x.group.VipLiveDealerRebatePercentage,
+                    VipLotteryRebatePercentage = x.group.VipLotteryRebatePercentage,
+                    VipSlotRebatePercentage = x.group.VipSlotRebatePercentage,
+                    VipSportsRebatePercentage = x.group.VipSportsRebatePercentage,
+                    VipVirtualSportsRebatePercentage = x.group.VipVirtualSportsRebatePercentage,
+                    SportsTurnover = x.group.SportsTurnover,
+                    VirtualSportsTurnover = x.group.VirtualSportsTurnover,
+                    VirtualSportsRebateAmount = x.group.VirtualSportsRebateAmount,
+                    LiveDealerTurnover = x.group.LiveDealerTurnover,
+                    LiveDealerRebateAmount = x.group.LiveDealerRebateAmount,
+                    CardGameTurnover = x.group.CardGameTurnover,
+                    CardGameRebateAmount = x.group.CardGameRebateAmount,
+                    SlotTurnover = x.group.SlotTurnover,
+                    SlotRebateAmount = x.group.SlotRebateAmount,
+                    LotteryTurnover = x.group.LotteryTurnover,
+                    LotteryRebateAmount = x.group.LotteryRebateAmount,
+                    RebateAmount = x.group.RebateAmount,
+                    DefaultWalletId = x.player!.DefaultWalletId
+                })
+                .ToArrayAsync(cancellationToken).ConfigureAwait(false);
+
 
             if (playerRebates.Length <= 0)
             {
                 return new() { Valid = false, Message = "Has no player rebate data." };
             }
 
-            var brandIds = playerRebates.Select(x => x.BrandId);
-            var brands = await _brandService.GetQueries().Where(x => brandIds.Contains(x.Id))
-                .Select(x => new { x.Id, x.AutoSentPlayerBonus })
-                .ToArrayAsync(cancellationToken);
+            var rebates = await _vipPlayerRebateFactory.CreateVipPlayerRebatesAsync(playerRebates, brand.AutoSentPlayerBonus ? DateTimeOffset.UtcNow : null);
 
-            var autoSentPlayer = playerRebates
-                .Join(brands, p => p.BrandId, b => b.Id, (player, brand) => new { player, brand })
-                .Where(x => x.brand.AutoSentPlayerBonus).Select(x => x.player).ToArray();
-
-            var playerBonusesNotSend = playerRebates
-                .Join(brands, p => p.BrandId, b => b.Id, (player, brand) => new { player, brand })
-                .Where(x => !x.brand.AutoSentPlayerBonus).Select(x => x.player).ToArray();
+            if (brand.AutoSentPlayerBonus)
+            {
+                await _vipPlayerRebateFactory.CreatePlayerBucketsAsync(playerRebates.Select(x =>
+                        new CreatePlayerBucketRequest(x.PlayerCode, BucketType.Vip, x.RebateAmount)).ToArray())
+                    .ConfigureAwait(false);
+            }
 
             var players = await _playerService.GetQueries()
-                .Where(x => autoSentPlayer.Select(p => p.PlayerCode).Contains(x.PlayerCode))
+                .Where(x => x.BrandId == request.BrandId)
+                .Where(x => playerRebates.Select(p => p.PlayerCode).Contains(x.PlayerCode))
                 .Select(x => new { x.BrandId, x.PlayerCode, x.Wallets, x.DefaultWalletId })
                 .ToArrayAsync(cancellationToken);
 
-            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await _vipPlayerRebateFactory.CreateVipPlayerRebatesAsync(autoSentPlayer, DateTimeOffset.UtcNow);
-
-            await _vipPlayerRebateFactory.CreateVipPlayerRebatesAsync(playerBonusesNotSend, null);
-            await _vipPlayerRebateFactory.CreatePlayerBucketsAsync(autoSentPlayer.Join(players, pb => pb.PlayerCode,
-                    p => p.PlayerCode,
-                    (pb, p) => new { pb, p }).Select(x =>
-                    new CreatePlayerBucketRequest(x.pb.PlayerCode, BucketType.Vip, x.pb.RebateAmount)).ToArray())
-                .ConfigureAwait(false);
-
-            scope.Complete();
-
-            foreach (var playerBonus in autoSentPlayer.Join(players, pb => pb.PlayerCode, p => p.PlayerCode,
-                         (pb, p) => new { pb, p }))
+            foreach (var playerBonus in rebates.Join(players, pb => pb.PlayerCode, p => p.PlayerCode,
+                         (pb, p) => new { pb, p }).Where(x => x.pb.RebateAmount > 0))
             {
-                var response = await _cashServiceClient.RebateAsync(
+                _logger.LogInformation($"player rebate: brand ({brand.Id}), player {playerBonus.p.PlayerCode}");
+
+                _ = await _cashServiceClient.RebateAsync(
                     playerBonus.p.DefaultWalletId,
                     playerBonus.pb.RebateAmount,
                     null,
-                    null).ConfigureAwait(false);
+                    playerBonus.pb.Id.ToString()).ConfigureAwait(false);
             }
 
             return new MessageResponse

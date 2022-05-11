@@ -171,26 +171,23 @@ namespace Tgs.ProfitRebate.Core.Commands
                 .Select(x => new { x.BrandId, x.PlayerCode, x.Wallets, x.DefaultWalletId })
                 .ToArrayAsync(cancellationToken);
 
-            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await _vipPlayerRebateFactory.CreateVipPlayerRebatesAsync(autoSentPlayer, DateTimeOffset.UtcNow);
+            var rebates = await _vipPlayerRebateFactory.CreateVipPlayerRebatesAsync(autoSentPlayer, DateTimeOffset.UtcNow).ConfigureAwait(false);
 
-            await _vipPlayerRebateFactory.CreateVipPlayerRebatesAsync(playerBonusesNotSend, null);
+            _ = await _vipPlayerRebateFactory.CreateVipPlayerRebatesAsync(playerBonusesNotSend, null).ConfigureAwait(false);
             await _vipPlayerRebateFactory.CreatePlayerBucketsAsync(autoSentPlayer.Join(players, pb => pb.PlayerCode,
                     p => p.PlayerCode,
                     (pb, p) => new { pb, p }).Select(x =>
                     new CreatePlayerBucketRequest(x.pb.PlayerCode, BucketType.Vip, x.pb.RebateAmount)).ToArray())
                 .ConfigureAwait(false);
 
-            scope.Complete();
-
-            foreach (var playerBonus in autoSentPlayer.Join(players, pb => pb.PlayerCode, p => p.PlayerCode,
-                         (pb, p) => new { pb, p }))
+            foreach (var playerBonus in rebates.Join(players, pb => pb.PlayerCode, p => p.PlayerCode,
+                         (pb, p) => new { pb, p }).Where(x => x.pb.RebateAmount > 0))
             {
-                var response = await _cashServiceClient.RebateAsync(
+                _ = await _cashServiceClient.RebateAsync(
                     playerBonus.p.DefaultWalletId,
                     playerBonus.pb.RebateAmount,
                     null,
-                    null).ConfigureAwait(false);
+                    playerBonus.pb.Id.ToString()).ConfigureAwait(false);
             }
 
             return new MessageResponse

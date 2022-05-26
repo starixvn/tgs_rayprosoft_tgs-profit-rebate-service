@@ -34,5 +34,7 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal SystemAdjustAmount { get; set; }
         public decimal NoIncludeNetProfitAgentAdjustAmount { get; set; }
         public decimal NoIncludeNetProfitCompanyAdjustAmount { get; set; }
+        public decimal BonusAdjustAmount { get; set; }
+        public decimal NoIncludeNetProfitBonusAdjustAmount { get; set; }
     }
 }

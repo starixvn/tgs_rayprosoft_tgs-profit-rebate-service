@@ -169,10 +169,12 @@ namespace Tgs.ProfitRebate.Core
                     NoIncludeNetProfitCompanyAdjustAmount = x.NoIncludeNetProfitCompanyAdjustAmount,
                     NoIncludeNetProfitAgentAdjustAmount = x.NoIncludeNetProfitAgentAdjustAmount,
                     NoIncludeNetProfitBonusAdjustAmount = x.NoIncludeNetProfitBonusAdjustAmount,
-                    NetProfit = x.WinLossAmount -
-                        (x.AgentAdjustAmount - x.NoIncludeNetProfitAgentAdjustAmount) -
-                        x.RebateAmount - x.PromotionAmount -
-                        x.WinLossAmount * brand.PlatformCharge / 100
+                    NetProfit = x.WinLossAmount 
+                        - (x.AgentAdjustAmount - x.NoIncludeNetProfitAgentAdjustAmount)
+                        - (x.BonusAdjustAmount - x.NoIncludeNetProfitBonusAdjustAmount)
+                        - x.RebateAmount 
+                        - x.PromotionAmount 
+                        - x.WinLossAmount * brand.PlatformCharge / 100
                 };
             }).ToArray();
 

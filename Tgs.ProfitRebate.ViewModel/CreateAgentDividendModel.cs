@@ -29,6 +29,7 @@ namespace Tgs.ProfitRebate.ViewModel
         public decimal CompanyAdjustAmount { get; set; }
 
         public decimal AgentAdjustAmount { get; set; }
+        public decimal BonusAdjustAmount { get; set; }
 
         public decimal BonusAmount { get; set; }
 
@@ -43,6 +44,7 @@ namespace Tgs.ProfitRebate.ViewModel
         public decimal WinLossAmount { get; set; }
         public decimal NoIncludeNetProfitCompanyAdjustAmount { get; set; }
         public decimal NoIncludeNetProfitAgentAdjustAmount { get; set; }
+        public decimal NoIncludeNetProfitBonusAdjustAmount { get; set; }
 
         public decimal NetProfit { get; set; }
 

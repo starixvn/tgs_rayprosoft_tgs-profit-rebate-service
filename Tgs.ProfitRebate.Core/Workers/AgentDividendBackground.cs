@@ -26,9 +26,7 @@ namespace Tgs.ProfitRebate.Core.Workers
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation(
-                $"Queued Hosted Service is running.{Environment.NewLine}" +
-                $"{Environment.NewLine}Tap W to add a work item to the " +
-                $"background queue.{Environment.NewLine}");
+                $"Queued Hosted Service is running. Agent Dividend background queue.");
 
             await BackgroundProcessing(stoppingToken);
         }
@@ -100,14 +98,14 @@ namespace Tgs.ProfitRebate.Core.Workers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error occurred executing task work item.");
+                    _logger.LogError(ex, "Agent Dividend Error occurred executing task work item.");
                 }
             }
         }
 
         public override async Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Queued Hosted Service is stopping.");
+            _logger.LogInformation("Agent Dividend Queued Hosted Service is stopping.");
 
             await base.StopAsync(stoppingToken);
         }

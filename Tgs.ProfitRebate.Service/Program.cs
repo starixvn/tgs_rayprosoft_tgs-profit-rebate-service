@@ -18,6 +18,7 @@ builder.Configuration
 builder.Host.ConfigureServices((context, services) =>
 {
     services.AddHostedService<AgentDividendBackground>();
+    services.AddHostedService<PlayerRebateBackground>();
     services.AddSingleton<IAgentDividendTaskQueue>(_ =>
     {
         if (!int.TryParse(context.Configuration["QueueCapacity"], out var queueCapacity))

@@ -19,8 +19,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="TGS.Core.Infrastructures.Json" Version="0.0.1" />
     <PackageReference Include="Tgs.Logging" Version="0.0.12" />
-    <PackageReference Include="Tgs.MessageQueue.Nats" Version="1.4.0" />
-    <PackageReference Include="Tgs.MessageQueue.RabbitMQ" Version="1.4.0" />
+    <PackageReference Include="Tgs.MessageQueue" Version="2.1.0" />
+    <PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.1.1" />
+    <PackageReference Include="Tgs.MessageQueue.Nats" Version="2.1.6" />
+    <PackageReference Include="Tgs.MessageQueue.RabbitMQ" Version="2.1.3" />
 	<PackageReference Include="OpenTelemetry" Version="1.2.0-rc1" />
     <PackageReference Include="OpenTelemetry.Contrib.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta2" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.2.0-rc1" />

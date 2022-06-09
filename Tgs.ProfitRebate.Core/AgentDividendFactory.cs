@@ -115,11 +115,11 @@ namespace Tgs.ProfitRebate.Core
                 .Where(x => x.ReportDate >= brand.CurrentSettlementFrom &&
                     x.ReportDate <= brand.CurrentSettlementTo)
                 .GroupBy(x => new
-                    {
-                        x.BrandId,
-                        x.AgentId,
-                        x.PlayerCode
-                    },
+                {
+                    x.BrandId,
+                    x.AgentId,
+                    x.PlayerCode
+                },
                     (groupItem, playerAggregates) => new
                     {
                         groupItem.AgentId,
@@ -131,6 +131,7 @@ namespace Tgs.ProfitRebate.Core
                         WithdrawalAmount = playerAggregates.Sum(p => p.WithdrawalAmount),
                         CompanyAdjustAmount = playerAggregates.Sum(p => p.CompanyAdjustAmount),
                         AgentAdjustAmount = playerAggregates.Sum(p => p.AgentAdjustAmount),
+                        BonusAdjustAmount = playerAggregates.Sum(p => p.BonusAdjustAmount),
                         BonusAmount = playerAggregates.Sum(p => p.RebateAmount + p.PromotionAmount),
                         BetAmount = playerAggregates.Sum(p => p.BetAmount),
                         ValidBetAmount = playerAggregates.Sum(p => p.ValidBetAmount),
@@ -140,7 +141,9 @@ namespace Tgs.ProfitRebate.Core
                         NoIncludeNetProfitCompanyAdjustAmount =
                             playerAggregates.Sum(p => p.NoIncludeNetProfitCompanyAdjustAmount),
                         NoIncludeNetProfitAgentAdjustAmount =
-                            playerAggregates.Sum(p => p.NoIncludeNetProfitAgentAdjustAmount)
+                            playerAggregates.Sum(p => p.NoIncludeNetProfitAgentAdjustAmount),
+                        NoIncludeNetProfitBonusAdjustAmount =
+                            playerAggregates.Sum(p => p.NoIncludeNetProfitBonusAdjustAmount)
                     }).ToArrayAsync();
 
             var playerData = playerDataModels.Select(x =>
@@ -156,6 +159,7 @@ namespace Tgs.ProfitRebate.Core
                     WithdrawalAmount = x.WithdrawalAmount,
                     CompanyAdjustAmount = x.CompanyAdjustAmount,
                     AgentAdjustAmount = x.AgentAdjustAmount,
+                    BonusAdjustAmount = x.BonusAdjustAmount,
                     BonusAmount = x.BonusAmount,
                     ValidBetAmount = x.ValidBetAmount,
                     OriginalTurnover = x.OriginalTurnover,
@@ -164,10 +168,13 @@ namespace Tgs.ProfitRebate.Core
                     WinLossAmount = x.WinLossAmount,
                     NoIncludeNetProfitCompanyAdjustAmount = x.NoIncludeNetProfitCompanyAdjustAmount,
                     NoIncludeNetProfitAgentAdjustAmount = x.NoIncludeNetProfitAgentAdjustAmount,
-                    NetProfit = x.WinLossAmount -
-                        (x.AgentAdjustAmount - x.NoIncludeNetProfitAgentAdjustAmount) -
-                        x.RebateAmount - x.PromotionAmount -
-                        x.WinLossAmount * brand.PlatformCharge / 100
+                    NoIncludeNetProfitBonusAdjustAmount = x.NoIncludeNetProfitBonusAdjustAmount,
+                    NetProfit = x.WinLossAmount 
+                        - (x.AgentAdjustAmount - x.NoIncludeNetProfitAgentAdjustAmount)
+                        - (x.BonusAdjustAmount - x.NoIncludeNetProfitBonusAdjustAmount)
+                        - x.RebateAmount 
+                        - x.PromotionAmount 
+                        - x.WinLossAmount * brand.PlatformCharge / 100
                 };
             }).ToArray();
 
@@ -189,10 +196,10 @@ namespace Tgs.ProfitRebate.Core
                         x.NetProfit)).ToArray();
 
             var agentData = playerData.GroupBy(x => new
-                {
-                    x.BrandId,
-                    x.AgentId
-                },
+            {
+                x.BrandId,
+                x.AgentId
+            },
                 (groupItem, playerAggregates) => new
                 {
                     groupItem.AgentId,
@@ -203,6 +210,7 @@ namespace Tgs.ProfitRebate.Core
                     WithdrawalAmount = playerAggregates.Sum(p => p.WithdrawalAmount),
                     CompanyAdjustAmount = playerAggregates.Sum(p => p.CompanyAdjustAmount),
                     AgentAdjustAmount = playerAggregates.Sum(p => p.AgentAdjustAmount),
+                    BonusAdjustAmount = playerAggregates.Sum(p => p.BonusAdjustAmount),
                     BonusAmount = playerAggregates.Sum(p => p.BonusAmount),
                     BetAmount = playerAggregates.Sum(p => p.BetAmount),
                     ValidBetAmount = playerAggregates.Sum(p => p.ValidBetAmount),
@@ -213,6 +221,8 @@ namespace Tgs.ProfitRebate.Core
                         playerAggregates.Sum(p => p.NoIncludeNetProfitCompanyAdjustAmount),
                     NoIncludeNetProfitAgentAdjustAmount =
                         playerAggregates.Sum(p => p.NoIncludeNetProfitAgentAdjustAmount),
+                    NoIncludeNetProfitBonusAdjustAmount =
+                        playerAggregates.Sum(p => p.NoIncludeNetProfitBonusAdjustAmount),
                     NetProfit = playerAggregates.Sum(p => p.NetProfit)
                 });
 
@@ -246,6 +256,7 @@ namespace Tgs.ProfitRebate.Core
                     data?.WithdrawalAmount,
                     data?.CompanyAdjustAmount,
                     data?.AgentAdjustAmount,
+                    data?.BonusAdjustAmount,
                     data?.BonusAmount,
                     data?.BetAmount,
                     data?.ValidBetAmount,
@@ -254,6 +265,7 @@ namespace Tgs.ProfitRebate.Core
                     data?.WinLossAmount,
                     data?.NoIncludeNetProfitCompanyAdjustAmount,
                     data?.NoIncludeNetProfitAgentAdjustAmount,
+                    data?.NoIncludeNetProfitBonusAdjustAmount,
                     data?.NetProfit
                 });
 
@@ -345,6 +357,7 @@ namespace Tgs.ProfitRebate.Core
                         WithdrawalAmount = x.agent?.WithdrawalAmount ?? 0M,
                         CompanyAdjustAmount = x.agent?.CompanyAdjustAmount ?? 0M,
                         AgentAdjustAmount = x.agent?.AgentAdjustAmount ?? 0M,
+                        BonusAdjustAmount = x.agent?.BonusAdjustAmount ?? 0M,
                         BonusAmount = x.agent?.BonusAmount ?? 0M,
                         BetAmount = x.agent?.BetAmount ?? 0M,
                         ValidBetAmount = x.agent?.ValidBetAmount ?? 0M,
@@ -353,6 +366,7 @@ namespace Tgs.ProfitRebate.Core
                         WinLossAmount = x.agent?.WinLossAmount ?? 0M,
                         NoIncludeNetProfitCompanyAdjustAmount = x.agent?.NoIncludeNetProfitCompanyAdjustAmount ?? 0M,
                         NoIncludeNetProfitAgentAdjustAmount = x.agent?.NoIncludeNetProfitAgentAdjustAmount ?? 0M,
+                        NoIncludeNetProfitBonusAdjustAmount = x.agent?.NoIncludeNetProfitBonusAdjustAmount ?? 0M,
                         NetProfit = x.agent?.NetProfit ?? 0M,
                         LiveDealerWinLoss = games?.LiveDealerWinLoss ?? 0M,
                         SlotWinLoss = games?.SlotWinLoss ?? 0M,
@@ -433,6 +447,7 @@ namespace Tgs.ProfitRebate.Core
                 WithdrawalAmount = model.WithdrawalAmount,
                 CompanyAdjustAmount = model.CompanyAdjustAmount,
                 AgentAdjustAmount = model.AgentAdjustAmount,
+                BonusAdjustAmount = model.BonusAdjustAmount,
                 BonusAmount = model.BonusAmount,
                 BetAmount = model.BetAmount,
                 ValidBetAmount = model.ValidBetAmount,
@@ -441,6 +456,7 @@ namespace Tgs.ProfitRebate.Core
                 WinLossAmount = model.WinLossAmount,
                 NoIncludeNetProfitCompanyAdjustAmount = model.NoIncludeNetProfitCompanyAdjustAmount,
                 NoIncludeNetProfitAgentAdjustAmount = model.NoIncludeNetProfitAgentAdjustAmount,
+                NoIncludeNetProfitBonusAdjustAmount = model.NoIncludeNetProfitBonusAdjustAmount,
                 NetProfit = model.NetProfit,
                 LiveDealerWinLoss = model.LiveDealerWinLoss,
                 SlotWinLoss = model.SlotWinLoss,

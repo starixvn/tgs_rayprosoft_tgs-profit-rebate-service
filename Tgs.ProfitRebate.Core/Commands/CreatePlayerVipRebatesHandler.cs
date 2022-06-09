@@ -1,8 +1,10 @@
 ﻿using System.Transactions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 using Tgs.CashService.Client;
 using TGS.Core.Infrastructures.Extensions;
+using Tgs.MessageQueue;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
@@ -15,30 +17,31 @@ namespace Tgs.ProfitRebate.Core.Commands
     {
         private readonly ITgsService<BrandGame> _brandGameRepository;
         private readonly ITgsService<Brand> _brandService;
-        private readonly ICashServiceClient _cashServiceClient;
         private readonly ITgsService<PlayerGameRebateAggregate> _playerGameAggregateService;
         private readonly ITgsService<PlayerRebate> _playerRebateService;
         private readonly ITgsService<Player> _playerService;
         private readonly IPlayerRebateFactory _vipPlayerRebateFactory;
+        private readonly IMessageSender _messageSender;
 
         public CreatePlayerVipRebatesHandler(ITgsService<Brand> brandService,
             ITgsService<PlayerRebate> playerRebateService,
             ITgsService<PlayerGameRebateAggregate> playerGameAggregateService,
-            ICashServiceClient cashServiceClient,
             ITgsService<Player> playerService,
             ITgsService<BrandGame> brandGameRepository,
-            IPlayerRebateFactory vipPlayerRebateFactory)
+            IPlayerRebateFactory vipPlayerRebateFactory,
+            IMessageSender messageSender)
         {
             _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));
             _playerRebateService = playerRebateService ?? throw new ArgumentNullException(nameof(playerRebateService));
             _playerGameAggregateService = playerGameAggregateService ??
                 throw new ArgumentNullException(nameof(playerGameAggregateService));
-            _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
             _brandGameRepository =
                 brandGameRepository ?? throw new ArgumentNullException(nameof(brandGameRepository));
             _vipPlayerRebateFactory =
                 vipPlayerRebateFactory ?? throw new ArgumentNullException(nameof(vipPlayerRebateFactory));
+            _messageSender =
+                messageSender ?? throw new ArgumentNullException(nameof(messageSender));
         }
 
         public async Task<MessageResponse> Handle(CreateVipPlayerRebatesRequest request,
@@ -183,11 +186,16 @@ namespace Tgs.ProfitRebate.Core.Commands
             foreach (var playerBonus in rebates.Join(players, pb => pb.PlayerCode, p => p.PlayerCode,
                          (pb, p) => new { pb, p }).Where(x => x.pb.RebateAmount > 0))
             {
-                _ = await _cashServiceClient.RebateAsync(
-                    playerBonus.p.DefaultWalletId,
-                    playerBonus.pb.RebateAmount,
-                    null,
-                    playerBonus.pb.Id.ToString()).ConfigureAwait(false);
+                var data = new
+                {
+                    PromotionType = 300,
+                    WalletId = playerBonus.p.DefaultWalletId,
+                    Amount = playerBonus.pb.RebateAmount,
+                    Description = "player rebate",
+                    ExternalId = playerBonus.pb.Id.ToString()
+                };
+
+                await _messageSender.PublishAsync("tgs.viplevel.database.promotion", data.ToBson(), cancellationToken);
             }
 
             return new MessageResponse

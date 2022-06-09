@@ -1,11 +1,13 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
+using MongoDB.Messaging;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Tgs.MessageQueue;
+using Tgs.MessageQueue.MongoDB.Configuration;
 using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.ViewModel;
 
@@ -44,6 +46,18 @@ builder.Services
 
 builder.Services
     .AddMessageQueue()
+    .AddMongoMessageQueue(config =>
+    {
+        _ = config
+            .DefineMessageQueue(
+                "viplevel.database",
+                sp => new MongoMessageQueueBuilderOptions
+                {
+                    MessageQueue = MessageQueue.Default,
+                    ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoDBMessagingConnectionString")
+                })
+            .DeclareQueue("tgs.viplevel.database.promotion");
+    })
     .AddNatsMessageQueue(natsConfig =>
     {
         natsConfig
@@ -66,6 +80,7 @@ builder.Services
     })
     .ClearAllExchanges()
     .AddRabbitGlobPatternExchange("report.error", "amq.direct")
+    .AddMongoGlobPatternExchange("tgs.viplevel.database.promotion", "viplevel.database", "tgs.viplevel.database.promotion")
     .AddNatsGlobPatternExchange("*");
 
 builder.Services.AddHealthChecks();

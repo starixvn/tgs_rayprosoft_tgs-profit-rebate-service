@@ -10,7 +10,7 @@ namespace Tgs.ProfitRebate.Core
         IQueryable<T> GetQueries(
             Func<IQueryable<T>, IQueryable<T>>? preQuery = null,
             bool tracking = false);
-
+        ValueTask CreateEntityAsync(T entity);
         ValueTask CreateEntitiesAsync(T[] entities);
         ValueTask UpdateEntitiesAsync(T[] entities);
     }
@@ -25,6 +25,12 @@ namespace Tgs.ProfitRebate.Core
         }
 
         ITgsRepository ITgsService<T>.Repository => Repository;
+
+        public async ValueTask CreateEntityAsync(T entity)
+        {
+            await Repository.Set<T>().AddAsync(entity);
+            await Repository.SaveChangesAsync();
+        }
 
         public async ValueTask CreateEntitiesAsync(T[] entities)
         {

@@ -25,8 +25,6 @@ public class
         ITgsService<PlayerGameRebateAggregate> playerGameAggregateService,
         ITgsService<Player> playerService,
         ITgsService<BrandGame> brandGameRepository,
-        IPlayerRebateFactory vipPlayerRebateFactory,
-        IMessageSender messageSender,
         IPlayerRebateTaskQueue taskQueue)
     {
         _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));

@@ -20,43 +20,6 @@ namespace Tgs.ProfitRebate.Core
             _allAgentPlayerRebateService = allAgentPlayerRebateService;
         }
 
-        public async ValueTask<PlayerRebate[]> CreateVipPlayerRebatesAsync(VipPlayerRebateModel[] models,
-            DateTimeOffset? sentOn)
-        {
-            var rebates = models.Select(model => new PlayerRebate
-            {
-                BrandId = model.BrandId,
-                AgentId = model.AgentId,
-                PlayerCode = model.PlayerCode,
-                ReportDate = model.ReportDate,
-                CreatedOn = DateTimeOffset.UtcNow,
-                SentOn = sentOn,
-                VipCardGameRebatePercentage = model.VipCardGameRebatePercentage,
-                VipLiveDealerRebatePercentage = model.VipLiveDealerRebatePercentage,
-                VipLotteryRebatePercentage = model.VipLotteryRebatePercentage,
-                VipSlotRebatePercentage = model.VipSlotRebatePercentage,
-                VipSportsRebatePercentage = model.VipSportsRebatePercentage,
-                VipVirtualSportsRebatePercentage = model.VipVirtualSportsRebatePercentage,
-                SportsTurnover = model.SportsTurnover,
-                SportsRebateAmount = model.SportsRebateAmount,
-                VirtualSportsTurnover = model.VirtualSportsTurnover,
-                VirtualSportsRebateAmount = model.VirtualSportsRebateAmount,
-                LiveDealerTurnover = model.LiveDealerTurnover,
-                LiveDealerRebateAmount = model.LiveDealerRebateAmount,
-                CardGameTurnover = model.CardGameTurnover,
-                CardGameRebateAmount = model.CardGameRebateAmount,
-                SlotTurnover = model.SlotTurnover,
-                SlotRebateAmount = model.SlotRebateAmount,
-                LotteryTurnover = model.LotteryTurnover,
-                LotteryRebateAmount = model.LotteryRebateAmount,
-                RebateAmount = model.RebateAmount
-            }).ToArray();
-
-            await _playerRebateService.CreateEntitiesAsync(rebates);
-
-            return rebates;
-        }
-
         public async ValueTask<PlayerAllAgentTurnoverWinLossModel[]>
             GetPlayerTurnoverWinLossAsync(DateTimeOffset reportDate)
         {
@@ -194,6 +157,57 @@ namespace Tgs.ProfitRebate.Core
                     NetProfit = x.Condition.NetProfit,
                     RebatePercentage = x.Condition.RebatePercentage
                 }).ToArrayAsync();
+        }
+
+        public async ValueTask<PlayerRebate> CreateVipPlayerRebateAsync(VipPlayerRebateModel model, DateTimeOffset? sentOn)
+        {
+            var rebate = new PlayerRebate
+            {
+                BrandId = model.BrandId,
+                AgentId = model.AgentId,
+                PlayerCode = model.PlayerCode,
+                ReportDate = model.ReportDate,
+                CreatedOn = DateTimeOffset.UtcNow,
+                SentOn = sentOn,
+                VipCardGameRebatePercentage = model.VipCardGameRebatePercentage,
+                VipLiveDealerRebatePercentage = model.VipLiveDealerRebatePercentage,
+                VipLotteryRebatePercentage = model.VipLotteryRebatePercentage,
+                VipSlotRebatePercentage = model.VipSlotRebatePercentage,
+                VipSportsRebatePercentage = model.VipSportsRebatePercentage,
+                VipVirtualSportsRebatePercentage = model.VipVirtualSportsRebatePercentage,
+                SportsTurnover = model.SportsTurnover,
+                SportsRebateAmount = model.SportsRebateAmount,
+                VirtualSportsTurnover = model.VirtualSportsTurnover,
+                VirtualSportsRebateAmount = model.VirtualSportsRebateAmount,
+                LiveDealerTurnover = model.LiveDealerTurnover,
+                LiveDealerRebateAmount = model.LiveDealerRebateAmount,
+                CardGameTurnover = model.CardGameTurnover,
+                CardGameRebateAmount = model.CardGameRebateAmount,
+                SlotTurnover = model.SlotTurnover,
+                SlotRebateAmount = model.SlotRebateAmount,
+                LotteryTurnover = model.LotteryTurnover,
+                LotteryRebateAmount = model.LotteryRebateAmount,
+                RebateAmount = model.RebateAmount
+            };
+
+            await _playerRebateService.CreateEntityAsync(rebate);
+
+            return rebate;
+        }
+
+        public async ValueTask CreatePlayerBucketAsync(CreatePlayerBucketRequest requests)
+        {
+            var bucket = new PlayerBucket
+            {
+                Id = Guid.NewGuid(),
+                PlayerCode = requests.PlayerCode,
+                BucketAmount = requests.BucketAmount,
+                BucketType = (short)requests.BucketType,
+                IsFull = false,
+                CreatedOn = DateTimeOffset.UtcNow
+            };
+
+            await _playerBucketService.CreateEntityAsync(bucket).ConfigureAwait(false);
         }
     }
 }

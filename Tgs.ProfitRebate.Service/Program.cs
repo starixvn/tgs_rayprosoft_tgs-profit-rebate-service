@@ -20,6 +20,7 @@ builder.Configuration
 builder.Host.ConfigureServices((context, services) =>
 {
     services.AddHostedService<AgentDividendBackground>();
+    services.AddHostedService<PlayerRebateBackground>();
     services.AddSingleton<IAgentDividendTaskQueue>(_ =>
     {
         if (!int.TryParse(context.Configuration["QueueCapacity"], out var queueCapacity))
@@ -28,6 +29,15 @@ builder.Host.ConfigureServices((context, services) =>
         }
 
         return new AgentDividendTaskQueue(queueCapacity);
+    });
+    services.AddSingleton<IPlayerRebateTaskQueue>(_ =>
+    {
+        if (!int.TryParse(context.Configuration["QueueCapacity"], out var queueCapacity))
+        {
+            queueCapacity = 1500;
+        }
+
+        return new PlayerRebateTaskQueue(queueCapacity);
     });
 });
 

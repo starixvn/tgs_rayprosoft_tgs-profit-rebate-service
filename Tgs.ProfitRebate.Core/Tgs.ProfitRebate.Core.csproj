@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Polly" Version="7.2.3" />
     <PackageReference Include="Tgs.CashService.Client" Version="0.0.17" />
     <PackageReference Include="Tgs.Core.Infrastructures.Utility" Version="0.0.3" />
     <PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.1.1" />

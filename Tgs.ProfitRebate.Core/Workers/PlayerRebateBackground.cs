@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Polly;
 using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Enum;
+using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Workers;
@@ -39,6 +42,7 @@ public class PlayerRebateBackground : BackgroundService
 
                 var playerRebateFactory = scope.ServiceProvider.GetRequiredService<IPlayerRebateFactory>();
                 var cashServiceClient = scope.ServiceProvider.GetRequiredService<ICashServiceClient>();
+                var transactionService = scope.ServiceProvider.GetRequiredService<ITgsService<Transaction>>();
 
                 var request =
                     await _taskQueue.DequeueAsync(stoppingToken);
@@ -83,11 +87,29 @@ public class PlayerRebateBackground : BackgroundService
                     .CreatePlayerBucketAsync(new(request.PlayerCode, BucketType.Vip, request.RebateAmount))
                     .ConfigureAwait(false);
 
-                await cashServiceClient.RebateAsync(
-                    request.DefaultWalletId,
-                    request.RebateAmount,
-                    "player rebate",
-                    rebate.Id.ToString()).ConfigureAwait(false);
+                await Policy.Handle<HttpRequestException>()
+                    .WaitAndRetryAsync(1, retryAttempt =>
+                        TimeSpan.FromSeconds(3), (exception, time, retryCount, context) =>
+                    {
+                        _logger.LogError("externalId:{externalId} retryCount:{retryCount} Exception:{exception}",
+                            rebate.Id, retryCount, exception);
+                    })
+                    .ExecuteAsync(
+                        async () =>
+                        {
+                            if (!await transactionService.GetQueries()
+                                    .AnyAsync(
+                                        x => x.PlayerCode == request.PlayerCode &&
+                                            x.ExternalTransactionId == rebate.Id.ToString(),
+                                        cancellationToken: stoppingToken))
+                            {
+                                await cashServiceClient.RebateAsync(
+                                    request.DefaultWalletId,
+                                    request.RebateAmount,
+                                    "player rebate",
+                                    rebate.Id.ToString()).ConfigureAwait(false);
+                            }
+                        });
             }
             catch (Exception ex)
             {

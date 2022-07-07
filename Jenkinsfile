@@ -6,7 +6,7 @@ pipeline {
 	
 	environment {
 		BuildConfiguration="Debug"
-		ImageName ="harbor.rpgp.cc/tgs/profit-rebate-service"
+		ImageName ="pgtgs/profit-rebate-service"
 	}
 
 	stages {

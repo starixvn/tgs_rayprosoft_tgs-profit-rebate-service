@@ -145,7 +145,8 @@ namespace Tgs.ProfitRebate.Tests
             fixture.Customize<Player>(u => u
                 .With(s => s.PlayerCode, playerCode)
                 .With(s => s.PlayerBuckets, new PlayerBucket[] { })
-                .With(s => s.Wallets, new Wallet[] { }));
+                .With(s => s.Wallets, new Wallet[] { })
+                .With(s => s.Birthdate, new DateOnly()));
             fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             return fixture;
         }

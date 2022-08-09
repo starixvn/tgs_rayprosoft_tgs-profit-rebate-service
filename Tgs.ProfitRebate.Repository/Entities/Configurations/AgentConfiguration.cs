@@ -18,6 +18,9 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.HasIndex(e => e.BrandId, "ix_agents_brand_id");
 
+            entity.HasIndex(e => e.Path, "ix_agents_gist_path")
+                .HasMethod("gist");
+
             entity.HasIndex(e => e.ParentAgentId, "ix_agents_parent_agent_id");
 
             entity.Property(e => e.Id)
@@ -67,6 +70,10 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.Property(e => e.ParentAgentId).HasColumnName("parent_agent_id");
 
             entity.Property(e => e.Password).HasColumnName("password");
+
+            entity.Property(e => e.Path)
+                .HasColumnName("path")
+                .HasDefaultValueSql("''::ltree");
 
             entity.Property(e => e.Phone)
                 .HasMaxLength(32)

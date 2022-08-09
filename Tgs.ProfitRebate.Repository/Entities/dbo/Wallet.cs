@@ -19,6 +19,7 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal Balance { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
         public DateTimeOffset UpdatedOn { get; set; }
+        public decimal LockedBalance { get; set; }
 
         public virtual Currency CurrencyCodeNavigation { get; set; } = null!;
         public virtual Player PlayerCodeNavigation { get; set; } = null!;

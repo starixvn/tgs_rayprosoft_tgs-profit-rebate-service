@@ -57,6 +57,13 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public bool EnableAgentSms { get; set; }
         public bool EnablePlayerIdentity { get; set; }
         public bool AutoClearWageringRequirement { get; set; }
+        public decimal AutoClearWageringRequirementBalance { get; set; }
+        public decimal DepositHandlingFeeRateTenPercentile { get; set; }
+        public decimal WithdrawHandlingFeeRateTenPercentile { get; set; }
+        public bool EnableEmailRegisterFlow { get; set; }
+        public string? PlayerRegisterFlowSettings { get; set; }
+        public bool EnableBankInfoRegisterFlow { get; set; }
+        public bool DepositPaymentLockEnabled { get; set; }
 
         public virtual Licensee Licensee { get; set; } = null!;
         public virtual ICollection<AgentTransaction> AgentTransactions { get; set; }

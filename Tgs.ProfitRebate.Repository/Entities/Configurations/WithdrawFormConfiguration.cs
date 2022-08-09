@@ -50,6 +50,8 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasColumnName("created_on")
                 .HasDefaultValueSql("now()");
 
+            entity.Property(e => e.Note).HasColumnName("note");
+
             entity.Property(e => e.OrderNo)
                 .HasMaxLength(50)
                 .HasColumnName("order_no");

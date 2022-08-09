@@ -2,6 +2,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tgs.ProfitRebate.Repository.Entities
 {
@@ -48,6 +49,7 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string? UpdatedByUsername { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
         public DateTimeOffset UpdatedOn { get; set; }
+        public LTree Path { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;
         public virtual Agent? ParentAgent { get; set; }

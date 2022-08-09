@@ -41,6 +41,7 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string? Terms { get; set; }
         public string CampaignDetail { get; set; } = null!;
         public int DisplayOrder { get; set; }
+        public Guid? AmountUsedSnapshotId { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;
         public virtual VipLevel? VipLevel { get; set; }

@@ -16,6 +16,7 @@ namespace Tgs.ProfitRebate.Core
         private readonly ITgsService<Brand> _brandService;
         private readonly ITgsService<PlayerAggregate> _playerAggregateService;
         private readonly ITgsService<PlayerGameRebateAggregate> _playerGameAggregateService;
+        private readonly ITgsService<PlayerBonusAggregate> _playerBonusAggregateService;
 
         public AgentDividendFactory(
             ITgsService<Agent> agentService,
@@ -23,6 +24,7 @@ namespace Tgs.ProfitRebate.Core
             ITgsService<AgentDividend> agentDividendService,
             ITgsService<PlayerAggregate> playerAggregateService,
             ITgsService<PlayerGameRebateAggregate> playerGameAggregateService,
+            ITgsService<PlayerBonusAggregate> playerBonusAggregateService,
             IAgentWalletRepository agentWalletRepository)
         {
             _agentService = agentService;
@@ -31,6 +33,7 @@ namespace Tgs.ProfitRebate.Core
             _playerAggregateService = playerAggregateService;
             _playerGameAggregateService = playerGameAggregateService;
             _agentWalletRepository = agentWalletRepository;
+            _playerBonusAggregateService = playerBonusAggregateService;
         }
 
         public (DateTimeOffset, DateTimeOffset) GetInterval(SettlementIntervalType type, DateTimeOffset startDate,
@@ -102,14 +105,15 @@ namespace Tgs.ProfitRebate.Core
         }
 
         public async Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>, int)>
-            GetAgentDividends(Brand brand, int idNumber)
+            GetAgentDividends(Brand brand, int idNumber,CancellationToken cancellationToken)
         {
             var agents = await _agentService.GetQueries()
                 .Where(x => x.BrandId == brand.Id)
                 .Include(x => x.AgentDividendConditions)
-                .ToArrayAsync();
+                .ToArrayAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-            var playerDataModels = await _playerAggregateService.GetQueries()
+            var playerAggregate = await _playerAggregateService.GetQueries()
                 .Where(x => x.AgentId != null)
                 .Where(x => x.BrandId == brand.Id)
                 .Where(x => x.ReportDate >= brand.CurrentSettlementFrom &&
@@ -120,63 +124,107 @@ namespace Tgs.ProfitRebate.Core
                     x.AgentId,
                     x.PlayerCode
                 },
-                    (groupItem, playerAggregates) => new
+                    (groupItem, list) => new PlayerGroupDataModel
                     {
-                        groupItem.AgentId,
-                        groupItem.PlayerCode,
-                        groupItem.BrandId,
-                        PromotionAmount = playerAggregates.Sum(p => p.PromotionAmount),
-                        RebateAmount = playerAggregates.Sum(p => p.RebateAmount),
-                        DepositAmount = playerAggregates.Sum(p => p.DepositAmount),
-                        WithdrawalAmount = playerAggregates.Sum(p => p.WithdrawalAmount),
-                        CompanyAdjustAmount = playerAggregates.Sum(p => p.CompanyAdjustAmount),
-                        AgentAdjustAmount = playerAggregates.Sum(p => p.AgentAdjustAmount),
-                        BonusAdjustAmount = playerAggregates.Sum(p => p.BonusAdjustAmount),
-                        BonusAmount = playerAggregates.Sum(p => p.RebateAmount + p.PromotionAmount),
-                        BetAmount = playerAggregates.Sum(p => p.BetAmount),
-                        ValidBetAmount = playerAggregates.Sum(p => p.ValidBetAmount),
-                        OriginalTurnover = playerAggregates.Sum(p => p.OriginalTurnover),
-                        Turnover = playerAggregates.Sum(p => p.Turnover),
-                        WinLossAmount = playerAggregates.Sum(p => p.WinLossAmount),
+                        AgentId = groupItem.AgentId!.Value,
+                        PlayerCode = groupItem.PlayerCode,
+                        BrandId = groupItem.BrandId,
+                        PromotionAmount = list.Sum(p => p.PromotionAmount),
+                        RebateAmount = list.Sum(p => p.RebateAmount),
+                        DepositAmount = list.Sum(p => p.DepositAmount),
+                        WithdrawalAmount = list.Sum(p => p.WithdrawalAmount),
+                        CompanyAdjustAmount = list.Sum(p => p.CompanyAdjustAmount),
+                        AgentAdjustAmount = list.Sum(p => p.AgentAdjustAmount),
+                        BonusAdjustAmount = list.Sum(p => p.BonusAdjustAmount),
+                        BonusAmount = list.Sum(p => p.RebateAmount + p.PromotionAmount),
+                        BetAmount = list.Sum(p => p.BetAmount),
+                        ValidBetAmount = list.Sum(p => p.ValidBetAmount),
+                        OriginalTurnover = list.Sum(p => p.OriginalTurnover),
+                        Turnover = list.Sum(p => p.Turnover),
+                        WinLossAmount = list.Sum(p => p.WinLossAmount),
                         NoIncludeNetProfitCompanyAdjustAmount =
-                            playerAggregates.Sum(p => p.NoIncludeNetProfitCompanyAdjustAmount),
+                            list.Sum(p => p.NoIncludeNetProfitCompanyAdjustAmount),
                         NoIncludeNetProfitAgentAdjustAmount =
-                            playerAggregates.Sum(p => p.NoIncludeNetProfitAgentAdjustAmount),
+                            list.Sum(p => p.NoIncludeNetProfitAgentAdjustAmount),
                         NoIncludeNetProfitBonusAdjustAmount =
-                            playerAggregates.Sum(p => p.NoIncludeNetProfitBonusAdjustAmount)
-                    }).ToArrayAsync();
+                            list.Sum(p => p.NoIncludeNetProfitBonusAdjustAmount)
+                    })
+                .ToArrayAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-            var playerData = playerDataModels.Select(x =>
-            {
-                return new PlayerGroupDataModel
-                {
-                    AgentId = x.AgentId!.Value,
-                    PlayerCode = x.PlayerCode,
-                    BrandId = x.BrandId,
-                    PromotionAmount = x.PromotionAmount,
-                    RebateAmount = x.RebateAmount,
-                    DepositAmount = x.DepositAmount,
-                    WithdrawalAmount = x.WithdrawalAmount,
-                    CompanyAdjustAmount = x.CompanyAdjustAmount,
-                    AgentAdjustAmount = x.AgentAdjustAmount,
-                    BonusAdjustAmount = x.BonusAdjustAmount,
-                    BonusAmount = x.BonusAmount,
-                    ValidBetAmount = x.ValidBetAmount,
-                    OriginalTurnover = x.OriginalTurnover,
-                    BetAmount = x.BetAmount,
-                    Turnover = x.Turnover,
-                    WinLossAmount = x.WinLossAmount,
-                    NoIncludeNetProfitCompanyAdjustAmount = x.NoIncludeNetProfitCompanyAdjustAmount,
-                    NoIncludeNetProfitAgentAdjustAmount = x.NoIncludeNetProfitAgentAdjustAmount,
-                    NoIncludeNetProfitBonusAdjustAmount = x.NoIncludeNetProfitBonusAdjustAmount,
-                    NetProfit = x.WinLossAmount 
-                        - (x.AgentAdjustAmount - x.NoIncludeNetProfitAgentAdjustAmount)
-                        - (x.BonusAdjustAmount - x.NoIncludeNetProfitBonusAdjustAmount)
-                        - x.RebateAmount 
-                        - x.PromotionAmount 
-                        - x.WinLossAmount * brand.PlatformCharge / 100
-                };
-            }).ToArray();
+            var playerBonuses = await _playerBonusAggregateService.GetQueries()
+                .Where(x => x.AgentId != null)
+                .Where(x => x.BrandId == brand.Id)
+                .Where(x => x.ReportDate >= brand.CurrentSettlementFrom &&
+                    x.ReportDate <= brand.CurrentSettlementTo)
+                .GroupBy(x => new
+                    {
+                        x.BrandId,
+                        x.AgentId,
+                        x.PlayerCode
+                    },
+                    (groupItem, list) => new PlayerGroupDataModel
+                    {
+                        AgentId = groupItem.AgentId!.Value,
+                        PlayerCode = groupItem.PlayerCode,
+                        BrandId = groupItem.BrandId,
+                        PromotionAmount = 0M,
+                        RebateAmount = 0M,
+                        BonusAmount = list.Sum(p
+                            => p.UpgradeAmount + p.SeasonAmount + p.BirthdayAmount),
+                        DepositAmount = 0M,
+                        WithdrawalAmount = 0M,
+                        CompanyAdjustAmount = 0M,
+                        AgentAdjustAmount = 0M,
+                        BonusAdjustAmount = 0M,
+                        BetAmount = 0M,
+                        ValidBetAmount = 0M,
+                        OriginalTurnover = 0M,
+                        Turnover = 0M,
+                        WinLossAmount = 0M,
+                        NoIncludeNetProfitCompanyAdjustAmount = 0M,
+                        NoIncludeNetProfitAgentAdjustAmount = 0M,
+                        NoIncludeNetProfitBonusAdjustAmount = 0M
+                    })
+                .ToArrayAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            var playerData = playerAggregate.Concat(playerBonuses)
+                .GroupBy(x => new
+                    {
+                        x.BrandId,
+                        x.AgentId,
+                        x.PlayerCode
+                    },
+                    (groupItem, list) => new PlayerGroupDataModel
+                    {
+                        AgentId = groupItem.AgentId,
+                        PlayerCode = groupItem.PlayerCode,
+                        BrandId = groupItem.BrandId,
+                        PromotionAmount = list.Sum(p => p.PromotionAmount),
+                        RebateAmount = list.Sum(p => p.RebateAmount),
+                        DepositAmount = list.Sum(p => p.DepositAmount),
+                        WithdrawalAmount = list.Sum(p => p.WithdrawalAmount),
+                        CompanyAdjustAmount = list.Sum(p => p.CompanyAdjustAmount),
+                        AgentAdjustAmount = list.Sum(p => p.AgentAdjustAmount),
+                        BonusAdjustAmount = list.Sum(p => p.BonusAdjustAmount),
+                        BonusAmount = list.Sum(p => p.BonusAmount),
+                        BetAmount = list.Sum(p => p.BetAmount),
+                        ValidBetAmount = list.Sum(p => p.ValidBetAmount),
+                        OriginalTurnover = list.Sum(p => p.OriginalTurnover),
+                        Turnover = list.Sum(p => p.Turnover),
+                        WinLossAmount = list.Sum(p => p.WinLossAmount),
+                        NoIncludeNetProfitCompanyAdjustAmount =
+                            list.Sum(p => p.NoIncludeNetProfitCompanyAdjustAmount),
+                        NoIncludeNetProfitAgentAdjustAmount =
+                            list.Sum(p => p.NoIncludeNetProfitAgentAdjustAmount),
+                        NoIncludeNetProfitBonusAdjustAmount =
+                            list.Sum(p => p.NoIncludeNetProfitBonusAdjustAmount),
+                        NetProfit = list.Sum(s => s.WinLossAmount
+                            - (s.AgentAdjustAmount - s.NoIncludeNetProfitAgentAdjustAmount)
+                            - (s.BonusAdjustAmount - s.NoIncludeNetProfitBonusAdjustAmount)
+                            - s.BonusAmount * brand.PlatformCharge / 100) 
+                    });
 
             var agentCurrentConditions = playerData.GroupBy(x => x.AgentId, (agentId, items) => new AgentConditionModel
             {
@@ -393,7 +441,8 @@ namespace Tgs.ProfitRebate.Core
             var agentIds = agentDividends.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
 
             var noSendDividends = await _agentDividendService.GetQueries()
-                .Where(x => agentIds.Contains(x.AgentId) && x.SentOn == null).ToArrayAsync()
+                .Where(x => agentIds.Contains(x.AgentId) && x.SentOn == null)
+                .ToArrayAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             foreach (var dividend in agentDividends)

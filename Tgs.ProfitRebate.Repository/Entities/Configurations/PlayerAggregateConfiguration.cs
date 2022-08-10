@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tgs.ProfitRebate.Repository.Entities;
 
 #nullable disable
@@ -15,6 +16,9 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
         public void Configure(EntityTypeBuilder<PlayerAggregate> entity)
         {
             entity.ToTable("player_aggregates", "report");
+
+            entity.HasIndex(e => new { e.BrandId, e.ReportDate, e.AgentId, e.PlayerCode }, "ix_player_aggregate_brand_id_and_report_date_desc_and_player_co")
+                .HasSortOrder(new[] { SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending, SortOrder.Ascending });
 
             entity.HasIndex(e => e.AgentId, "ix_player_aggregates_agent_id");
 
@@ -55,6 +59,10 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.Property(e => e.DepositAmount)
                 .HasPrecision(18, 6)
                 .HasColumnName("deposit_amount");
+
+            entity.Property(e => e.DepositHandlingFee)
+                .HasPrecision(18, 6)
+                .HasColumnName("deposit_handling_fee");
 
             entity.Property(e => e.DividendAmount)
                 .HasPrecision(18, 6)
@@ -113,6 +121,10 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.Property(e => e.WinLossAmount)
                 .HasPrecision(18, 6)
                 .HasColumnName("win_loss_amount");
+
+            entity.Property(e => e.WithdrawHandlingFee)
+                .HasPrecision(18, 6)
+                .HasColumnName("withdraw_handling_fee");
 
             entity.Property(e => e.WithdrawalAmount)
                 .HasPrecision(18, 6)

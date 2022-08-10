@@ -28,6 +28,8 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasPrecision(18, 6)
                 .HasColumnName("amount_used");
 
+            entity.Property(e => e.AmountUsedSnapshotId).HasColumnName("amount_used_snapshot_id");
+
             entity.Property(e => e.AutoSentPlayerBonus).HasColumnName("auto_sent_player_bonus");
 
             entity.Property(e => e.BonusAmountLimit)

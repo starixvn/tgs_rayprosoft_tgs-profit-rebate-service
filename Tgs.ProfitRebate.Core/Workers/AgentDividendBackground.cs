@@ -70,7 +70,7 @@ namespace Tgs.ProfitRebate.Core.Workers
                                         request.CancellationToken))
                             {
                                 var (autoSendDividends, manuelOrNegativeDividends, agentDividends, backMaxNumber) =
-                                    await agentDividendFactory.GetAgentDividends(brand, maxNumber);
+                                    await agentDividendFactory.GetAgentDividends(brand, maxNumber, stoppingToken);
 
                                 maxNumber = backMaxNumber;
 

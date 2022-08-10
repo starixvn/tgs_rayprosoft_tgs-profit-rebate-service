@@ -18,6 +18,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public short Type { get; set; }
         public DateTimeOffset RecordedOn { get; set; }
         public DateTimeOffset? SentOn { get; set; }
+        public decimal LockAmount { get; set; }
+        public decimal LockedBalance { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;
         public virtual AgentWallet Wallet { get; set; } = null!;

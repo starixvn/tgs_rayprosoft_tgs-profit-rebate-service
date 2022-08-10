@@ -20,7 +20,7 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string? Remark { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
         public string CreatedByUsername { get; set; } = null!;
-        public bool? IncludeInNetProfit { get; set; }
+        public bool IncludeInNetProfit { get; set; }
         public DateTimeOffset TransactionRecordedOn { get; set; }
     }
 }

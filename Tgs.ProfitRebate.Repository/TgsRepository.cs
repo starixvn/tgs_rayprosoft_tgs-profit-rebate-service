@@ -46,6 +46,7 @@ namespace Tgs.ProfitRebate.Repository
         public DbSet<VipLevel> VipLevels { get; set; } = null!;
         public DbSet<Wallet> Wallets { get; set; } = null!;
         public DbSet<WithdrawForm> WithdrawForms { get; set; } = null!;
+        public DbSet<PlayerBonusAggregate> PlayerBonusAggregates { get; set; } = null!;
 
         public IDbConnection GetDbConnection() =>
             Database.GetDbConnection();

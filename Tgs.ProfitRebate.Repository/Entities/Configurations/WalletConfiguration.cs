@@ -38,6 +38,10 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasMaxLength(16)
                 .HasColumnName("external_currency_code");
 
+            entity.Property(e => e.LockedBalance)
+                .HasPrecision(18, 6)
+                .HasColumnName("locked_balance");
+
             entity.Property(e => e.PlayerCode)
                 .HasMaxLength(16)
                 .HasColumnName("player_code");

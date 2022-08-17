@@ -16,6 +16,6 @@ namespace Tgs.ProfitRebate.Core
             List<CreateAgentDividendModel> createAutoSendModels, List<AgentDividend> updateAgentDividends);
 
         public Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>, int)>
-            GetAgentDividends(Brand brand, int idNumber);
+            GetAgentDividends(Brand brand, int idNumber,CancellationToken cancellationToken);
     }
 }

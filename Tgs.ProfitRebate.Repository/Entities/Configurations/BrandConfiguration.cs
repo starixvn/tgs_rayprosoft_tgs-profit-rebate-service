@@ -36,6 +36,10 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.AutoClearWageringRequirement).HasColumnName("auto_clear_wagering_requirement");
 
+            entity.Property(e => e.AutoClearWageringRequirementBalance)
+                .HasPrecision(18, 6)
+                .HasColumnName("auto_clear_wagering_requirement_balance");
+
             entity.Property(e => e.AutoSentAgentBonus).HasColumnName("auto_sent_agent_bonus");
 
             entity.Property(e => e.AutoSentPlayerBonus).HasColumnName("auto_sent_player_bonus");
@@ -58,17 +62,25 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.CurrentSettlementFrom)
                 .HasColumnName("current_settlement_from")
-                .HasDefaultValueSql("'0001-01-01 08:06:00+08:06'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.CurrentSettlementTo)
                 .HasColumnName("current_settlement_to")
-                .HasDefaultValueSql("'0001-01-01 08:06:00+08:06'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
+
+            entity.Property(e => e.DepositHandlingFeeRateTenPercentile).HasColumnName("deposit_handling_fee_rate_ten_percentile");
+
+            entity.Property(e => e.DepositPaymentLockEnabled).HasColumnName("deposit_payment_lock_enabled");
 
             entity.Property(e => e.Description)
                 .HasMaxLength(256)
                 .HasColumnName("description");
 
             entity.Property(e => e.EnableAgentSms).HasColumnName("enable_agent_sms");
+
+            entity.Property(e => e.EnableBankInfoRegisterFlow).HasColumnName("enable_bank_info_register_flow");
+
+            entity.Property(e => e.EnableEmailRegisterFlow).HasColumnName("enable_email_register_flow");
 
             entity.Property(e => e.EnablePlayerIdentity).HasColumnName("enable_player_identity");
 
@@ -88,11 +100,11 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.NextSettlementFrom)
                 .HasColumnName("next_settlement_from")
-                .HasDefaultValueSql("'0001-01-01 08:06:00+08:06'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.NextSettlementTo)
                 .HasColumnName("next_settlement_to")
-                .HasDefaultValueSql("'0001-01-01 08:06:00+08:06'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.OperationalEmail)
                 .HasMaxLength(128)
@@ -102,13 +114,17 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasPrecision(9, 6)
                 .HasColumnName("platform_charge");
 
+            entity.Property(e => e.PlayerRegisterFlowSettings)
+                .HasColumnType("jsonb")
+                .HasColumnName("player_register_flow_settings");
+
             entity.Property(e => e.PreviousSettlementFrom)
                 .HasColumnName("previous_settlement_from")
-                .HasDefaultValueSql("'0001-01-01 08:06:00+08:06'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.PreviousSettlementTo)
                 .HasColumnName("previous_settlement_to")
-                .HasDefaultValueSql("'0001-01-01 08:06:00+08:06'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.SecretKey)
                 .HasMaxLength(32)
@@ -135,6 +151,8 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasColumnName("updated_by_username");
 
             entity.Property(e => e.UpdatedOn).HasColumnName("updated_on");
+
+            entity.Property(e => e.WithdrawHandlingFeeRateTenPercentile).HasColumnName("withdraw_handling_fee_rate_ten_percentile");
 
             entity.HasOne(d => d.Licensee)
                 .WithMany(p => p.Brands)

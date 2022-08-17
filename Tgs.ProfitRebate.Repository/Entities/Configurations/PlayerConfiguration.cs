@@ -50,7 +50,12 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.BetLimitId).HasColumnName("bet_limit_id");
 
-            entity.Property(e => e.Birthday).HasColumnName("birthday");
+            entity.Property(e => e.Birthdate).HasColumnName("birthdate");
+
+            entity.Property(e => e.Birthday)
+                .HasMaxLength(4)
+                .HasColumnName("birthday")
+                .HasComputedColumnSql("(lpad((date_part('month'::text, birthdate))::text, 2, '0'::text) || lpad((date_part('day'::text, birthdate))::text, 2, '0'::text))", true);
 
             entity.Property(e => e.BrandId).HasColumnName("brand_id");
 

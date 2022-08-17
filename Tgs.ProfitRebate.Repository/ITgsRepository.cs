@@ -41,6 +41,8 @@ namespace Tgs.ProfitRebate.Repository
         DbSet<BrandAllAgentGameType> BrandAllAgentGameTypes { get; set; }
         DbSet<BrandAllAgentGameTypeCondition> BrandAllAgentGameTypeConditions { get; set; }
         DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; }
+        DbSet<PlayerBonusAggregate> PlayerBonusAggregates { get; set; }
+
         IDbContextTransaction? CurrentTransaction { get; }
         DbSet<T> Set<T>() where T : class;
 

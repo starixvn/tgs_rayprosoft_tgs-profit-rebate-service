@@ -40,10 +40,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.CreatedOn).HasColumnName("created_on");
 
-            entity.Property(e => e.IncludeInNetProfit)
-                .IsRequired()
-                .HasColumnName("include_in_net_profit")
-                .HasDefaultValueSql("true");
+            entity.Property(e => e.IncludeInNetProfit).HasColumnName("include_in_net_profit");
 
             entity.Property(e => e.PlayerCode).HasColumnName("player_code");
 
@@ -53,7 +50,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.TransactionRecordedOn)
                 .HasColumnName("transaction_recorded_on")
-                .HasDefaultValueSql("'0001-01-01 08:06:00+08:06'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.TransferTarget).HasColumnName("transfer_target");
 

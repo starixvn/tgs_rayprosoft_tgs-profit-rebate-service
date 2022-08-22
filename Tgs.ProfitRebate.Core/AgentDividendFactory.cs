@@ -223,7 +223,8 @@ namespace Tgs.ProfitRebate.Core
                         NetProfit = list.Sum(s => s.WinLossAmount
                             - (s.AgentAdjustAmount - s.NoIncludeNetProfitAgentAdjustAmount)
                             - (s.BonusAdjustAmount - s.NoIncludeNetProfitBonusAdjustAmount)
-                            - s.BonusAmount * brand.PlatformCharge / 100) 
+                            - s.BonusAmount
+                            - s.WinLossAmount * brand.PlatformCharge / 100) 
                     });
 
             var agentCurrentConditions = playerData.GroupBy(x => x.AgentId, (agentId, items) => new AgentConditionModel

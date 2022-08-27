@@ -73,7 +73,7 @@ namespace Tgs.ProfitRebate.Core
         public async ValueTask SaveAgentDividendData(Brand[] brands, List<CreateAgentDividendModel> createModels,
             List<CreateAgentDividendModel> createAutoSendModels, List<AgentDividend> updateAgentDividends)
         {
-            using var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions() { Timeout = TimeSpan.FromMinutes(5) }, TransactionScopeAsyncFlowOption.Enabled);
+            using var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions() { Timeout = TimeSpan.FromMinutes(10) }, TransactionScopeAsyncFlowOption.Enabled);
 
             await CreateAgentDividendsAsync(createModels.ToArray(), null);
 

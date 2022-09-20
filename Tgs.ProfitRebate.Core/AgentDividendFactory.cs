@@ -6,6 +6,7 @@ using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository;
 using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
+using TGS.Core.Infrastructures.Extensions;
 
 namespace Tgs.ProfitRebate.Core;
 
@@ -632,7 +633,7 @@ public class AgentDividendFactory : IAgentDividendFactory
             SportsWinLoss = model.SportsWinLoss,
             ESportsWinLoss = model.ESportsWinLoss,
             VirtualSportsWinLoss = model.VirtualSportsWinLoss,
-            AgentDividendAmount = model.AgentDividendAmount,
+            AgentDividendAmount = model.AgentDividendAmount.Truncate(2),
             CreatedOn = model.CreatedOn,
             SentOn = sentOn,
             BeforeDividendAmount = model.BeforeDividendAmount,
@@ -649,7 +650,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                     DividendProviderAgentId = x.DividendProviderAgentId,
                     DividendProviderId = x.DividendProviderId,
                     Layer = x.Layer,
-                    Dividend = x.Dividend
+                    Dividend = x.Dividend.Truncate(2)
                 }).ToArray()
         }).ToArray());
 

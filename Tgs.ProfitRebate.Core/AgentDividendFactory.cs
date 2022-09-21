@@ -316,7 +316,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                     AgentAdjustAmount = list.Sum(p => p.agg.AgentAdjustAmount),
                     BonusAdjustAmount = list.Sum(p => p.agg.BonusAdjustAmount),
                     BonusAmount = list.Sum(p
-                        => p.agg.BonusAmount),
+                        => p.agg.BonusAmount + (p.bonusAgg?.BonusAmount ?? 0M)),
                     BetAmount = list.Sum(p => p.agg.BetAmount),
                     ValidBetAmount = list.Sum(p => p.agg.ValidBetAmount),
                     OriginalTurnover = list.Sum(p => p.agg.OriginalTurnover),
@@ -392,9 +392,8 @@ public class AgentDividendFactory : IAgentDividendFactory
                     groupItem.NoIncludeNetProfitAgentAdjustAmount,
                     groupItem.NoIncludeNetProfitBonusAdjustAmount,
                     NetProfit = groupItem.WinLossAmount
-                        - (groupItem.BonusAdjustAmount - groupItem.NoIncludeNetProfitBonusAdjustAmount) *
-                        groupItem.AgentDividendPercentage / 100
-                        - groupItem.BonusAmount * groupItem.AgentDividendPercentage / 100
+                        - (groupItem.BonusAdjustAmount - groupItem.NoIncludeNetProfitBonusAdjustAmount)
+                        - groupItem.BonusAmount
                         - groupItem.WinLossAmount * brand.PlatformCharge / 100,
                     LiveDealerWinLoss = list.Sum(x => x.gameAgg?.LiveDealerWinLoss ?? 0M),
                     SlotWinLoss = list.Sum(x => x.gameAgg?.SlotWinLoss ?? 0M),
@@ -687,8 +686,8 @@ public class AgentDividendFactory : IAgentDividendFactory
                 AgentDividendPercentage = agentDividendPercentage,
                 ActualDividendPercentage = actualDividendPercentage,
                 Layer = layer,
-                AgentCoveredBonus = bonusAmount * actualDividendPercentage / 100M,
-                AgentCoveredBonusAdjust = bonusAdjustAmount * actualDividendPercentage / 100M,
+                AgentCoveredBonus = (bonusAmount * actualDividendPercentage / 100M).Truncate(2),
+                AgentCoveredBonusAdjust = (bonusAdjustAmount * actualDividendPercentage / 100M).Truncate(2),
                 Dividend = (netProfit * actualDividendPercentage / 100M).Truncate(2)
             };
 
@@ -739,8 +738,8 @@ public class AgentDividendFactory : IAgentDividendFactory
                 AgentDividendPercentage = agentDividendPercentage,
                 ActualDividendPercentage = actualDividendPercentage,
                 Layer = layer,
-                AgentCoveredBonus = bonusAmount * actualDividendPercentage / 100M,
-                AgentCoveredBonusAdjust = bonusAdjustAmount * actualDividendPercentage / 100M,
+                AgentCoveredBonus = (bonusAmount * actualDividendPercentage / 100M).Truncate(2),
+                AgentCoveredBonusAdjust = (bonusAdjustAmount * actualDividendPercentage / 100M).Truncate(2),
                 Dividend = (netProfit * actualDividendPercentage / 100M).Truncate(2)
             };
 

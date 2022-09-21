@@ -423,6 +423,9 @@ public class AgentDividendFactory : IAgentDividendFactory
                 {
                     AgentId = groupItem.AgentId,
                     BrandId = groupItem.BrandId!.Value,
+                    AutoSend = brand.AutoSentAgentBonus,
+                    From = brand.CurrentSettlementFrom,
+                    To = brand.CurrentSettlementTo,
                     AgentDividendPercentage = groupItem.AgentDividendPercentage,
                     AgentDividendPercentageTreeData = groupItem.AgentDividendPercentageTreeData,
                     PromotionAmount = list.Sum(x => x.PromotionAmount),
@@ -454,7 +457,8 @@ public class AgentDividendFactory : IAgentDividendFactory
                     CardGameWinLoss = list.Sum(x => x.CardGameWinLoss),
                     SportsWinLoss = list.Sum(x => x.SportsWinLoss),
                     ESportsWinLoss = list.Sum(x => x.ESportsWinLoss),
-                    VirtualSportsWinLoss = list.Sum(x => x.VirtualSportsWinLoss)
+                    VirtualSportsWinLoss = list.Sum(x => x.VirtualSportsWinLoss),
+                    CreatedOn = DateTimeOffset.UtcNow
                 }).ToArray();
 
 
@@ -521,11 +525,11 @@ public class AgentDividendFactory : IAgentDividendFactory
         foreach (var dividend in allAgent)
         {
             dividend.AgentDividendAmount =
-                parentAgentDividends.Where(p => p.DividendProviderId == dividend.Id && p.AgentId == dividend.AgentId)
+                parentAgentDividends.Where(p => p.AgentId == dividend.AgentId && p.AgentDividendPercentage == dividend.AgentDividendPercentage)
                     .Sum(s => s.Dividend) - (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
 
             dividend.AgentDividendMultipleLayerModels =
-                parentAgentDividends.Where(p => p.DividendProviderId == dividend.Id).ToArray();
+                parentAgentDividends.Where(p => p.AgentId == dividend.AgentId && p.AgentDividendPercentage == dividend.AgentDividendPercentage).ToArray();
         }
 
         var agentIds = allAgent.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
@@ -593,7 +597,7 @@ public class AgentDividendFactory : IAgentDividendFactory
             AgentId = currentAgentId,
             DividendProviderAgentId = providerAgentId,
             Layer = layer,
-            Dividend = netProfit * agentDividendPercentage / 100M
+            Dividend = (netProfit * agentDividendPercentage / 100M).Truncate(2)
         };
     }
 
@@ -633,7 +637,7 @@ public class AgentDividendFactory : IAgentDividendFactory
             SportsWinLoss = model.SportsWinLoss,
             ESportsWinLoss = model.ESportsWinLoss,
             VirtualSportsWinLoss = model.VirtualSportsWinLoss,
-            AgentDividendAmount = model.AgentDividendAmount.Truncate(2),
+            AgentDividendAmount = model.AgentDividendAmount,
             CreatedOn = model.CreatedOn,
             SentOn = sentOn,
             BeforeDividendAmount = model.BeforeDividendAmount,
@@ -650,7 +654,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                     DividendProviderAgentId = x.DividendProviderAgentId,
                     DividendProviderId = x.DividendProviderId,
                     Layer = x.Layer,
-                    Dividend = x.Dividend.Truncate(2)
+                    Dividend = x.Dividend
                 }).ToArray()
         }).ToArray());
 
@@ -685,7 +689,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                 Layer = layer,
                 AgentCoveredBonus = bonusAmount * actualDividendPercentage / 100M,
                 AgentCoveredBonusAdjust = bonusAdjustAmount * actualDividendPercentage / 100M,
-                Dividend = netProfit * actualDividendPercentage / 100M
+                Dividend = (netProfit * actualDividendPercentage / 100M).Truncate(2)
             };
 
             hasParentAgentId = agent.ParentAgentId != null;
@@ -737,7 +741,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                 Layer = layer,
                 AgentCoveredBonus = bonusAmount * actualDividendPercentage / 100M,
                 AgentCoveredBonusAdjust = bonusAdjustAmount * actualDividendPercentage / 100M,
-                Dividend = netProfit * actualDividendPercentage / 100M
+                Dividend = (netProfit * actualDividendPercentage / 100M).Truncate(2)
             };
 
             hasParentAgentId = agent.ParentAgentId != null;

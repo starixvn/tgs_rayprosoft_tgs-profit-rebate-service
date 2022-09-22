@@ -30,6 +30,14 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasPrecision(18, 6)
                 .HasColumnName("agent_adjust_amount");
 
+            entity.Property(e => e.AgentDividendPercentage)
+                .HasPrecision(18, 6)
+                .HasColumnName("agent_dividend_percentage");
+
+            entity.Property(e => e.AgentDividendPercentageTreeData)
+                .HasColumnType("jsonb")
+                .HasColumnName("agent_dividend_percentage_tree_data");
+
             entity.Property(e => e.AgentId).HasColumnName("agent_id");
 
             entity.Property(e => e.AllAgentRebateAmount)
@@ -49,6 +57,10 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasColumnName("bonus_amount");
 
             entity.Property(e => e.BrandId).HasColumnName("brand_id");
+
+            entity.Property(e => e.ChiefAgentDividendPercentage)
+                .HasPrecision(18, 6)
+                .HasColumnName("chief_agent_dividend_percentage");
 
             entity.Property(e => e.CompanyAdjustAmount)
                 .HasPrecision(18, 6)

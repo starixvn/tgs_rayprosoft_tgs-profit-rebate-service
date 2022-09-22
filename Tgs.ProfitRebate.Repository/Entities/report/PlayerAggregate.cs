@@ -38,5 +38,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal NoIncludeNetProfitBonusAdjustAmount { get; set; }
         public decimal DepositHandlingFee { get; set; }
         public decimal WithdrawHandlingFee { get; set; }
+        public decimal? AgentDividendPercentage { get; set; }
+        public string? AgentDividendPercentageTreeData { get; set; }
+        public decimal? ChiefAgentDividendPercentage { get; set; }
     }
 }

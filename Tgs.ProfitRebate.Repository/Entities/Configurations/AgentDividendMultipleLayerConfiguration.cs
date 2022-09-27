@@ -22,7 +22,23 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.Id).HasColumnName("id");
 
+            entity.Property(e => e.ActualDividendPercentage)
+                .HasPrecision(18, 6)
+                .HasColumnName("actual_dividend_percentage");
+
+            entity.Property(e => e.AgentCoveredBonus)
+                .HasPrecision(18, 6)
+                .HasColumnName("agent_covered_bonus");
+
+            entity.Property(e => e.AgentCoveredBonusAdjust)
+                .HasPrecision(18, 6)
+                .HasColumnName("agent_covered_bonus_adjust");
+
             entity.Property(e => e.AgentDividendId).HasColumnName("agent_dividend_id");
+
+            entity.Property(e => e.AgentDividendPercentage)
+                .HasPrecision(18, 6)
+                .HasColumnName("agent_dividend_percentage");
 
             entity.Property(e => e.AgentId).HasColumnName("agent_id");
 
@@ -31,6 +47,8 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasColumnName("dividend");
 
             entity.Property(e => e.DividendProviderAgentId).HasColumnName("dividend_provider_agent_id");
+
+            entity.Property(e => e.DividendProviderId).HasColumnName("dividend_provider_id");
 
             entity.Property(e => e.Layer).HasColumnName("layer");
 

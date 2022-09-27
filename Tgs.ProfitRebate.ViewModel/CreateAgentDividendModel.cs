@@ -4,7 +4,7 @@ namespace Tgs.ProfitRebate.ViewModel
 {
     public class CreateAgentDividendModel
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         public int? ReferencedAgentDividendId { get; set; }
 
@@ -69,6 +69,8 @@ namespace Tgs.ProfitRebate.ViewModel
         public decimal VirtualSportsWinLoss { get; set; }
 
         public decimal AgentDividendPercentage { get; set; }
+
+        public string? AgentDividendPercentageTreeData { get; set; }
 
         public decimal AgentDividendAmount { get; set; }
 

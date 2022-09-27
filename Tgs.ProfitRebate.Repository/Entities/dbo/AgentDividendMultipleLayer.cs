@@ -13,6 +13,11 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public Guid DividendProviderAgentId { get; set; }
         public string Layer { get; set; } = null!;
         public decimal Dividend { get; set; }
+        public decimal ActualDividendPercentage { get; set; }
+        public decimal? AgentCoveredBonus { get; set; }
+        public decimal? AgentCoveredBonusAdjust { get; set; }
+        public decimal AgentDividendPercentage { get; set; }
+        public int DividendProviderId { get; set; }
 
         public virtual AgentDividend AgentDividend { get; set; } = null!;
     }

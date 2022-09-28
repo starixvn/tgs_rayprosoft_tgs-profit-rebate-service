@@ -500,6 +500,8 @@ public class AgentDividendFactory : IAgentDividendFactory
                     ? null
                     : JsonSerializer.Deserialize<AgentDividendPercentageData[]>(x.AgentDividendPercentageTreeData);
 
+                var bonusAdjustAmount = x.BonusAdjustAmount - x.NoIncludeNetProfitBonusAdjustAmount;
+
                 if (x.AgentDividendPercentageTreeData is null)
                 {
                     return GetAgentDividends(
@@ -507,7 +509,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                         agents,
                         x.AgentId,
                         x.BonusAmount,
-                        x.BonusAdjustAmount,
+                        bonusAdjustAmount,
                         x.NetProfit);
                 }
 
@@ -516,7 +518,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                     agentDividendPercentage!,
                     x.AgentId,
                     x.BonusAmount,
-                    x.BonusAdjustAmount,
+                    bonusAdjustAmount,
                     x.NetProfit);
             }).ToArray();
 

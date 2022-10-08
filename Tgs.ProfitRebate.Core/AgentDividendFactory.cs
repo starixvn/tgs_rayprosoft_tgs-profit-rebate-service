@@ -1,12 +1,12 @@
 ﻿using System.Text.Json;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using TGS.Core.Infrastructures.Extensions;
 using Tgs.Core.Infrastructures.Utility;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository;
 using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
-using TGS.Core.Infrastructures.Extensions;
 
 namespace Tgs.ProfitRebate.Core;
 
@@ -116,7 +116,8 @@ public class AgentDividendFactory : IAgentDividendFactory
             .ToArrayAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        var playerAggregate = await _agentService.GetQueries().Where(x => x.BrandId == brand.Id)
+        var playerAggregate = await _agentService.GetQueries()
+            .Where(x => x.BrandId == brand.Id)
             .GroupJoin(_playerAggregateService.GetQueries()
                     .Where(x => x.AgentId != null)
                     .Where(x => x.BrandId == brand.Id)
@@ -139,7 +140,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                 {
                     ReportDate = x.agg == null ? (DateTimeOffset?)null : x.agg.ReportDate,
                     Hour = x.agg == null ? (int?)null : x.agg.Hour,
-                    BrandId = x.agg == null ? (Guid?)null : x.agg.BrandId,
+                    BrandId = x.agent.BrandId,
                     AgentId = x.agent.Id,
                     x.agent.DividendPercentage,
                     AgentDividendPercentage = x.agg == null ? null : x.agg.AgentDividendPercentage,
@@ -193,7 +194,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                     ReportDate = (DateTimeOffset?)groupItem.ReportDate,
                     Hour = (int?)groupItem.Hour,
                     AgentId = groupItem.AgentId!.Value,
-                    BrandId = (Guid?)groupItem.BrandId,
+                    BrandId = groupItem.BrandId,
                     PromotionAmount = 0M,
                     RebateAmount = 0M,
                     BonusAmount = list.Sum(p
@@ -231,7 +232,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                     ReportDate = (DateTimeOffset?)agent.ReportDate,
                     Hour = (int?)agent.Hour,
                     agent.AgentId,
-                    BrandId = (Guid?)agent.BrandId,
+                    BrandId = agent.BrandId,
                     LiveDealerWinLoss =
                         playerGames
                             .Where(l => l.GameType == (short)GameType.LiveDealer)
@@ -277,7 +278,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                 })
             .ToArrayAsync(cancellationToken);
 
-        var allAgent = playerAggregate.GroupJoin(playerBonuses,
+        var allAgentAggregate = playerAggregate.GroupJoin(playerBonuses,
                 agg => new { agg.ReportDate, agg.Hour, agg.AgentId, agg.BrandId },
                 aggBonus => new { aggBonus.ReportDate, aggBonus.Hour, aggBonus.AgentId, aggBonus.BrandId },
                 (agg, list) => new
@@ -406,9 +407,9 @@ public class AgentDividendFactory : IAgentDividendFactory
                     ESportsWinLoss = list.Sum(x => x.gameAgg?.ESportsWinLoss ?? 0M),
                     VirtualSportsWinLoss = list.Sum(x => x.gameAgg?.VirtualSportsWinLoss ?? 0M)
                 })
-            .Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.CompanyAdjustAmount != 0M ||
+            .Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AgentAdjustAmount != 0M ||
                 x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
-                x.NetProfit != 0M ||
+                x.NetProfit != 0M || x.BonusAdjustAmount != 0M ||
                 x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||
                 x.ValidBetAmount != 0M)
             .GroupBy(x => new
@@ -421,7 +422,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                 (groupItem, list) => new CreateAgentDividendModel
                 {
                     AgentId = groupItem.AgentId,
-                    BrandId = groupItem.BrandId!.Value,
+                    BrandId = groupItem.BrandId,
                     AutoSend = brand.AutoSentAgentBonus,
                     From = brand.CurrentSettlementFrom,
                     To = brand.CurrentSettlementTo,
@@ -460,7 +461,6 @@ public class AgentDividendFactory : IAgentDividendFactory
                     CreatedOn = DateTimeOffset.UtcNow
                 }).ToArray();
 
-
         var agentCurrentConditions = brand.AgentDividendType == (short)AgentDividendType.MultipleLayer
             ? await _playerAggregateService.GetQueries()
                 .Where(x => x.AgentId != null)
@@ -488,49 +488,102 @@ public class AgentDividendFactory : IAgentDividendFactory
 
 
         var parentAgentDividends = brand.AgentDividendType == (short)AgentDividendType.MultipleLayer
-            ? allAgent.SelectMany(x => GetAgentDividendsByMultipleLayer(agents, agentCurrentConditions,
-                x.AgentId,
-                x.NetProfit,
-                brand.CheckDividendActiveCount)).ToArray()
-            : allAgent.SelectMany(x =>
+            ? allAgentAggregate.SelectMany(x =>
             {
                 x.Id = idNumber += 1;
 
-                var agentDividendPercentage = x.AgentDividendPercentageTreeData is null
-                    ? null
-                    : JsonSerializer.Deserialize<AgentDividendPercentageData[]>(x.AgentDividendPercentageTreeData);
-
-                var bonusAdjustAmount = x.BonusAdjustAmount - x.NoIncludeNetProfitBonusAdjustAmount;
-
-                if (x.AgentDividendPercentageTreeData is null)
+                return GetAgentDividendsByMultipleLayer(x.Id, agents, agentCurrentConditions,
+                    x.AgentId,
+                    x.NetProfit,
+                    brand.CheckDividendActiveCount);
+            }).ToArray()
+            : allAgentAggregate
+                .SelectMany(x =>
                 {
+                    x.Id = idNumber += 1;
+
+                    var agentDividendPercentage = x.AgentDividendPercentageTreeData is null
+                        ? null
+                        : JsonSerializer.Deserialize<AgentDividendPercentageData[]>(x.AgentDividendPercentageTreeData);
+
+                    var bonusAdjustAmount = x.BonusAdjustAmount - x.NoIncludeNetProfitBonusAdjustAmount;
+
+                    if (x.AgentDividendPercentageTreeData is null)
+                    {
+                        return GetAgentDividends(
+                            x.Id,
+                            agents,
+                            x.AgentId,
+                            x.BonusAmount,
+                            bonusAdjustAmount,
+                            x.NetProfit);
+                    }
+
                     return GetAgentDividends(
                         x.Id,
-                        agents,
+                        agentDividendPercentage!,
                         x.AgentId,
                         x.BonusAmount,
                         bonusAdjustAmount,
                         x.NetProfit);
-                }
+                }).ToArray();
 
-                return GetAgentDividends(
-                    x.Id,
-                    agentDividendPercentage!,
-                    x.AgentId,
-                    x.BonusAmount,
-                    bonusAdjustAmount,
-                    x.NetProfit);
-            }).ToArray();
-
+        var allAgent = allAgentAggregate.GroupBy(x => new { x.AgentId, x.BrandId, x.AgentDividendPercentage },
+            (x, list) =>
+                new CreateAgentDividendModel
+                {
+                    AgentId = x.AgentId,
+                    BrandId = x.BrandId,
+                    AutoSend = brand.AutoSentAgentBonus,
+                    From = brand.CurrentSettlementFrom,
+                    To = brand.CurrentSettlementTo,
+                    AgentDividendPercentage = x.AgentDividendPercentage,
+                    PromotionAmount = list.Sum(x => x.PromotionAmount),
+                    RebateAmount = list.Sum(x => x.RebateAmount),
+                    DepositAmount = list.Sum(x => x.DepositAmount),
+                    WithdrawalAmount = list.Sum(x => x.WithdrawalAmount),
+                    CompanyAdjustAmount = list.Sum(x => x.CompanyAdjustAmount),
+                    AgentAdjustAmount = list.Sum(x => x.AgentAdjustAmount),
+                    BonusAdjustAmount = list.Sum(x => x.BonusAdjustAmount),
+                    BonusAmount = list.Sum(x => x.BonusAmount),
+                    BetAmount = list.Sum(x => x.BetAmount),
+                    ValidBetAmount = list.Sum(x => x.ValidBetAmount),
+                    OriginalTurnover = list.Sum(x => x.OriginalTurnover),
+                    Turnover = list.Sum(x => x.Turnover),
+                    WinLossAmount = list.Sum(x => x.WinLossAmount),
+                    NoIncludeNetProfitCompanyAdjustAmount =
+                        list.Sum(x => x.NoIncludeNetProfitCompanyAdjustAmount),
+                    NoIncludeNetProfitAgentAdjustAmount =
+                        list.Sum(x => x.NoIncludeNetProfitAgentAdjustAmount),
+                    NoIncludeNetProfitBonusAdjustAmount =
+                        list.Sum(x => x.NoIncludeNetProfitBonusAdjustAmount),
+                    NetProfit = list.Sum(x => x.NetProfit),
+                    LiveDealerWinLoss = list.Sum(x => x.LiveDealerWinLoss),
+                    SlotWinLoss = list.Sum(x => x.SlotWinLoss),
+                    FishingWinLoss = list.Sum(x => x.FishingWinLoss),
+                    ArcadeWinLoss = list.Sum(x => x.ArcadeWinLoss),
+                    TableGameWinLoss = list.Sum(x => x.TableGameWinLoss),
+                    LotteryWinLoss = list.Sum(x => x.LotteryWinLoss),
+                    CardGameWinLoss = list.Sum(x => x.CardGameWinLoss),
+                    SportsWinLoss = list.Sum(x => x.SportsWinLoss),
+                    ESportsWinLoss = list.Sum(x => x.ESportsWinLoss),
+                    VirtualSportsWinLoss = list.Sum(x => x.VirtualSportsWinLoss),
+                    CreatedOn = DateTimeOffset.UtcNow
+                }).ToArray();
 
         foreach (var dividend in allAgent)
         {
             dividend.AgentDividendAmount =
-                parentAgentDividends.Where(p => p.AgentId == dividend.AgentId && p.AgentDividendPercentage == dividend.AgentDividendPercentage)
+                parentAgentDividends.Where(p
+                        => p.AgentId == dividend.AgentId &&
+                        p.AgentDividendPercentage == dividend.AgentDividendPercentage)
                     .Sum(s => s.Dividend) - (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
 
             dividend.AgentDividendMultipleLayerModels =
-                parentAgentDividends.Where(p => p.AgentId == dividend.AgentId && p.AgentDividendPercentage == dividend.AgentDividendPercentage).ToArray();
+                parentAgentDividends.Where(p
+                        => p.AgentId == dividend.AgentId &&
+                        p.AgentDividendPercentage == dividend.AgentDividendPercentage)
+                    .ToArray();
         }
 
         var agentIds = allAgent.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
@@ -582,6 +635,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                 currentCondition.NetProfit >= x.NetProfit).Select(x => x.DividendPercentage).FirstOrDefault();
 
     private static IEnumerable<AgentDividendMultipleLayerModel> GetAgentDividendsByMultipleLayer(
+        int id,
         Agent[] agents, AgentConditionModel[] agentCurrentConditions, Guid agentId,
         decimal netProfit, bool checkDividendActiveCount)
     {
@@ -597,6 +651,9 @@ public class AgentDividendFactory : IAgentDividendFactory
         {
             AgentId = currentAgentId,
             DividendProviderAgentId = providerAgentId,
+            DividendProviderId = id,
+            AgentDividendPercentage = agentDividendPercentage,
+            ActualDividendPercentage = agentDividendPercentage,
             Layer = layer,
             Dividend = (netProfit * agentDividendPercentage / 100M).Truncate(2)
         };

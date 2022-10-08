@@ -532,6 +532,9 @@ public class AgentDividendFactory : IAgentDividendFactory
             (x, list) =>
                 new CreateAgentDividendModel
                 {
+                    Id = allAgentAggregate.First(a => a.AgentId == x.AgentId && 
+                        a.BrandId == x.BrandId &&
+                        a.AgentDividendPercentage == x.AgentDividendPercentage).Id,
                     AgentId = x.AgentId,
                     BrandId = x.BrandId,
                     AutoSend = brand.AutoSentAgentBonus,

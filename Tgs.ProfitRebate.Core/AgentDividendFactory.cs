@@ -407,11 +407,6 @@ public class AgentDividendFactory : IAgentDividendFactory
                     ESportsWinLoss = list.Sum(x => x.gameAgg?.ESportsWinLoss ?? 0M),
                     VirtualSportsWinLoss = list.Sum(x => x.gameAgg?.VirtualSportsWinLoss ?? 0M)
                 })
-            .Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AgentAdjustAmount != 0M ||
-                x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
-                x.NetProfit != 0M || x.BonusAdjustAmount != 0M ||
-                x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||
-                x.ValidBetAmount != 0M)
             .GroupBy(x => new
                 {
                     x.BrandId,
@@ -588,6 +583,12 @@ public class AgentDividendFactory : IAgentDividendFactory
                         p.AgentDividendPercentage == dividend.AgentDividendPercentage)
                     .ToArray();
         }
+
+        allAgent = allAgent.Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AgentAdjustAmount != 0M ||
+            x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
+            x.NetProfit != 0M || x.BonusAdjustAmount != 0M || x.AgentDividendPercentage != 0M || x.AgentDividendAmount != 0M ||
+            x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||
+            x.ValidBetAmount != 0M).ToArray();
 
         var agentIds = allAgent.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
 

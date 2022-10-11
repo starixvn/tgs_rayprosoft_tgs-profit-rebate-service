@@ -586,7 +586,7 @@ public class AgentDividendFactory : IAgentDividendFactory
 
         allAgent = allAgent.Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AgentAdjustAmount != 0M ||
             x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
-            x.NetProfit != 0M || x.BonusAdjustAmount != 0M || x.AgentDividendAmount != 0M ||
+            x.NetProfit != 0M || x.BonusAdjustAmount != 0M || x.AgentDividendPercentage != 0M || x.AgentDividendAmount != 0M ||
             x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||
             x.ValidBetAmount != 0M).ToArray();
 

@@ -2,85 +2,86 @@
 using System.Text.Json;
 using Tgs.ProfitRebate.Client.Models;
 
-namespace Tgs.ProfitRebate.Client
+namespace Tgs.ProfitRebate.Client;
+
+public interface IProfitRebateClient
 {
-    public interface IProfitRebateClient
-    {
-        ValueTask<MessageResponse> CreatePlayerRebateAsync(CreatePlayerRebateRequest request);
-        ValueTask<MessageResponse> CreateAgentDividendAsync(CreateAgentDividendsRequest request);
-        ValueTask<MessageResponse> CreatePlayerVipRebateAsync(CreateVipPlayerRebatesRequest request);
-        ValueTask<MessageResponse> CreatePlayerAllAgentRebateAsync(CreateAllAgentPlayerRebatesRequest request);
-    }
+	ValueTask<MessageResponse> CreatePlayerRebateAsync(CreatePlayerRebateRequest request);
 
-    public class ProfitRebateClient : IProfitRebateClient
-    {
-        private readonly HttpClient _client;
+	ValueTask<MessageResponse> CreateAgentDividendAsync(CreateAgentDividendsRequest request);
 
-        public ProfitRebateClient(HttpClient client)
-        {
-            _client = client;
-        }
+	ValueTask<MessageResponse> CreatePlayerVipRebateAsync(CreateVipPlayerRebatesRequest request);
 
-        public async ValueTask<MessageResponse> CreatePlayerRebateAsync(CreatePlayerRebateRequest request)
-        {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/playerRebate/vip")
-            {
-                Content =
-                    new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
-            };
-            var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+	ValueTask<MessageResponse> CreatePlayerAllAgentRebateAsync(CreateAllAgentPlayerRebatesRequest request);
+}
 
-            response.EnsureSuccessStatusCode();
+public class ProfitRebateClient : IProfitRebateClient
+{
+	private readonly HttpClient _client;
 
-            return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-        }
+	public ProfitRebateClient(HttpClient client)
+	{
+		_client = client;
+	}
 
+	public async ValueTask<MessageResponse> CreatePlayerRebateAsync(CreatePlayerRebateRequest request)
+	{
+		var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/playerRebate/vip")
+		{
+			Content =
+				new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
+		};
+		var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
 
-        public async ValueTask<MessageResponse> CreateAgentDividendAsync(CreateAgentDividendsRequest request)
-        {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/agentDividend/send")
-            {
-                Content =
-                    new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
-            };
-            var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+		_ = response.EnsureSuccessStatusCode();
 
-            response.EnsureSuccessStatusCode();
+		return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
+			new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+	}
 
-            return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-        }
+	public async ValueTask<MessageResponse> CreateAgentDividendAsync(CreateAgentDividendsRequest request)
+	{
+		var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/agentDividend/send")
+		{
+			Content =
+				new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
+		};
+		var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
 
-        public async ValueTask<MessageResponse> CreatePlayerAllAgentRebateAsync(
-            CreateAllAgentPlayerRebatesRequest request)
-        {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/playerRebate/allAgent")
-            {
-                Content =
-                    new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
-            };
-            var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+		_ = response.EnsureSuccessStatusCode();
 
-            response.EnsureSuccessStatusCode();
+		return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
+			new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+	}
 
-            return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-        }
+	public async ValueTask<MessageResponse> CreatePlayerAllAgentRebateAsync(
+		CreateAllAgentPlayerRebatesRequest request)
+	{
+		var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/playerRebate/allAgent")
+		{
+			Content =
+				new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
+		};
+		var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
 
-        public async ValueTask<MessageResponse> CreatePlayerVipRebateAsync(CreateVipPlayerRebatesRequest request)
-        {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/playerRebate/vip")
-            {
-                Content =
-                    new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
-            };
-            var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+		_ = response.EnsureSuccessStatusCode();
 
-            response.EnsureSuccessStatusCode();
+		return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
+			new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+	}
 
-            return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-        }
-    }
+	public async ValueTask<MessageResponse> CreatePlayerVipRebateAsync(CreateVipPlayerRebatesRequest request)
+	{
+		var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/playerRebate/vip")
+		{
+			Content =
+				new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
+		};
+		var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+
+		return JsonSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync(),
+			new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+	}
 }

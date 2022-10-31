@@ -1,171 +1,171 @@
 ﻿{
-   "CodeGenerationMode": 2,
-   "ContextClassName": "TgsContext",
-   "ContextNamespace": null,
-   "DefaultDacpacSchema": null,
-   "FilterSchemas": false,
-   "IncludeConnectionString": false,
-   "ModelNamespace": "Entities",
-   "OutputContextPath": null,
-   "OutputPath": "Entities",
-   "ProjectRootNamespace": "Tgs.ProfitRebate.Repository",
-   "Schemas": null,
-   "SelectedHandlebarsLanguage": 0,
-   "SelectedToBeGenerated": 0,
-   "Tables": [
-      {
-         "Name": "dbo.currencies",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.player_rebates",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.player_buckets",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.players",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brand_all_agent_game_type_conditions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.agent_dividend_conditions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.transactions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brand_all_agent_game_types",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.transaction_promotions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.promotions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.adjust_player_records",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.withdraw_forms",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.agent_transactions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.agent_dividends",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brand_all_agents",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.agent_wallets",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.roles",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.vip_levels",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.licensees",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brand_agent_dividend_conditions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.player_all_agent_rebates",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.agent_dividend_multiple_layers",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.player_parents",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brands",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.agents",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brand_games",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.departments",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.resellers",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.wallets",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.users",
-         "ObjectType": 0
-      },
-      {
-         "Name": "report.round_aggregates",
-         "ObjectType": 0
-      },
-      {
-         "Name": "report.player_aggregates",
-         "ObjectType": 0
-      },
-      {
-         "Name": "report.player_bonus_aggregates",
-         "ObjectType": 0
-      },
-      {
-         "Name": "report.player_game_rebate_aggregates",
-         "ObjectType": 0
-      }
-   ],
-   "UiHint": "tgs",
-   "UseBoolPropertiesWithoutDefaultSql": false,
-   "UseDatabaseNames": false,
-   "UseDbContextSplitting": true,
-   "UseFluentApiOnly": true,
-   "UseHandleBars": false,
-   "UseHierarchyId": false,
-   "UseInflector": true,
-   "UseLegacyPluralizer": true,
-   "UseManyToManyEntity": true,
-   "UseNoConstructor": true,
-   "UseNoDefaultConstructor": false,
-   "UseNoNavigations": false,
-   "UseNoObjectFilter": false,
-   "UseNodaTime": false,
-   "UseNullableReferences": true,
-   "UseSchemaFolders": true,
-   "UseSpatial": true
+	"CodeGenerationMode": 2,
+	"ContextClassName": "TgsContext",
+	"ContextNamespace": null,
+	"DefaultDacpacSchema": null,
+	"FilterSchemas": false,
+	"IncludeConnectionString": false,
+	"ModelNamespace": "Entities",
+	"OutputContextPath": null,
+	"OutputPath": "Entities",
+	"ProjectRootNamespace": "Tgs.ProfitRebate.Repository",
+	"Schemas": null,
+	"SelectedHandlebarsLanguage": 0,
+	"SelectedToBeGenerated": 0,
+	"Tables": [
+		{
+			"Name": "dbo.currencies",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.player_rebates",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.player_buckets",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.players",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.brand_all_agent_game_type_conditions",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.agent_dividend_conditions",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.transactions",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.brand_all_agent_game_types",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.transaction_promotions",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.promotions",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.adjust_player_records",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.withdraw_forms",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.agent_transactions",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.agent_dividends",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.brand_all_agents",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.agent_wallets",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.roles",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.vip_levels",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.licensees",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.brand_agent_dividend_conditions",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.player_all_agent_rebates",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.agent_dividend_multiple_layers",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.player_parents",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.brands",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.agents",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.brand_games",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.departments",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.resellers",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.wallets",
+			"ObjectType": 0
+		},
+		{
+			"Name": "dbo.users",
+			"ObjectType": 0
+		},
+		{
+			"Name": "report.round_aggregates",
+			"ObjectType": 0
+		},
+		{
+			"Name": "report.player_aggregates",
+			"ObjectType": 0
+		},
+		{
+			"Name": "report.player_bonus_aggregates",
+			"ObjectType": 0
+		},
+		{
+			"Name": "report.player_game_rebate_aggregates",
+			"ObjectType": 0
+		}
+	],
+	"UiHint": "tgs",
+	"UseBoolPropertiesWithoutDefaultSql": false,
+	"UseDatabaseNames": false,
+	"UseDbContextSplitting": true,
+	"UseFluentApiOnly": true,
+	"UseHandleBars": false,
+	"UseHierarchyId": false,
+	"UseInflector": true,
+	"UseLegacyPluralizer": true,
+	"UseManyToManyEntity": true,
+	"UseNoConstructor": true,
+	"UseNoDefaultConstructor": false,
+	"UseNoNavigations": false,
+	"UseNoObjectFilter": false,
+	"UseNodaTime": false,
+	"UseNullableReferences": true,
+	"UseSchemaFolders": true,
+	"UseSpatial": true
 }

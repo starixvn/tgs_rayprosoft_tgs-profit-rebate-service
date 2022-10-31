@@ -23,4 +23,12 @@
     <ProjectReference Include="..\Tgs.ProfitRebate.Core\Tgs.ProfitRebate.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Users\Phoenix\source\repos\tgs-profit-rebate-service\Tgs.ProfitRebate.Tests\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\Users\Phoenix\source\repos\tgs-profit-rebate-service\Tgs.ProfitRebate.Tests\.editorconfig" />
+  </ItemGroup>
+
 </Project>

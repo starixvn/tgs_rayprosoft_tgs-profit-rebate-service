@@ -2,18 +2,14 @@
 using MediatR;
 using Tgs.ProfitRebate.Core;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class ProfitRebateCoreExtensions
-    {
-        public static IServiceCollection AddProfitRebateCore(this IServiceCollection services)
-        {
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(ITgsService<>), typeof(TgsService<>));
-            services.AddTransient<IAgentDividendFactory, AgentDividendFactory>();
-            services.AddTransient<IPlayerRebateFactory, PlayerRebateFactory>();
+namespace Microsoft.Extensions.DependencyInjection;
 
-            return services;
-        }
-    }
+public static class ProfitRebateCoreExtensions
+{
+	public static IServiceCollection AddProfitRebateCore(this IServiceCollection services)
+		=> services
+			.AddMediatR(Assembly.GetExecutingAssembly())
+			.AddTransient(typeof(ITgsService<>), typeof(TgsService<>))
+			.AddTransient<IAgentDividendFactory, AgentDividendFactory>()
+			.AddTransient<IPlayerRebateFactory, PlayerRebateFactory>();
 }

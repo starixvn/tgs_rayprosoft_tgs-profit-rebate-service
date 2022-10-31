@@ -2,5 +2,5 @@
 
 namespace Tgs.ProfitRebate.ViewModel
 {
-    public record CreateVipPlayerRebatesRequest(string? Date) : IRequest<MessageResponse>;
+	public record CreateVipPlayerRebatesRequest(string? Date) : IRequest<MessageResponse>;
 }

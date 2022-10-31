@@ -3,50 +3,59 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Tgs.ProfitRebate.Repository.Entities;
 
-namespace Tgs.ProfitRebate.Repository
+namespace Tgs.ProfitRebate.Repository;
+
+public interface ITgsRepository
 {
-    public interface ITgsRepository
-    {
-        DbSet<AgentDividend> AgentDividends { get; set; }
-        DbSet<AgentTransaction> AgentTransactions { get; set; }
-        DbSet<AgentWallet> AgentWallets { get; set; }
+	DbSet<AgentDividend> AgentDividends { get; set; }
 
-        DbSet<Agent> Agents { get; set; }
+	DbSet<AgentTransaction> AgentTransactions { get; set; }
 
-        DbSet<Brand> Brands { get; set; }
+	DbSet<AgentWallet> AgentWallets { get; set; }
 
-        DbSet<Licensee> Licensees { get; set; }
+	DbSet<Agent> Agents { get; set; }
 
-        DbSet<PlayerAggregate> PlayerAggregates { get; set; }
-        DbSet<PlayerGameRebateAggregate> PlayerGameRebateAggregates { get; set; }
+	DbSet<Brand> Brands { get; set; }
 
-        DbSet<Player> Players { get; set; }
+	DbSet<Licensee> Licensees { get; set; }
 
-        DbSet<Reseller> Resellers { get; set; }
+	DbSet<PlayerAggregate> PlayerAggregates { get; set; }
 
-        DbSet<RoundAggregate> RoundAggregates { get; set; }
+	DbSet<PlayerGameRebateAggregate> PlayerGameRebateAggregates { get; set; }
 
-        DbSet<TransactionPromotion> TransactionPromotions { get; set; }
+	DbSet<Player> Players { get; set; }
 
-        DbSet<Transaction> Transactions { get; set; }
+	DbSet<Reseller> Resellers { get; set; }
 
-        DbSet<User> Users { get; set; }
+	DbSet<RoundAggregate> RoundAggregates { get; set; }
 
-        DbSet<WithdrawForm> WithdrawForms { get; set; }
+	DbSet<TransactionPromotion> TransactionPromotions { get; set; }
 
-        DbSet<BrandGame> BrandGames { get; set; }
+	DbSet<Transaction> Transactions { get; set; }
 
-        DbSet<PlayerParent> PlayerParents { get; set; }
-        DbSet<BrandAllAgent> BrandAllAgents { get; set; }
-        DbSet<BrandAllAgentGameType> BrandAllAgentGameTypes { get; set; }
-        DbSet<BrandAllAgentGameTypeCondition> BrandAllAgentGameTypeConditions { get; set; }
-        DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; }
-        DbSet<PlayerBonusAggregate> PlayerBonusAggregates { get; set; }
+	DbSet<User> Users { get; set; }
 
-        IDbContextTransaction? CurrentTransaction { get; }
-        DbSet<T> Set<T>() where T : class;
+	DbSet<WithdrawForm> WithdrawForms { get; set; }
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-        IDbConnection GetDbConnection();
-    }
+	DbSet<BrandGame> BrandGames { get; set; }
+
+	DbSet<PlayerParent> PlayerParents { get; set; }
+
+	DbSet<BrandAllAgent> BrandAllAgents { get; set; }
+
+	DbSet<BrandAllAgentGameType> BrandAllAgentGameTypes { get; set; }
+
+	DbSet<BrandAllAgentGameTypeCondition> BrandAllAgentGameTypeConditions { get; set; }
+
+	DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; }
+
+	DbSet<PlayerBonusAggregate> PlayerBonusAggregates { get; set; }
+
+	IDbContextTransaction? CurrentTransaction { get; }
+
+	DbSet<T> Set<T>() where T : class;
+
+	Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+	IDbConnection GetDbConnection();
 }

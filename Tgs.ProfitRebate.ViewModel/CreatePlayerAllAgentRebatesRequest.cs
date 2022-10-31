@@ -2,5 +2,5 @@
 
 namespace Tgs.ProfitRebate.ViewModel
 {
-    public record CreatePlayerAllAgentRebatesRequest(string? Date) : IRequest<MessageResponse>;
+	public record CreatePlayerAllAgentRebatesRequest(string? Date) : IRequest<MessageResponse>;
 }

@@ -14,8 +14,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
 
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-        public DateTimeOffset From { get; set; }
-        public DateTimeOffset To { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
         public short Status { get; set; }
         public bool AutoSentPlayerBonus { get; set; }
         public Guid BrandId { get; set; }
@@ -28,8 +28,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal Percentage { get; set; }
         public decimal BonusAmountLimit { get; set; }
         public decimal TurnoverMultiple { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string? CreatedByUsername { get; set; }
         public string? UpdatedByUsername { get; set; }
         public Guid? VipLevelId { get; set; }

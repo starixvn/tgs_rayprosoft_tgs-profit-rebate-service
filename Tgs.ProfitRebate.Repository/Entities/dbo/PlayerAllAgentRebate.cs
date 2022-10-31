@@ -10,9 +10,9 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public int Id { get; set; }
         public Guid BrandId { get; set; }
         public string PlayerCode { get; set; } = null!;
-        public DateTimeOffset ReportDate { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset? SentOn { get; set; }
+        public DateTime ReportDate { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime? SentOn { get; set; }
         public short AllAgentGameType { get; set; }
         public short GameType { get; set; }
         public short AllAgentRebateType { get; set; }

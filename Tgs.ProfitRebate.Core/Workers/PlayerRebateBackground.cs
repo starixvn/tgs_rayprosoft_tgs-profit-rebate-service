@@ -91,7 +91,11 @@ public class PlayerRebateBackground : BackgroundService
 				}
 
 				await playerRebateFactory
-					.CreatePlayerBucketAsync(new(request.PlayerCode, BucketType.Vip, request.RebateAmount))
+					.CreatePlayerBucketsAsync(new CreatePlayerBucketRequest(
+						request.PlayerCode,
+						Service.PlayerBuckets.BucketType.Vip,
+						request.RebateAmount,
+						rebate.Id.ToString()))
 					.ConfigureAwait(false);
 
 				await Policy.Handle<HttpRequestException>()

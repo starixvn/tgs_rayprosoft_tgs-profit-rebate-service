@@ -87,17 +87,17 @@ public class AgentDividendBackground : BackgroundService
 							updateAgentDividends.AddRange(agentDividends);
 						}
 
-						var (nextFrom, nextTo) =
-							agentDividendFactory.GetInterval((SettlementIntervalType)brand.SettlementIntervalType,
-								brand.NextSettlementTo.ToOffset(new(8, 0, 0)),
-								brand.SettlementDay);
+						var (nextFrom, nextTo) = agentDividendFactory.GetInterval(
+							(SettlementIntervalType)brand.SettlementIntervalType,
+							new DateTimeOffset(brand.NextSettlementTo).ToOffset(new(8, 0, 0)),
+							brand.SettlementDay);
 
 						brand.PreviousSettlementFrom = brand.CurrentSettlementFrom;
 						brand.PreviousSettlementTo = brand.CurrentSettlementTo;
 						brand.CurrentSettlementFrom = brand.NextSettlementFrom;
 						brand.CurrentSettlementTo = brand.NextSettlementTo;
-						brand.NextSettlementFrom = nextFrom.ToUniversalTime();
-						brand.NextSettlementTo = nextTo.ToUniversalTime();
+						brand.NextSettlementFrom = nextFrom.UtcDateTime;
+						brand.NextSettlementTo = nextTo.UtcDateTime;
 					}
 
 					await agentDividendFactory.SaveAgentDividendData(brands,

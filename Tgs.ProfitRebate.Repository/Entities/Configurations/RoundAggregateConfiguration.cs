@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tgs.ProfitRebate.Repository.Entities;
 
 #nullable disable
@@ -20,9 +19,6 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.HasIndex(e => new { e.ReportDate, e.Hour, e.Minute }, "ix_round_aggregate_multiple_keys");
 
             entity.HasIndex(e => e.PlayerCode, "ix_round_aggregate_player_code");
-
-            entity.HasIndex(e => new { e.ReportDate, e.Hour, e.Minute }, "ix_round_aggregate_report_date_desc_and_hour_minute")
-                .HasSortOrder(new[] { SortOrder.Descending, SortOrder.Ascending, SortOrder.Ascending });
 
             entity.Property(e => e.Id).HasColumnName("id");
 

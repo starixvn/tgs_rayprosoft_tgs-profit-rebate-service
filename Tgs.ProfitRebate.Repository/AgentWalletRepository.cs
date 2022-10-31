@@ -48,7 +48,7 @@ internal class AgentWalletRepository : IAgentWalletRepository
 				Balance = postBalance,
 				Type = (short)transactionType,
 				Description = description,
-				RecordedOn = DateTimeOffset.UtcNow
+				RecordedOn = DateTime.UtcNow
 			})
 			.ConfigureAwait(false);
 

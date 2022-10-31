@@ -12,10 +12,10 @@
     <PackageReference Include="Tgs.CashService.Client" Version="0.0.17" />
     <PackageReference Include="Tgs.Core.Infrastructures.Utility" Version="0.0.3" />
     <PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.1.1" />
+    <PackageReference Include="Tgs.PlayerBucket.Client" Version="0.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tgs.ProfitRebate.ViewModel\Tgs.ProfitRebate.ViewModel.csproj" />
     <ProjectReference Include="..\Tgs.ProfitRebate.Repository\Tgs.ProfitRebate.Repository.csproj" />
   </ItemGroup>
 

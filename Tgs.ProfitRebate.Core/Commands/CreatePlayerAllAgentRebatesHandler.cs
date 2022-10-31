@@ -5,13 +5,12 @@ using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
+using Tgs.Service.PlayerBuckets;
 using TGS.Core.Infrastructures.Extensions;
 
 namespace Tgs.ProfitRebate.Core.Commands;
 
-public class
-	CreatePlayerAllAgentRebatesHandler : IRequestHandler<CreatePlayerAllAgentRebatesRequest,
-		MessageResponse>
+public class CreatePlayerAllAgentRebatesHandler : IRequestHandler<CreatePlayerAllAgentRebatesRequest, MessageResponse>
 {
 	private readonly ICashServiceClient _cashServiceClient;
 	private readonly ITgsService<PlayerAllAgentRebate> _playerAllAgentRebateService;
@@ -75,8 +74,10 @@ public class
 		var players = _playerService.GetQueries()
 			.Where(x => playerRebates.Select(p => p.PlayerCode).Distinct().Contains(x.PlayerCode)).ToArray();
 
-		var sentToPlayerRebates = playerRebates.Where(x => x.RebateAmount > 0)
-			.Join(players, pb => pb.PlayerCode,
+		var sentToPlayerRebates = playerRebates
+			.Where(x => x.RebateAmount > 0)
+			.Join(players,
+				pb => pb.PlayerCode,
 				p => p.PlayerCode,
 				(pb, p) => new { pb, p }).Select(x => new
 				{
@@ -93,8 +94,14 @@ public class
 		using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
 		await _playerRebateFactory.CreateAllAgentPlayerRebatesAsync(playerRebates, DateTimeOffset.UtcNow);
-		await _playerRebateFactory.CreatePlayerBucketsAsync(sentToPlayerRebates.Select(x =>
-				new CreatePlayerBucketRequest(x.PlayerCode, BucketType.AllAgent, x.RebateAmount)).ToArray())
+		await _playerRebateFactory
+			.CreatePlayerBucketsAsync(sentToPlayerRebates
+				.Select(x => new CreatePlayerBucketRequest(
+					x.PlayerCode,
+					BucketType.AllAgent,
+					x.RebateAmount,
+					null))
+				.ToArray())
 			.ConfigureAwait(false);
 
 		scope.Complete();

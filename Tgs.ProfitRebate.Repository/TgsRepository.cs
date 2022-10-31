@@ -46,8 +46,6 @@ public class TgsRepository : DbContext, ITgsRepository
 
 	public DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; } = null!;
 
-	public DbSet<PlayerBucket> PlayerBuckets { get; set; } = null!;
-
 	public DbSet<PlayerGameRebateAggregate> PlayerGameRebateAggregates { get; set; } = null!;
 
 	public DbSet<PlayerParent> PlayerParents { get; set; } = null!;

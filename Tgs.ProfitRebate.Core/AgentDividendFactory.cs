@@ -610,7 +610,7 @@ public class AgentDividendFactory : IAgentDividendFactory
 					foreach (var negativeDividend in agentNoSendDividends)
 					{
 						negativeDividend.ReferencedAgentDividendId = dividend.Id;
-						negativeDividend.SentOn = DateTimeOffset.UtcNow;
+						negativeDividend.SentOn = DateTime.UtcNow;
 					}
 				}
 				else
@@ -770,8 +770,8 @@ public class AgentDividendFactory : IAgentDividendFactory
 					Id = model.Id,
 					BrandId = model.BrandId,
 					AgentId = model.AgentId,
-					From = model.From,
-					To = model.To,
+					From = model.From.UtcDateTime,
+					To = model.To.UtcDateTime,
 					AgentDividendPercentage = model.AgentDividendPercentage,
 					PromotionAmount = model.PromotionAmount,
 					RebateAmount = model.RebateAmount,
@@ -801,8 +801,8 @@ public class AgentDividendFactory : IAgentDividendFactory
 					ESportsWinLoss = model.ESportsWinLoss,
 					VirtualSportsWinLoss = model.VirtualSportsWinLoss,
 					AgentDividendAmount = model.AgentDividendAmount,
-					CreatedOn = model.CreatedOn,
-					SentOn = sentOn,
+					CreatedOn = model.CreatedOn.UtcDateTime,
+					SentOn = sentOn?.UtcDateTime,
 					BeforeDividendAmount = model.BeforeDividendAmount,
 					ReferencedAgentDividendId = model.ReferencedAgentDividendId,
 					AgentDividendMultipleLayers = model.AgentDividendMultipleLayerModels.Select(x

@@ -144,7 +144,6 @@ public class CreatePlayerAllAgentRebatesHandlerTest
 		var fixture = new Fixture();
 		fixture.Customize<Player>(u => u
 			.With(s => s.PlayerCode, playerCode)
-			.With(s => s.PlayerBuckets, Array.Empty<PlayerBucket>())
 			.With(s => s.Wallets, Array.Empty<Wallet>())
 			.With(s => s.Birthdate, new DateOnly()));
 		fixture.Behaviors.Add(new OmitOnRecursionBehavior());

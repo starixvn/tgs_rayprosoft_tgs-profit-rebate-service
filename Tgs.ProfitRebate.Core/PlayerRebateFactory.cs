@@ -2,22 +2,24 @@
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
+using Tgs.Service.PlayerBuckets;
 
 namespace Tgs.ProfitRebate.Core;
 
 public class PlayerRebateFactory : IPlayerRebateFactory
 {
 	private readonly ITgsService<PlayerAllAgentRebate> _allAgentPlayerRebateService;
-	private readonly ITgsService<PlayerBucket> _playerBucketService;
+	private readonly IPlayerBucketClient _playerBucketClient;
 	private readonly ITgsService<PlayerRebate> _playerRebateService;
 
-	public PlayerRebateFactory(ITgsService<PlayerRebate> playerRebateService,
-		ITgsService<PlayerBucket> playerBucketService,
-		ITgsService<PlayerAllAgentRebate> allAgentPlayerRebateService)
+	public PlayerRebateFactory(
+		ITgsService<PlayerRebate> playerRebateService,
+		ITgsService<PlayerAllAgentRebate> allAgentPlayerRebateService,
+		IPlayerBucketClient playerBucketClient)
 	{
-		_playerRebateService = playerRebateService;
-		_playerBucketService = playerBucketService;
-		_allAgentPlayerRebateService = allAgentPlayerRebateService;
+		_playerRebateService = playerRebateService ?? throw new ArgumentNullException(nameof(playerRebateService));
+		_allAgentPlayerRebateService = allAgentPlayerRebateService ?? throw new ArgumentNullException(nameof(allAgentPlayerRebateService));
+		_playerBucketClient = playerBucketClient ?? throw new ArgumentNullException(nameof(playerBucketClient));
 	}
 
 	public async ValueTask<PlayerAllAgentTurnoverWinLossModel[]>
@@ -97,27 +99,22 @@ public class PlayerRebateFactory : IPlayerRebateFactory
 
 	public async ValueTask CreatePlayerBucketsAsync(CreatePlayerBucketRequest[] requests)
 	{
-		var buckets = requests.Select(x => new PlayerBucket
-		{
-			Id = Guid.NewGuid(),
-			PlayerCode = x.PlayerCode,
-			BucketAmount = x.BucketAmount,
-			BucketType = (short)x.BucketType,
-			IsFull = false,
-			CreatedOn = DateTimeOffset.UtcNow
-		}).ToArray();
-
-		await _playerBucketService.CreateEntitiesAsync(buckets).ConfigureAwait(false);
+		foreach (var request in requests)
+			_ = await _playerBucketClient.CreateBucketAsync(
+				request.PlayerCode,
+				request.BucketAmount,
+				request.BucketType,
+				request.ExternalId).ConfigureAwait(false);
 	}
 
-	public ValueTask CreateAllAgentPlayerRebatesAsync(PlayerAllAgentRebateModel[] models, DateTimeOffset? sentOn) =>
-		_allAgentPlayerRebateService.CreateEntitiesAsync(models.Select(model => new PlayerAllAgentRebate
+	public ValueTask CreateAllAgentPlayerRebatesAsync(PlayerAllAgentRebateModel[] models, DateTimeOffset? sentOn)
+		=> _allAgentPlayerRebateService.CreateEntitiesAsync(models.Select(model => new PlayerAllAgentRebate
 		{
 			BrandId = model.BrandId,
 			PlayerCode = model.PlayerCode,
-			ReportDate = model.ReportDate,
-			CreatedOn = DateTimeOffset.UtcNow,
-			SentOn = sentOn,
+			ReportDate = model.ReportDate.UtcDateTime,
+			CreatedOn = DateTime.UtcNow,
+			SentOn = sentOn?.UtcDateTime,
 			AllAgentGameType = (short)model.AllAgentGameType,
 			GameType = (short)model.GameType,
 			AllAgentRebateType = (short)model.AllAgentRebateType,
@@ -166,9 +163,9 @@ public class PlayerRebateFactory : IPlayerRebateFactory
 			BrandId = model.BrandId,
 			AgentId = model.AgentId,
 			PlayerCode = model.PlayerCode,
-			ReportDate = model.ReportDate,
-			CreatedOn = DateTimeOffset.UtcNow,
-			SentOn = sentOn,
+			ReportDate = model.ReportDate.UtcDateTime,
+			CreatedOn = DateTime.UtcNow,
+			SentOn = sentOn?.UtcDateTime,
 			VipCardGameRebatePercentage = model.VipCardGameRebatePercentage,
 			VipLiveDealerRebatePercentage = model.VipLiveDealerRebatePercentage,
 			VipLotteryRebatePercentage = model.VipLotteryRebatePercentage,
@@ -193,20 +190,5 @@ public class PlayerRebateFactory : IPlayerRebateFactory
 		await _playerRebateService.CreateEntityAsync(rebate);
 
 		return rebate;
-	}
-
-	public async ValueTask CreatePlayerBucketAsync(CreatePlayerBucketRequest requests)
-	{
-		var bucket = new PlayerBucket
-		{
-			Id = Guid.NewGuid(),
-			PlayerCode = requests.PlayerCode,
-			BucketAmount = requests.BucketAmount,
-			BucketType = (short)requests.BucketType,
-			IsFull = false,
-			CreatedOn = DateTimeOffset.UtcNow
-		};
-
-		await _playerBucketService.CreateEntityAsync(bucket).ConfigureAwait(false);
 	}
 }

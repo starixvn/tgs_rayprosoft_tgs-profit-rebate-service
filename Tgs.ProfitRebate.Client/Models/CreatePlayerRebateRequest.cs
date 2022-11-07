@@ -1,4 +1,3 @@
-﻿namespace Tgs.ProfitRebate.Client.Models
-{
-    public record CreatePlayerRebateRequest(string? Date = null);
-}
+﻿namespace Tgs.ProfitRebate.Client.Models;
+
+public record CreatePlayerRebateRequest(string? Date = null);

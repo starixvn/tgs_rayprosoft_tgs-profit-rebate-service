@@ -6,110 +6,110 @@ using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.ProfitRebate.ViewModel;
 
-namespace Tgs.ProfitRebate.Core.Workers
+namespace Tgs.ProfitRebate.Core.Workers;
+
+public class AgentDividendBackground : BackgroundService
 {
-    public class AgentDividendBackground : BackgroundService
-    {
-        private readonly ILogger<AgentDividendBackground> _logger;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IAgentDividendTaskQueue _taskQueue;
+	private readonly ILogger<AgentDividendBackground> _logger;
+	private readonly IServiceProvider _serviceProvider;
+	private readonly IAgentDividendTaskQueue _taskQueue;
 
-        public AgentDividendBackground(IAgentDividendTaskQueue taskQueue,
-            IServiceProvider serviceProvider,
-            ILogger<AgentDividendBackground> logger)
-        {
-            _taskQueue = taskQueue;
-            _logger = logger;
-            _serviceProvider = serviceProvider;
-        }
+	public AgentDividendBackground(IAgentDividendTaskQueue taskQueue,
+		IServiceProvider serviceProvider,
+		ILogger<AgentDividendBackground> logger)
+	{
+		_taskQueue = taskQueue;
+		_logger = logger;
+		_serviceProvider = serviceProvider;
+	}
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            _logger.LogInformation(
-                $"Queued Hosted Service is running.{Environment.NewLine}" +
-                $"{Environment.NewLine}Tap W to add a work item to the " +
-                $"background queue.{Environment.NewLine}");
+	public override async Task StopAsync(CancellationToken stoppingToken)
+	{
+		_logger.LogInformation("Queued Hosted Service is stopping.");
 
-            await BackgroundProcessing(stoppingToken);
-        }
+		await base.StopAsync(stoppingToken);
+	}
 
-        private async Task BackgroundProcessing(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
+	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+	{
+		_logger.LogInformation(
+			"Queued Hosted Service is running.{Environment.NewLine}" +
+			"{Environment.NewLine}Tap W to add a work item to the " +
+			"background queue.{Environment.NewLine}",
+			Environment.NewLine);
 
-                    var agentDividendFactory = scope.ServiceProvider.GetRequiredService<IAgentDividendFactory>();
-                    var agentDividendService = scope.ServiceProvider.GetRequiredService<ITgsService<AgentDividend>>();
+		await BackgroundProcessing(stoppingToken);
+	}
 
-                    var request =
-                        await _taskQueue.DequeueAsync(stoppingToken);
+	private async Task BackgroundProcessing(CancellationToken stoppingToken)
+	{
+		while (!stoppingToken.IsCancellationRequested)
+		{
+			try
+			{
+				using var scope = _serviceProvider.CreateScope();
 
-                    var now = DateTimeOffset.Now.ToOffset(new(8, 0, 0));
-                    var queryDate = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, new(8, 0, 0));
+				var agentDividendFactory = scope.ServiceProvider.GetRequiredService<IAgentDividendFactory>();
+				var agentDividendService = scope.ServiceProvider.GetRequiredService<ITgsService<AgentDividend>>();
 
-                    await foreach (var brands in
-                                   agentDividendFactory.GetSettlementIntervalBrands(request.BrandCode, queryDate)
-                                       .WithCancellation(stoppingToken))
-                    {
-                        var createModels = new List<CreateAgentDividendModel>();
-                        var createAutoSendModels = new List<CreateAgentDividendModel>();
-                        var updateAgentDividends = new List<AgentDividend>();
+				var request =
+					await _taskQueue.DequeueAsync(stoppingToken);
 
-                        var maxNumber = await agentDividendService.GetQueries()
-                            .MaxAsync(x => (int?)x.Id, request.CancellationToken) ?? 0;
+				var now = DateTimeOffset.Now.ToOffset(new(8, 0, 0));
+				var queryDate = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, new(8, 0, 0));
 
-                        foreach (var brand in brands)
-                        {
-                            if (!await agentDividendService.GetQueries()
-                                    .AnyAsync(
-                                        x => x.BrandId == brand.Id && brand.CurrentSettlementFrom == x.From &&
-                                            brand.CurrentSettlementTo == x.To,
-                                        request.CancellationToken))
-                            {
-                                var (autoSendDividends, manuelOrNegativeDividends, agentDividends, backMaxNumber) =
-                                    await agentDividendFactory.GetAgentDividends(brand, maxNumber, stoppingToken);
+				await foreach (var brands in
+							   agentDividendFactory.GetSettlementIntervalBrands(request.BrandCode, queryDate)
+								   .WithCancellation(stoppingToken))
+				{
+					var createModels = new List<CreateAgentDividendModel>();
+					var createAutoSendModels = new List<CreateAgentDividendModel>();
+					var updateAgentDividends = new List<AgentDividend>();
 
-                                maxNumber = backMaxNumber;
+					var maxNumber = await agentDividendService.GetQueries()
+						.MaxAsync(x => (int?)x.Id, request.CancellationToken) ?? 0;
 
-                                createAutoSendModels.AddRange(autoSendDividends);
-                                createModels.AddRange(manuelOrNegativeDividends);
-                                updateAgentDividends.AddRange(agentDividends);
-                            }
+					foreach (var brand in brands)
+					{
+						if (!await agentDividendService.GetQueries()
+								.AnyAsync(
+									x => x.BrandId == brand.Id && brand.CurrentSettlementFrom == x.From &&
+										brand.CurrentSettlementTo == x.To,
+									request.CancellationToken))
+						{
+							var (autoSendDividends, manuelOrNegativeDividends, agentDividends, backMaxNumber) =
+								await agentDividendFactory.GetAgentDividends(brand, maxNumber, stoppingToken);
 
-                            var (nextFrom, nextTo) =
-                                agentDividendFactory.GetInterval((SettlementIntervalType)brand.SettlementIntervalType,
-                                    brand.NextSettlementTo.ToOffset(new(8, 0, 0)),
-                                    brand.SettlementDay);
+							maxNumber = backMaxNumber;
 
-                            brand.PreviousSettlementFrom = brand.CurrentSettlementFrom;
-                            brand.PreviousSettlementTo = brand.CurrentSettlementTo;
-                            brand.CurrentSettlementFrom = brand.NextSettlementFrom;
-                            brand.CurrentSettlementTo = brand.NextSettlementTo;
-                            brand.NextSettlementFrom = nextFrom.ToUniversalTime();
-                            brand.NextSettlementTo = nextTo.ToUniversalTime();
-                        }
+							createAutoSendModels.AddRange(autoSendDividends);
+							createModels.AddRange(manuelOrNegativeDividends);
+							updateAgentDividends.AddRange(agentDividends);
+						}
 
-                        await agentDividendFactory.SaveAgentDividendData(brands,
-                            createModels,
-                            createAutoSendModels,
-                            updateAgentDividends);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error occurred executing task work item.");
-                }
-            }
-        }
+						var (nextFrom, nextTo) = agentDividendFactory.GetInterval(
+							(SettlementIntervalType)brand.SettlementIntervalType,
+							new DateTimeOffset(brand.NextSettlementTo).ToOffset(new(8, 0, 0)),
+							brand.SettlementDay);
 
-        public override async Task StopAsync(CancellationToken stoppingToken)
-        {
-            _logger.LogInformation("Queued Hosted Service is stopping.");
+						brand.PreviousSettlementFrom = brand.CurrentSettlementFrom;
+						brand.PreviousSettlementTo = brand.CurrentSettlementTo;
+						brand.CurrentSettlementFrom = brand.NextSettlementFrom;
+						brand.CurrentSettlementTo = brand.NextSettlementTo;
+						brand.NextSettlementFrom = nextFrom.UtcDateTime;
+						brand.NextSettlementTo = nextTo.UtcDateTime;
+					}
 
-            await base.StopAsync(stoppingToken);
-        }
-    }
+					await agentDividendFactory.SaveAgentDividendData(brands,
+						createModels,
+						createAutoSendModels,
+						updateAgentDividends);
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred executing task work item.");
+			}
+		}
+	}
 }

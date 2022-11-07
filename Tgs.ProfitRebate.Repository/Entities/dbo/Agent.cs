@@ -30,7 +30,7 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string InvitationCode { get; set; } = null!;
         public Guid BrandId { get; set; }
         public Guid? ParentAgentId { get; set; }
-        public DateTimeOffset RegisteredOn { get; set; }
+        public DateTime RegisteredOn { get; set; }
         public Guid DefaultWalletId { get; set; }
         public decimal CommissionPercentage { get; set; }
         public decimal DividendPercentage { get; set; }
@@ -47,8 +47,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string? Wechat { get; set; }
         public string? CreatedByUsername { get; set; }
         public string? UpdatedByUsername { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public LTree Path { get; set; }
 
         public virtual Brand Brand { get; set; } = null!;

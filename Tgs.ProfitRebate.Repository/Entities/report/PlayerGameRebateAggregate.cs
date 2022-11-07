@@ -17,8 +17,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public short GameType { get; set; }
         public int Hour { get; set; }
         public int Minute { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset ReportDate { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime ReportDate { get; set; }
         public decimal Turnover { get; set; }
         public decimal WinLoss { get; set; }
         public decimal VipLiveDealerRebatePercentage { get; set; }

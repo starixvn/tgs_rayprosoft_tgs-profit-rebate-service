@@ -30,8 +30,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal CardGameRebatePercentage { get; set; }
         public decimal SportsRebatePercentage { get; set; }
         public decimal VirtualSportsRebatePercentage { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string CreatedByUsername { get; set; } = null!;
         public string UpdatedByUsername { get; set; } = null!;
 

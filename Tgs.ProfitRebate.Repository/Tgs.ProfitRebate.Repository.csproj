@@ -15,8 +15,4 @@
     <PackageReference Include="TGS.Core.Infrastructures.Extensions" Version="0.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Tgs.ProfitRebate.Enum\Tgs.ProfitRebate.Enum.csproj" />
-  </ItemGroup>
-
 </Project>

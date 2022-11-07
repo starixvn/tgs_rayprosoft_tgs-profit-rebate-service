@@ -13,15 +13,15 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public Guid DepartmentId { get; set; }
         public string Username { get; set; } = null!;
         public string? LastLoginIp { get; set; }
-        public DateTimeOffset? LastLoginTime { get; set; }
+        public DateTime? LastLoginTime { get; set; }
         public string Name { get; set; } = null!;
         public string? TimeZone { get; set; }
         public byte[] Password { get; set; } = null!;
         public byte[] Salt { get; set; } = null!;
         public string CreatedByUsername { get; set; } = null!;
         public string UpdatedByUsername { get; set; } = null!;
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
 
         public virtual Department Department { get; set; } = null!;
         public virtual Role Role { get; set; } = null!;

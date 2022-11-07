@@ -16,8 +16,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal Balance { get; set; }
         public string? Description { get; set; }
         public short Type { get; set; }
-        public DateTimeOffset RecordedOn { get; set; }
-        public DateTimeOffset? SentOn { get; set; }
+        public DateTime RecordedOn { get; set; }
+        public DateTime? SentOn { get; set; }
         public decimal LockAmount { get; set; }
         public decimal LockedBalance { get; set; }
 

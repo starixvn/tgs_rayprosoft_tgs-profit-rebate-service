@@ -8,29 +8,14 @@
    "ModelNamespace": "Entities",
    "OutputContextPath": null,
    "OutputPath": "Entities",
+   "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "Tgs.ProfitRebate.Repository",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
-         "Name": "dbo.currencies",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.player_rebates",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.player_buckets",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.players",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brand_all_agent_game_type_conditions",
+         "Name": "dbo.adjust_player_records",
          "ObjectType": 0
       },
       {
@@ -38,31 +23,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "dbo.transactions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brand_all_agent_game_types",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.transaction_promotions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.promotions",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.adjust_player_records",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.withdraw_forms",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.agent_transactions",
+         "Name": "dbo.agent_dividend_multiple_layers",
          "ObjectType": 0
       },
       {
@@ -70,7 +31,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "dbo.brand_all_agents",
+         "Name": "dbo.agent_transactions",
          "ObjectType": 0
       },
       {
@@ -78,15 +39,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "dbo.roles",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.vip_levels",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.licensees",
+         "Name": "dbo.agents",
          "ObjectType": 0
       },
       {
@@ -94,23 +47,15 @@
          "ObjectType": 0
       },
       {
-         "Name": "dbo.player_all_agent_rebates",
+         "Name": "dbo.brand_all_agent_game_type_conditions",
          "ObjectType": 0
       },
       {
-         "Name": "dbo.agent_dividend_multiple_layers",
+         "Name": "dbo.brand_all_agent_game_types",
          "ObjectType": 0
       },
       {
-         "Name": "dbo.player_parents",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brands",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.agents",
+         "Name": "dbo.brand_all_agents",
          "ObjectType": 0
       },
       {
@@ -118,7 +63,39 @@
          "ObjectType": 0
       },
       {
+         "Name": "dbo.brands",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.currencies",
+         "ObjectType": 0
+      },
+      {
          "Name": "dbo.departments",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.licensees",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.player_all_agent_rebates",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.player_parents",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.player_rebates",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.players",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.promotions",
          "ObjectType": 0
       },
       {
@@ -126,7 +103,15 @@
          "ObjectType": 0
       },
       {
-         "Name": "dbo.wallets",
+         "Name": "dbo.roles",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.transaction_promotions",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.transactions",
          "ObjectType": 0
       },
       {
@@ -134,7 +119,15 @@
          "ObjectType": 0
       },
       {
-         "Name": "report.round_aggregates",
+         "Name": "dbo.vip_levels",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.wallets",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.withdraw_forms",
          "ObjectType": 0
       },
       {
@@ -148,9 +141,13 @@
       {
          "Name": "report.player_game_rebate_aggregates",
          "ObjectType": 0
+      },
+      {
+         "Name": "report.round_aggregates",
+         "ObjectType": 0
       }
    ],
-   "UiHint": "tgs",
+   "UiHint": "tgs-local",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDbContextSplitting": true,
@@ -167,5 +164,6 @@
    "UseNodaTime": false,
    "UseNullableReferences": true,
    "UseSchemaFolders": true,
-   "UseSpatial": true
+   "UseSpatial": true,
+   "UseT4": false
 }

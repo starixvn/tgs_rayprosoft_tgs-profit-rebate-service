@@ -9,7 +9,6 @@ namespace Tgs.ProfitRebate.Repository.Entities
     {
         public Player()
         {
-            PlayerBuckets = new HashSet<PlayerBucket>();
             Wallets = new HashSet<Wallet>();
         }
 
@@ -24,8 +23,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public Guid DefaultWalletId { get; set; }
         public string DefaultWalletCurrencyCode { get; set; } = null!;
         public Guid BrandId { get; set; }
-        public DateTimeOffset? RegisteredOn { get; set; }
-        public DateTimeOffset LastActiveOn { get; set; }
+        public DateTime? RegisteredOn { get; set; }
+        public DateTime LastActiveOn { get; set; }
         public short Status { get; set; }
         public int BetLimitId { get; set; }
         public short Type { get; set; }
@@ -39,10 +38,10 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal AccumulatedDeposit { get; set; }
         public Guid? VipId { get; set; }
         public string? UpdatedByUsername { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
-        public DateTimeOffset? FirstDepositOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public DateTime? FirstDepositOn { get; set; }
         public string? AreaCode { get; set; }
-        public DateTimeOffset? FirstPromotionOn { get; set; }
+        public DateTime? FirstPromotionOn { get; set; }
         public string? Remark { get; set; }
         public DateOnly? Birthdate { get; set; }
         public string? Birthday { get; set; }
@@ -50,7 +49,6 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public virtual Agent? Agent { get; set; }
         public virtual Brand Brand { get; set; } = null!;
         public virtual VipLevel? Vip { get; set; }
-        public virtual ICollection<PlayerBucket> PlayerBuckets { get; set; }
         public virtual ICollection<Wallet> Wallets { get; set; }
     }
 }

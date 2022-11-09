@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using AutoFixture;
+﻿using AutoFixture;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
 using Tgs.ProfitRebate.Core.Commands;
 using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.Repository.Entities;
@@ -29,16 +29,6 @@ namespace Tgs.ProfitRebate.Tests
 
             _ = fakeAgentDividendTaskQueue.Received(1)
                 .QueueAgentDividendAsync(Arg.Any<AgentDividendQueueModel>());
-        }
-
-        private static Fixture CreateBrandFixture()
-        {
-            var fixture = new Fixture();
-            fixture.Customize<Brand>(u => u
-                .With(s => s.Licensee, new Licensee())
-                .With(s => s.Players, new Player[] { }));
-            fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            return fixture;
         }
     }
 }

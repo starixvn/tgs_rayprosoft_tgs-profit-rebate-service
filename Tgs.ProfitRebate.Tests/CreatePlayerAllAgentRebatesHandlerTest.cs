@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoFixture;
+﻿using AutoFixture;
 using MockQueryable.Moq;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Core;
 using Tgs.ProfitRebate.Core.Commands;
@@ -44,12 +44,12 @@ namespace Tgs.ProfitRebate.Tests
             var players = CreatePlayerFixture("playerCode")
                 .CreateMany<Player>(1)
                 .AsQueryable()
-                .BuildMock().Object;
+                .BuildMock();
 
             fakePlayerRepository.GetQueries()
                 .Returns(players);
 
-            var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock().Object;
+            var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock();
             fakePlayerAllAgentRebateRepository.GetQueries()
                 .Returns(playerAllAgentRebates);
 
@@ -95,12 +95,12 @@ namespace Tgs.ProfitRebate.Tests
             var players = CreatePlayerFixture("playerCode")
                 .CreateMany<Player>(1)
                 .AsQueryable()
-                .BuildMock().Object;
+                .BuildMock();
 
             fakePlayerRepository.GetQueries()
                 .Returns(players);
 
-            var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock().Object;
+            var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock();
             fakePlayerAllAgentRebateRepository.GetQueries()
                 .Returns(playerAllAgentRebates);
 

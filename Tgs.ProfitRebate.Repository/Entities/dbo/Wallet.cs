@@ -17,8 +17,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string CurrencyCode { get; set; } = null!;
         public string ExternalCurrencyCode { get; set; } = null!;
         public decimal Balance { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public decimal LockedBalance { get; set; }
 
         public virtual Currency CurrencyCodeNavigation { get; set; } = null!;

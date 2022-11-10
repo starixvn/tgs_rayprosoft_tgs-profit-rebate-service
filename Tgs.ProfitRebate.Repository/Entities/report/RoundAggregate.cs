@@ -19,8 +19,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal ValidBetAmount { get; set; }
         public decimal Turnover { get; set; }
         public decimal WinLoss { get; set; }
-        public DateTimeOffset ReportDate { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public DateTime ReportDate { get; set; }
+        public DateTime CreatedOn { get; set; }
         public int GameId { get; set; }
         public decimal OriginalTurnover { get; set; }
     }

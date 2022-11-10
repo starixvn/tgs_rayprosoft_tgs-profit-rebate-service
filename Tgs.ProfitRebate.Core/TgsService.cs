@@ -1,53 +1,55 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Tgs.ProfitRebate.Repository;
 
-namespace Tgs.ProfitRebate.Core
+namespace Tgs.ProfitRebate.Core;
+
+public interface ITgsService<T>
 {
-    public interface ITgsService<T>
-    {
-        ITgsRepository Repository { get; }
+	ITgsRepository Repository { get; }
 
-        IQueryable<T> GetQueries(
-            Func<IQueryable<T>, IQueryable<T>>? preQuery = null,
-            bool tracking = false);
-        ValueTask CreateEntityAsync(T entity);
-        ValueTask CreateEntitiesAsync(T[] entities);
-        ValueTask UpdateEntitiesAsync(T[] entities);
-    }
+	IQueryable<T> GetQueries(
+		Func<IQueryable<T>, IQueryable<T>>? preQuery = null,
+		bool tracking = false);
 
-    public class TgsService<T> : ITgsService<T> where T : class
-    {
-        private ITgsRepository Repository { get; }
+	ValueTask CreateEntityAsync(T entity);
 
-        public TgsService(ITgsRepository repository)
-        {
-            Repository = repository;
-        }
+	ValueTask CreateEntitiesAsync(T[] entities);
 
-        ITgsRepository ITgsService<T>.Repository => Repository;
+	ValueTask UpdateEntitiesAsync(T[] entities);
+}
 
-        public async ValueTask CreateEntityAsync(T entity)
-        {
-            await Repository.Set<T>().AddAsync(entity);
-            await Repository.SaveChangesAsync();
-        }
+public class TgsService<T> : ITgsService<T> where T : class
+{
+	ITgsRepository ITgsService<T>.Repository => Repository;
 
-        public async ValueTask CreateEntitiesAsync(T[] entities)
-        {
-            await Repository.Set<T>().AddRangeAsync(entities);
-            await Repository.SaveChangesAsync();
-        }
+	private ITgsRepository Repository { get; }
 
-        public IQueryable<T> GetQueries(Func<IQueryable<T>, IQueryable<T>>? preQuery, bool tracking)
-        {
-            preQuery ??= c => c;
-            return tracking ? preQuery(Repository.Set<T>()) : preQuery(Repository.Set<T>()).AsNoTracking();
-        }
+	public TgsService(ITgsRepository repository)
+	{
+		Repository = repository;
+	}
 
-        public async ValueTask UpdateEntitiesAsync(T[] entities)
-        {
-            Repository.Set<T>().UpdateRange(entities);
-            await Repository.SaveChangesAsync();
-        }
-    }
+	public async ValueTask CreateEntityAsync(T entity)
+	{
+		_ = await Repository.Set<T>().AddAsync(entity);
+		_ = await Repository.SaveChangesAsync();
+	}
+
+	public async ValueTask CreateEntitiesAsync(T[] entities)
+	{
+		await Repository.Set<T>().AddRangeAsync(entities);
+		_ = await Repository.SaveChangesAsync();
+	}
+
+	public IQueryable<T> GetQueries(Func<IQueryable<T>, IQueryable<T>>? preQuery, bool tracking)
+	{
+		preQuery ??= c => c;
+		return tracking ? preQuery(Repository.Set<T>()) : preQuery(Repository.Set<T>()).AsNoTracking();
+	}
+
+	public async ValueTask UpdateEntitiesAsync(T[] entities)
+	{
+		Repository.Set<T>().UpdateRange(entities);
+		_ = await Repository.SaveChangesAsync();
+	}
 }

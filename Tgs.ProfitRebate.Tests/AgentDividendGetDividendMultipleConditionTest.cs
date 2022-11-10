@@ -337,7 +337,6 @@ public class AgentDividendGetDividendMultipleConditionTest
             .With(s => s.Brand, brand)
             .With(s => s.Agent, agent)
             .With(s => s.Birthdate, DateOnly.FromDateTime(DateTime.Now))
-            .With(s => s.PlayerBuckets, new PlayerBucket[] { })
             .With(s => s.Wallets, new Wallet[] { })
         );
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());

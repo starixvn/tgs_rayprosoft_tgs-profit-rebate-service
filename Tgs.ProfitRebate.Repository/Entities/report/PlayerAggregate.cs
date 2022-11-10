@@ -13,8 +13,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string PlayerCode { get; set; } = null!;
         public int Hour { get; set; }
         public int Minute { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset ReportDate { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime ReportDate { get; set; }
         public int RegisteredCount { get; set; }
         public int FirstFundInCount { get; set; }
         public decimal DepositAmount { get; set; }

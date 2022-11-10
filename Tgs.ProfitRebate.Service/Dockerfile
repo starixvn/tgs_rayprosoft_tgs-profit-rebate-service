@@ -1,4 +1,4 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+﻿#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
@@ -14,8 +14,6 @@ COPY ["nuget.config", "."]
 COPY ["Tgs.ProfitRebate.Service/Tgs.ProfitRebate.Service.csproj", "Tgs.ProfitRebate.Service/"]
 COPY ["Tgs.ProfitRebate.Core/Tgs.ProfitRebate.Core.csproj", "Tgs.ProfitRebate.Core/"]
 COPY ["Tgs.ProfitRebate.Repository/Tgs.ProfitRebate.Repository.csproj", "Tgs.ProfitRebate.Repository/"]
-COPY ["Tgs.ProfitRebate.Enum/Tgs.ProfitRebate.Enum.csproj", "Tgs.ProfitRebate.Enum/"]
-COPY ["Tgs.ProfitRebate.ViewModel/Tgs.ProfitRebate.ViewModel.csproj", "Tgs.ProfitRebate.ViewModel/"]
 RUN dotnet restore "Tgs.ProfitRebate.Service/Tgs.ProfitRebate.Service.csproj"
 COPY . .
 WORKDIR "/src/Tgs.ProfitRebate.Service"

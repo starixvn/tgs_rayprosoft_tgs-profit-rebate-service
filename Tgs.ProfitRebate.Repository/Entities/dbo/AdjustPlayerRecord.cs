@@ -18,9 +18,9 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal Amount { get; set; }
         public decimal BucketAmount { get; set; }
         public string? Remark { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         public string CreatedByUsername { get; set; } = null!;
         public bool IncludeInNetProfit { get; set; }
-        public DateTimeOffset TransactionRecordedOn { get; set; }
+        public DateTime TransactionRecordedOn { get; set; }
     }
 }

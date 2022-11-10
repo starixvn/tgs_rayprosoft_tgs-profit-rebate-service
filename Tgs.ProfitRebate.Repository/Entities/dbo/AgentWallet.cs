@@ -16,8 +16,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public Guid AgentId { get; set; }
         public string CurrencyCode { get; set; } = null!;
         public decimal Balance { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
 
         public virtual Agent Agent { get; set; } = null!;
         public virtual Currency CurrencyCodeNavigation { get; set; } = null!;

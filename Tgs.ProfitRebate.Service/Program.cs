@@ -8,6 +8,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Tgs.MessageQueue;
 using Tgs.MessageQueue.MongoDB.Configuration;
+using Tgs.PlayerBucket.Clients.DependencyInjection;
 using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.ViewModel;
 
@@ -50,7 +51,8 @@ builder.Services
 		var config = sp.GetRequiredService<IConfiguration>();
 
 		options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
-	});
+	})
+	.AddPlayerBucketClient();
 
 builder.Services
 	.AddMessageQueue()

@@ -44,12 +44,12 @@ public class CreatePlayerAllAgentRebatesHandlerTest
 		var players = CreatePlayerFixture("playerCode")
 			.CreateMany<Player>(1)
 			.AsQueryable()
-			.BuildMock().Object;
+			.BuildMock();
 
 		_ = fakePlayerRepository.GetQueries()
 			.Returns(players);
 
-		var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock().Object;
+		var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock();
 		_ = fakePlayerAllAgentRebateRepository.GetQueries()
 			.Returns(playerAllAgentRebates);
 
@@ -95,12 +95,12 @@ public class CreatePlayerAllAgentRebatesHandlerTest
 		var players = CreatePlayerFixture("playerCode")
 			.CreateMany<Player>(1)
 			.AsQueryable()
-			.BuildMock().Object;
+			.BuildMock();
 
 		_ = fakePlayerRepository.GetQueries()
 			.Returns(players);
 
-		var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock().Object;
+		var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock();
 		_ = fakePlayerAllAgentRebateRepository.GetQueries()
 			.Returns(playerAllAgentRebates);
 

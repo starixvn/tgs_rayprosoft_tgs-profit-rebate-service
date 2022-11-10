@@ -462,22 +462,34 @@ public class AgentDividendFactory : IAgentDividendFactory
                 .Where(x => x.BrandId == brand.Id)
                 .Where(x => x.ReportDate >= brand.CurrentSettlementFrom &&
                     x.ReportDate <= brand.CurrentSettlementTo)
-                .Where(x => x.BetAmount > 0)
-                .GroupBy(x => new { x.AgentId, x.PlayerCode }, (g, list) => new
+                .GroupJoin(_playerBonusAggregateService.GetQueries(), 
+                    pa => new {pa.ReportDate,pa.Hour,pa.AgentId,pa.PlayerCode},
+                    pb => new { pb.ReportDate, pb.Hour, pb.AgentId, pb.PlayerCode },
+                    (agg, list) => new
+                    {
+                        agg,
+                        list
+                    })
+                .SelectMany(x => x.list.DefaultIfEmpty(),
+                    (x, bonusAgg) => new
+                    {
+                        x.agg,
+                        bonusAgg
+                    })
+                .GroupBy(x => new { x.agg.AgentId, x.agg.PlayerCode }, (g, list) => new
                 {
                     g.AgentId,
                     g.PlayerCode,
-                    NetProfit = list.Sum(s => s.WinLossAmount
-                        - (s.BonusAdjustAmount - s.NoIncludeNetProfitBonusAdjustAmount) * s.AgentDividendPercentage /
-                        100
-                        - s.BonusAmount * s.AgentDividendPercentage / 100
-                        - s.WinLossAmount * brand.PlatformCharge / 100)
+                    NetProfit = list.Sum(s => s.agg.WinLossAmount
+                        - (s.agg.BonusAdjustAmount - s.agg.NoIncludeNetProfitBonusAdjustAmount)
+                        - (s.agg.RebateAmount + s.agg.PromotionAmount + (s.bonusAgg == null ? 0M : s.bonusAgg.BirthdayAmount + s.bonusAgg.SeasonAmount + s.bonusAgg.UpgradeAmount))
+                        - s.agg.WinLossAmount * brand.PlatformCharge / 100)
                 })
                 .GroupBy(x => x.AgentId, (agentId, items) => new AgentConditionModel
                 {
                     AgentId = agentId!.Value,
                     ActiveCount = items.Count(),
-                    NetProfit = items.Sum(s => s.NetProfit ?? 0M)
+                    NetProfit = items.Sum(s => s.NetProfit)
                 }).ToArrayAsync(cancellationToken)
             : Array.Empty<AgentConditionModel>();
 
@@ -571,17 +583,29 @@ public class AgentDividendFactory : IAgentDividendFactory
 
         foreach (var dividend in allAgent)
         {
-            dividend.AgentDividendAmount =
-                parentAgentDividends.Where(p
-                        => p.AgentId == dividend.AgentId &&
-                        p.AgentDividendPercentage == dividend.AgentDividendPercentage)
-                    .Sum(s => s.Dividend) - (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
+            if (brand.AgentDividendType == (short)AgentDividendType.MultipleLayer)
+            {
+                dividend.AgentDividendAmount =
+                    parentAgentDividends.Where(p => p.AgentId == dividend.AgentId)
+                        .Sum(s => s.Dividend) - (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
 
-            dividend.AgentDividendMultipleLayerModels =
-                parentAgentDividends.Where(p
-                        => p.AgentId == dividend.AgentId &&
-                        p.AgentDividendPercentage == dividend.AgentDividendPercentage)
-                    .ToArray();
+                dividend.AgentDividendMultipleLayerModels =
+                    parentAgentDividends.Where(p => p.AgentId == dividend.AgentId).ToArray();
+            }
+            else
+            {
+                dividend.AgentDividendAmount =
+                    parentAgentDividends.Where(p
+                            => p.AgentId == dividend.AgentId &&
+                            p.AgentDividendPercentage == dividend.AgentDividendPercentage)
+                        .Sum(s => s.Dividend) - (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
+
+                dividend.AgentDividendMultipleLayerModels =
+                    parentAgentDividends.Where(p
+                            => p.AgentId == dividend.AgentId &&
+                            p.AgentDividendPercentage == dividend.AgentDividendPercentage)
+                        .ToArray();
+            }
         }
 
         allAgent = allAgent.Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AgentAdjustAmount != 0M ||

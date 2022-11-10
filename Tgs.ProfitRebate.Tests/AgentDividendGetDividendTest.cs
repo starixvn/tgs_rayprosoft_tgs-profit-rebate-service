@@ -99,7 +99,9 @@ public class AgentDividendGetDividendTest
 
             var percentage = agentData.First(x => x.Id == dividend.AgentId).DividendPercentage;
 
-            Assert.IsTrue(dividend.AgentDividendAmount == ((winLoss - bonus - aggBonus - bonusAdjust - (winLoss * brand.PlatformCharge / 100)) * percentage / 100) - agentAdjustAmount);
+            Assert.IsTrue(dividend.AgentDividendAmount ==
+                (winLoss - bonus - aggBonus - bonusAdjust - winLoss * brand.PlatformCharge / 100) * percentage / 100 -
+                agentAdjustAmount);
         }
     }
 
@@ -158,7 +160,8 @@ public class AgentDividendGetDividendTest
     {
         var fixture = new Fixture();
         var percentageJson =
-            "[{\"AgentId\":\""+ agent!.Id + "\",\"ParentAgentId\":null,\"DividendPercentage\":"+ agent.DividendPercentage +"}]";
+            "[{\"AgentId\":\"" + agent!.Id + "\",\"ParentAgentId\":null,\"DividendPercentage\":" +
+            agent.DividendPercentage + "}]";
         fixture.Customize<PlayerAggregate>(u => u
             .With(s => s.ReportDate, reportDate)
             .With(s => s.Hour, 0)
@@ -172,7 +175,8 @@ public class AgentDividendGetDividendTest
         return fixture;
     }
 
-    private Fixture CreatePlayerBonusAggregateFixture(Brand brand, Agent? agent, Player player, DateTimeOffset reportDate)
+    private Fixture CreatePlayerBonusAggregateFixture(Brand brand, Agent? agent, Player player,
+        DateTimeOffset reportDate)
     {
         var fixture = new Fixture();
         fixture.Customize<PlayerBonusAggregate>(u => u
@@ -186,7 +190,8 @@ public class AgentDividendGetDividendTest
         return fixture;
     }
 
-    private Fixture CreatePlayerGameAggregateFixture(Brand brand, Agent? agent, Player player, DateTimeOffset reportDate)
+    private Fixture CreatePlayerGameAggregateFixture(Brand brand, Agent? agent, Player player,
+        DateTimeOffset reportDate)
     {
         var fixture = new Fixture();
         fixture.Customize<PlayerGameRebateAggregate>(u => u

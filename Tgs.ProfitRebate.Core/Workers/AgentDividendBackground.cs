@@ -33,9 +33,11 @@ public class AgentDividendBackground : BackgroundService
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		_logger.LogInformation(
-			"Queued Hosted Service is running.{Environment.NewLine}" +
-			"{Environment.NewLine}Tap W to add a work item to the " +
-			"background queue.{Environment.NewLine}",
+			"Queued Hosted Service is running.{0}" +
+				"{1}Tap W to add a work item to the " +
+				"background queue.{2}",
+			Environment.NewLine,
+			Environment.NewLine,
 			Environment.NewLine);
 
 		await BackgroundProcessing(stoppingToken);

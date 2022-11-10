@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tgs.ProfitRebate.Repository.Entities;
 
 #nullable disable
@@ -16,9 +15,6 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
         public void Configure(EntityTypeBuilder<PlayerAggregate> entity)
         {
             entity.ToTable("player_aggregates", "report");
-
-            entity.HasIndex(e => new { e.BrandId, e.ReportDate, e.AgentId, e.PlayerCode }, "ix_player_aggregate_brand_id_and_report_date_desc_and_player_co")
-                .HasSortOrder(new[] { SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending, SortOrder.Ascending });
 
             entity.HasIndex(e => e.AgentId, "ix_player_aggregates_agent_id");
 

@@ -15,8 +15,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public int Id { get; set; }
         public Guid AgentId { get; set; }
         public Guid BrandId { get; set; }
-        public DateTimeOffset From { get; set; }
-        public DateTimeOffset To { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
         public decimal DepositAmount { get; set; }
         public decimal WithdrawalAmount { get; set; }
         public decimal CompanyAdjustAmount { get; set; }
@@ -37,8 +37,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal VirtualSportsWinLoss { get; set; }
         public decimal AgentDividendPercentage { get; set; }
         public decimal AgentDividendAmount { get; set; }
-        public DateTimeOffset? SentOn { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public DateTime? SentOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         public int? ReferencedAgentDividendId { get; set; }
         public decimal? BeforeDividendAmount { get; set; }
         public decimal PromotionAmount { get; set; }

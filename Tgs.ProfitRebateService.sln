@@ -13,11 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.Client", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.ClientSample", "Tgs.ProfitRebate.ClientSample\Tgs.ProfitRebate.ClientSample.csproj", "{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.ViewModel", "Tgs.ProfitRebate.ViewModel\Tgs.ProfitRebate.ViewModel.csproj", "{FB21EC58-6BF3-48A9-A257-7BFF1792032E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.ProfitRebate.Tests", "Tgs.ProfitRebate.Tests\Tgs.ProfitRebate.Tests.csproj", "{3D1DAC51-2624-454F-A289-CCBA4AF4FDBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.ProfitRebate.Enum", "Tgs.ProfitRebate.Enum\Tgs.ProfitRebate.Enum.csproj", "{4DC2224D-68BB-475F-9D72-C9AFB37FD89A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9F521028-3675-4477-B304-CB01E59571C7}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,18 +46,10 @@ Global
 		{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DDEF7CB-79EC-4DEB-9D6D-4BE0DCD421DD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB21EC58-6BF3-48A9-A257-7BFF1792032E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB21EC58-6BF3-48A9-A257-7BFF1792032E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB21EC58-6BF3-48A9-A257-7BFF1792032E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB21EC58-6BF3-48A9-A257-7BFF1792032E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D1DAC51-2624-454F-A289-CCBA4AF4FDBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3D1DAC51-2624-454F-A289-CCBA4AF4FDBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D1DAC51-2624-454F-A289-CCBA4AF4FDBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D1DAC51-2624-454F-A289-CCBA4AF4FDBB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4DC2224D-68BB-475F-9D72-C9AFB37FD89A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DC2224D-68BB-475F-9D72-C9AFB37FD89A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4DC2224D-68BB-475F-9D72-C9AFB37FD89A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DC2224D-68BB-475F-9D72-C9AFB37FD89A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

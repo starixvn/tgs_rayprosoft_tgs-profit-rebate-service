@@ -1,18 +1,17 @@
-﻿namespace Tgs.ProfitRebate.Client.Models
+﻿namespace Tgs.ProfitRebate.Client.Models;
+
+public class MessageResponse
 {
-    public class MessageResponse
-    {
-        public bool Valid { get; set; }
+	public bool Valid { get; set; }
 
-        public string Message { get; set; }
+	public string Message { get; set; }
 
-        public string[] Errors { get; set; }
+	public string[] Errors { get; set; }
 
-        public MessageResponse()
-        {
-            Valid = false;
-            Message = string.Empty;
-            Errors = new string[] { };
-        }
-    }
+	public MessageResponse()
+	{
+		Valid = false;
+		Message = string.Empty;
+		Errors = Array.Empty<string>();
+	}
 }

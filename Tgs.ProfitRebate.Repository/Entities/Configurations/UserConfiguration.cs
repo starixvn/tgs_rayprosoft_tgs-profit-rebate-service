@@ -16,15 +16,9 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
         {
             entity.ToTable("users", "dbo");
 
-            entity.HasIndex(e => e.Username, "ix_trgm_users_username")
-                .HasMethod("gin")
-                .HasOperators(new[] { "gin_trgm_ops" });
-
             entity.HasIndex(e => e.DepartmentId, "ix_users_department_id");
 
             entity.HasIndex(e => e.RoleId, "ix_users_role_id");
-
-            entity.HasIndex(e => e.Username, "ix_users_username");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()

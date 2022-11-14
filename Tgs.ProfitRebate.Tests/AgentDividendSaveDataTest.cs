@@ -85,7 +85,7 @@ public class AgentDividendSaveDataTest
             .With(s => s.VipLevels, new VipLevel[] { })
             .With(s => s.Licensee, new Licensee())
             .With(s => s.AgentTransactions, new AgentTransaction[] { })
-            .With(s => s.CurrentSettlementTo, new DateTimeOffset(2022, 10, 1, 0, 0, 0, new(8, 0, 0))));
+            .With(s => s.CurrentSettlementTo, new DateTimeOffset(2022, 10, 1, 0, 0, 0, new(8, 0, 0)).UtcDateTime));
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         return fixture;
     }

@@ -578,13 +578,14 @@ public class AgentDividendFactory : IAgentDividendFactory
 					CreatedOn = DateTimeOffset.UtcNow
 				}).ToArray();
 
-		foreach (var dividend in allAgent)
-		{
+        foreach (var dividend in allAgent)
+        {
             if (brand.AgentDividendType == (short)AgentDividendType.MultipleLayer)
             {
                 dividend.AgentDividendAmount =
                     parentAgentDividends.Where(p => p.AgentId == dividend.AgentId)
-                        .Sum(s => s.Dividend) - (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
+                        .Sum(s => s.Dividend) -
+                    (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
 
                 dividend.AgentDividendMultipleLayerModels =
                     parentAgentDividends.Where(p => p.AgentId == dividend.AgentId).ToArray();
@@ -595,7 +596,8 @@ public class AgentDividendFactory : IAgentDividendFactory
                     parentAgentDividends.Where(p
                             => p.AgentId == dividend.AgentId &&
                             p.AgentDividendPercentage == dividend.AgentDividendPercentage)
-                        .Sum(s => s.Dividend) - (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
+                        .Sum(s => s.Dividend) -
+                    (dividend.AgentAdjustAmount - dividend.NoIncludeNetProfitAgentAdjustAmount);
 
                 dividend.AgentDividendMultipleLayerModels =
                     parentAgentDividends.Where(p
@@ -603,9 +605,9 @@ public class AgentDividendFactory : IAgentDividendFactory
                             p.AgentDividendPercentage == dividend.AgentDividendPercentage)
                         .ToArray();
             }
-		}
+        }
 
-		allAgent = allAgent.Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AgentAdjustAmount != 0M ||
+        allAgent = allAgent.Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AgentAdjustAmount != 0M ||
 			x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
 			x.NetProfit != 0M || x.BonusAdjustAmount != 0M || x.AgentDividendPercentage != 0M || x.AgentDividendAmount != 0M ||
 			x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||

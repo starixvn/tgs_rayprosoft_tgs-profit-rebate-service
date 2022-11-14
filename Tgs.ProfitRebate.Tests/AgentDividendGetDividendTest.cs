@@ -111,8 +111,8 @@ public class AgentDividendGetDividendTest
         fixture.Customize<Brand>(u => u
             .With(s => s.AutoSentAgentBonus, true)
             .With(u => u.AgentDividendType, (short)AgentDividendType.OneLayer)
-            .With(u => u.CurrentSettlementFrom, from)
-            .With(u => u.CurrentSettlementTo, to)
+            .With(u => u.CurrentSettlementFrom, from.UtcDateTime)
+            .With(u => u.CurrentSettlementTo, to.UtcDateTime)
             .With(s => s.Agents, new Agent[] { })
             .With(s => s.Players, new Player[] { })
             .With(s => s.Promotions, new Promotion[] { })
@@ -120,7 +120,7 @@ public class AgentDividendGetDividendTest
             .With(s => s.VipLevels, new VipLevel[] { })
             .With(s => s.Licensee, new Licensee())
             .With(s => s.AgentTransactions, new AgentTransaction[] { })
-            .With(s => s.CurrentSettlementTo, new DateTimeOffset(2022, 10, 1, 0, 0, 0, new(8, 0, 0))));
+            .With(s => s.CurrentSettlementTo, new DateTimeOffset(2022, 10, 1, 0, 0, 0, new(8, 0, 0)).UtcDateTime));
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         return fixture;
     }
@@ -162,7 +162,7 @@ public class AgentDividendGetDividendTest
             "[{\"AgentId\":\"" + agent!.Id + "\",\"ParentAgentId\":null,\"DividendPercentage\":" +
             agent.DividendPercentage + "}]";
         fixture.Customize<PlayerAggregate>(u => u
-            .With(s => s.ReportDate, reportDate)
+            .With(s => s.ReportDate, reportDate.UtcDateTime)
             .With(s => s.Hour, 0)
             .With(s => s.BrandId, brand.Id)
             .With(s => s.AgentId, agent?.Id)
@@ -179,7 +179,7 @@ public class AgentDividendGetDividendTest
     {
         var fixture = new Fixture();
         fixture.Customize<PlayerBonusAggregate>(u => u
-            .With(s => s.ReportDate, reportDate)
+            .With(s => s.ReportDate, reportDate.UtcDateTime)
             .With(s => s.Hour, 0)
             .With(s => s.BrandId, brand.Id)
             .With(s => s.AgentId, agent?.Id)
@@ -194,7 +194,7 @@ public class AgentDividendGetDividendTest
     {
         var fixture = new Fixture();
         fixture.Customize<PlayerGameRebateAggregate>(u => u
-            .With(s => s.ReportDate, reportDate)
+            .With(s => s.ReportDate, reportDate.UtcDateTime)
             .With(s => s.Hour, 0)
             .With(s => s.BrandId, brand.Id)
             .With(s => s.AgentId, agent?.Id)

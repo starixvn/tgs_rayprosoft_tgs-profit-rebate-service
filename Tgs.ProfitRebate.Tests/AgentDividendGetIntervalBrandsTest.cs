@@ -35,7 +35,7 @@ public class AgentDividendGetIntervalBrandsTest
             .BuildMock();
 
         var brandCode = brandData.First().Code;
-        var queryDate = new DateTimeOffset(2022, 10, 2, 0, 0, 0, new(8, 0, 0));
+        var queryDate = new DateTimeOffset(2022, 10, 2, 0, 0, 0, new(8, 0, 0)).UtcDateTime;
 
         fakeBrandService.GetQueries().Returns(brandData);
 
@@ -85,7 +85,7 @@ public class AgentDividendGetIntervalBrandsTest
             .With(s => s.VipLevels, new VipLevel[] { })
             .With(s => s.Licensee, new Licensee())
             .With(s => s.AgentTransactions, new AgentTransaction[] { })
-            .With(s => s.CurrentSettlementTo, new DateTimeOffset(2022, 10, 1, 0, 0, 0, new(8, 0, 0))));
+            .With(s => s.CurrentSettlementTo, new DateTimeOffset(2022, 10, 1, 0, 0, 0, new(8, 0, 0)).UtcDateTime));
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         return fixture;
     }

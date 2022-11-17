@@ -10,10 +10,10 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string PlayerCode { get; set; } = null!;
         public int Hour { get; set; }
         public int Minute { get; set; }
-        public DateTimeOffset ReportDate { get; set; }
+        public DateTime ReportDate { get; set; }
         public Guid BrandId { get; set; }
         public Guid? AgentId { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         public decimal RebateAmount { get; set; }
         public decimal PromotionAmount { get; set; }
         public decimal UpgradeAmount { get; set; }

@@ -23,8 +23,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public string MenuSetting { get; set; } = null!;
         public string? Description { get; set; }
         public short Status { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string CreatedByUsername { get; set; } = null!;
         public string UpdatedByUsername { get; set; } = null!;
 

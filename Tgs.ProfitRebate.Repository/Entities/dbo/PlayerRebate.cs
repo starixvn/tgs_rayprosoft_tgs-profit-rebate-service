@@ -11,9 +11,9 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public Guid BrandId { get; set; }
         public Guid? AgentId { get; set; }
         public string PlayerCode { get; set; } = null!;
-        public DateTimeOffset? SentOn { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset ReportDate { get; set; }
+        public DateTime? SentOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime ReportDate { get; set; }
         public decimal SportsTurnover { get; set; }
         public decimal SportsRebateAmount { get; set; }
         public decimal VirtualSportsTurnover { get; set; }

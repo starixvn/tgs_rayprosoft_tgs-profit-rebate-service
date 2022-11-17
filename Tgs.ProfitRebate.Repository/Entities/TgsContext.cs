@@ -39,7 +39,6 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public virtual DbSet<PlayerAggregate> PlayerAggregates { get; set; } = null!;
         public virtual DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; } = null!;
         public virtual DbSet<PlayerBonusAggregate> PlayerBonusAggregates { get; set; } = null!;
-        public virtual DbSet<PlayerBucket> PlayerBuckets { get; set; } = null!;
         public virtual DbSet<PlayerGameRebateAggregate> PlayerGameRebateAggregates { get; set; } = null!;
         public virtual DbSet<PlayerParent> PlayerParents { get; set; } = null!;
         public virtual DbSet<PlayerRebate> PlayerRebates { get; set; } = null!;
@@ -57,8 +56,7 @@ namespace Tgs.ProfitRebate.Repository.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("ltree")
-                .HasPostgresExtension("pg_trgm")
-                .HasPostgresExtension("uuid-ossp");
+                .HasPostgresExtension("pg_trgm");
 
             modelBuilder.ApplyConfiguration(new Configurations.AdjustPlayerRecordConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.AgentConfiguration());
@@ -80,7 +78,6 @@ namespace Tgs.ProfitRebate.Repository.Entities
             modelBuilder.ApplyConfiguration(new Configurations.PlayerAggregateConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerAllAgentRebateConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerBonusAggregateConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerBucketConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerGameRebateAggregateConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerParentConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerRebateConfiguration());

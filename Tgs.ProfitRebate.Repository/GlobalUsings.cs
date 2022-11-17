@@ -1,0 +1,1 @@
+﻿global using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;

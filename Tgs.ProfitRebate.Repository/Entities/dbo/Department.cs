@@ -15,8 +15,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public DateTimeOffset CreatedOn { get; set; }
-        public DateTimeOffset UpdatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string CreatedByUsername { get; set; } = null!;
         public string UpdatedByUsername { get; set; } = null!;
         public Guid? ResellerId { get; set; }

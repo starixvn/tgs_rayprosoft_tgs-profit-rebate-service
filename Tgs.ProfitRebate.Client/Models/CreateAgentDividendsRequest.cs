@@ -1,4 +1,3 @@
-﻿namespace Tgs.ProfitRebate.Client.Models
-{
-    public record CreateAgentDividendsRequest(string? BrandCode);
-}
+﻿namespace Tgs.ProfitRebate.Client.Models;
+
+public record CreateAgentDividendsRequest(string? BrandCode);

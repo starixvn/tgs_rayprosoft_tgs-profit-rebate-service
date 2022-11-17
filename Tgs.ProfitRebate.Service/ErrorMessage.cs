@@ -1,4 +1,3 @@
-﻿namespace Tgs.ProfitRebate.Service
-{
-    public record ErrorMessage(string Message);
-}
+﻿namespace Tgs.ProfitRebate.Service;
+
+public record ErrorMessage(string Message);

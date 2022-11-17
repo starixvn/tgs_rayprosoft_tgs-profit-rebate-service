@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
 using Tgs.ProfitRebate.Core.Commands;
 using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.ViewModel;

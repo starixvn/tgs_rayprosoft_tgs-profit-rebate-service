@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoFixture;
+﻿using AutoFixture;
 using MockQueryable.Moq;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Core;
 using Tgs.ProfitRebate.Core.Commands;

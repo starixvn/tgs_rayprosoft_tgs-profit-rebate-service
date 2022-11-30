@@ -51,16 +51,6 @@ public class
 				result.Offset);
 		}
 
-		if (await _playerRebateService.GetQueries()
-				.AnyAsync(x => x.ReportDate == reportDate.ToUniversalTime(), cancellationToken))
-		{
-			return new()
-			{
-				Valid = false,
-				Message = $"The rebates of {reportDate} have generated."
-			};
-		}
-
 		var sportsGroup = Consts.SportsGroup.Select(x => (short)x).ToArray();
 		var slotGroup = Consts.SlotGroup.Select(x => (short)x).ToArray();
 

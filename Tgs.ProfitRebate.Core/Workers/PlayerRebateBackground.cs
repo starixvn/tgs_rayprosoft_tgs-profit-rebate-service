@@ -50,11 +50,19 @@ public class PlayerRebateBackground : BackgroundService
 				var playerRebateFactory = scope.ServiceProvider.GetRequiredService<IPlayerRebateFactory>();
 				var cashServiceClient = scope.ServiceProvider.GetRequiredService<ICashServiceClient>();
 				var transactionService = scope.ServiceProvider.GetRequiredService<ITgsService<Transaction>>();
+                var playerRebateService = scope.ServiceProvider.GetRequiredService<ITgsService<PlayerRebate>>();
 
-				var request =
-					await _taskQueue.DequeueAsync(stoppingToken);
+                var request = await _taskQueue.DequeueAsync(stoppingToken);
 
-				var vipPlayerRebate = new VipPlayerRebateModel
+                _logger.LogInformation("player vip rebate request: {request}", request);
+
+                if (await playerRebateService.GetQueries()
+                        .AnyAsync(x => x.PlayerCode == request.PlayerCode && x.ReportDate == request.ReportDate.ToUniversalTime(), stoppingToken))
+                {
+                    continue;
+                }
+
+                var vipPlayerRebate = new VipPlayerRebateModel
 				{
 					BrandId = request.BrandId,
 					PlayerCode = request.PlayerCode,
@@ -90,7 +98,9 @@ public class PlayerRebateBackground : BackgroundService
 					continue;
 				}
 
-				await playerRebateFactory
+                _logger.LogInformation("player vip rebate create player bucket request: {request.PlayerCode} {request.RebateAmount}", request.PlayerCode, request.RebateAmount);
+
+                await playerRebateFactory
 					.CreatePlayerBucketsAsync(new CreatePlayerBucketRequest(
 						request.PlayerCode,
 						Service.PlayerBuckets.BucketType.Vip,
@@ -98,7 +108,9 @@ public class PlayerRebateBackground : BackgroundService
 						rebate.Id.ToString()))
 					.ConfigureAwait(false);
 
-				await Policy.Handle<HttpRequestException>()
+                _logger.LogInformation("player vip rebate send request: {request.PlayerCode} {request.RebateAmount}", request.PlayerCode, request.RebateAmount);
+
+                await Policy.Handle<HttpRequestException>()
 					.WaitAndRetryAsync(
 						1,
 						retryAttempt => TimeSpan.FromSeconds(3),

@@ -109,7 +109,7 @@ public class PlayerRebateBackground : BackgroundService
 
                 _logger.LogInformation("player vip rebate create player bucket request: {request.PlayerCode} {request.RebateAmount}", request.PlayerCode, request.RebateAmount);
 
-                await Policy.Handle<HttpRequestException>()
+                await Policy.Handle<Exception>()
                     .RetryAsync(
                         1,
                         (exception, retryCount) => _logger.LogError(

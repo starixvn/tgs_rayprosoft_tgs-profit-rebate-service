@@ -56,7 +56,17 @@ public class PlayerRebateBackground : BackgroundService
                 _logger.LogInformation("player vip rebate request: {request}", request);
 
                 if (await playerRebateService.GetQueries()
-                        .AnyAsync(x => x.PlayerCode == request.PlayerCode && x.ReportDate == request.ReportDate.ToUniversalTime(), stoppingToken))
+                        .AnyAsync(x =>
+                            x.BrandId == request.BrandId &&
+                            x.PlayerCode == request.PlayerCode &&
+                            x.ReportDate == request.ReportDate.ToUniversalTime() &&
+                            x.VipCardGameRebatePercentage == request.VipCardGameRebatePercentage &&
+                            x.VipLiveDealerRebatePercentage == request.VipLiveDealerRebatePercentage &&
+                            x.VipLotteryRebatePercentage == request.VipLotteryRebatePercentage &&
+                            x.VipSlotRebatePercentage == request.VipSlotRebatePercentage &&
+                            x.VipSportsRebatePercentage == request.VipSportsRebatePercentage &&
+                            x.VipVirtualSportsRebatePercentage == request.VipVirtualSportsRebatePercentage
+                            , stoppingToken))
                 {
                     continue;
                 }
@@ -99,13 +109,26 @@ public class PlayerRebateBackground : BackgroundService
 
                 _logger.LogInformation("player vip rebate create player bucket request: {request.PlayerCode} {request.RebateAmount}", request.PlayerCode, request.RebateAmount);
 
-                await playerRebateFactory
-                    .CreatePlayerBucketsAsync(new CreatePlayerBucketRequest(
-                        request.PlayerCode,
-                        Service.PlayerBuckets.BucketType.Vip,
-                        request.RebateAmount,
-                        rebate.Id.ToString()))
-                    .ConfigureAwait(false);
+                await Policy.Handle<Exception>()
+                    .RetryAsync(
+                        1,
+                        (exception, retryCount) => _logger.LogError(
+                            "PlayerCode:{request.PlayerCode} RebateAmount:{request.RebateAmount} retryCount:{retryCount} Exception:{exception}",
+                            request.PlayerCode,
+                            request.RebateAmount,
+                            retryCount,
+                            exception))
+                    .ExecuteAsync(
+                        async () =>
+                        {
+                            await playerRebateFactory
+                                .CreatePlayerBucketsAsync(new CreatePlayerBucketRequest(
+                                    request.PlayerCode,
+                                    Service.PlayerBuckets.BucketType.Vip,
+                                    request.RebateAmount,
+                                    rebate.Id.ToString()))
+                                .ConfigureAwait(false);
+                        });
 
                 _logger.LogInformation("player vip rebate send request: {request.PlayerCode} {request.RebateAmount}", request.PlayerCode, request.RebateAmount);
 
@@ -131,7 +154,7 @@ public class PlayerRebateBackground : BackgroundService
                                     request.DefaultWalletId,
                                     request.RebateAmount,
                                     "player rebate",
-                                    rebate.Id.ToString()).ConfigureAwait(false);
+                                    rebate.Id.ToString(), stoppingToken).ConfigureAwait(false);
                             }
                         });
             }

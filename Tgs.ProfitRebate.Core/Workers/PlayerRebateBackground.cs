@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MongoDB.Messaging.Logging;
 using Polly;
 using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Repository.Entities;

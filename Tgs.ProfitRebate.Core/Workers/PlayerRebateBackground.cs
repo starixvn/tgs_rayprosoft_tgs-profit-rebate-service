@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MongoDB.Messaging.Logging;
 using Polly;
 using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Repository.Entities;
@@ -41,126 +42,145 @@ public class PlayerRebateBackground : BackgroundService
 
     private async Task BackgroundProcessing(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-
-                var playerRebateFactory = scope.ServiceProvider.GetRequiredService<IPlayerRebateFactory>();
-                var cashServiceClient = scope.ServiceProvider.GetRequiredService<ICashServiceClient>();
-                var transactionService = scope.ServiceProvider.GetRequiredService<ITgsService<Transaction>>();
-                var playerRebateService = scope.ServiceProvider.GetRequiredService<ITgsService<PlayerRebate>>();
-
-                var request = await _taskQueue.DequeueAsync(stoppingToken);
-
-                _logger.LogInformation("player vip rebate request: {request}", request);
-
-                if (await playerRebateService.GetQueries()
-                        .AnyAsync(x =>
-                            x.BrandId == request.BrandId &&
-                            x.PlayerCode == request.PlayerCode &&
-                            x.ReportDate == request.ReportDate.ToUniversalTime() &&
-                            x.VipCardGameRebatePercentage == request.VipCardGameRebatePercentage &&
-                            x.VipLiveDealerRebatePercentage == request.VipLiveDealerRebatePercentage &&
-                            x.VipLotteryRebatePercentage == request.VipLotteryRebatePercentage &&
-                            x.VipSlotRebatePercentage == request.VipSlotRebatePercentage &&
-                            x.VipSportsRebatePercentage == request.VipSportsRebatePercentage &&
-                            x.VipVirtualSportsRebatePercentage == request.VipVirtualSportsRebatePercentage
-                            , stoppingToken))
+        try
+        {
+            while (!stoppingToken.IsCancellationRequested)
+                try
                 {
-                    continue;
-                }
+                    using var scope = _serviceProvider.CreateScope();
 
-                var vipPlayerRebate = new VipPlayerRebateModel
-                {
-                    BrandId = request.BrandId,
-                    PlayerCode = request.PlayerCode,
-                    AgentId = request.AgentId,
-                    ReportDate = request.ReportDate,
-                    VipCardGameRebatePercentage = request.VipCardGameRebatePercentage,
-                    VipLiveDealerRebatePercentage = request.VipLiveDealerRebatePercentage,
-                    VipLotteryRebatePercentage = request.VipLotteryRebatePercentage,
-                    VipSlotRebatePercentage = request.VipSlotRebatePercentage,
-                    VipSportsRebatePercentage = request.VipSportsRebatePercentage,
-                    VipVirtualSportsRebatePercentage = request.VipVirtualSportsRebatePercentage,
-                    SportsTurnover = request.SportsTurnover,
-                    SportsRebateAmount = request.SportsRebateAmount,
-                    VirtualSportsTurnover = request.VirtualSportsTurnover,
-                    VirtualSportsRebateAmount = request.VirtualSportsRebateAmount,
-                    LiveDealerTurnover = request.LiveDealerTurnover,
-                    LiveDealerRebateAmount = request.LiveDealerRebateAmount,
-                    CardGameTurnover = request.CardGameTurnover,
-                    CardGameRebateAmount = request.CardGameRebateAmount,
-                    SlotTurnover = request.SlotTurnover,
-                    SlotRebateAmount = request.SlotRebateAmount,
-                    LotteryTurnover = request.LotteryTurnover,
-                    LotteryRebateAmount = request.LotteryRebateAmount,
-                    RebateAmount = request.RebateAmount
-                };
+                    var playerRebateFactory = scope.ServiceProvider.GetRequiredService<IPlayerRebateFactory>();
+                    var cashServiceClient = scope.ServiceProvider.GetRequiredService<ICashServiceClient>();
+                    var transactionService = scope.ServiceProvider.GetRequiredService<ITgsService<Transaction>>();
+                    var playerRebateService = scope.ServiceProvider.GetRequiredService<ITgsService<PlayerRebate>>();
 
-                var rebate = await playerRebateFactory
-                    .CreateVipPlayerRebateAsync(vipPlayerRebate, request.IsAutoSend ? DateTimeOffset.UtcNow : null)
-                    .ConfigureAwait(false);
+                    var request = await _taskQueue.DequeueAsync(stoppingToken);
 
-                if (!request.IsAutoSend)
-                {
-                    continue;
-                }
+                    _logger.LogInformation("player vip rebate request: {request}", request);
 
-                _logger.LogInformation("player vip rebate create player bucket request: {request.PlayerCode} {request.RebateAmount}", request.PlayerCode, request.RebateAmount);
+                    if (await playerRebateService.GetQueries()
+                            .AnyAsync(x =>
+                                    x.BrandId == request.BrandId &&
+                                    x.PlayerCode == request.PlayerCode &&
+                                    x.ReportDate == request.ReportDate.ToUniversalTime() &&
+                                    x.VipCardGameRebatePercentage == request.VipCardGameRebatePercentage &&
+                                    x.VipLiveDealerRebatePercentage == request.VipLiveDealerRebatePercentage &&
+                                    x.VipLotteryRebatePercentage == request.VipLotteryRebatePercentage &&
+                                    x.VipSlotRebatePercentage == request.VipSlotRebatePercentage &&
+                                    x.VipSportsRebatePercentage == request.VipSportsRebatePercentage &&
+                                    x.VipVirtualSportsRebatePercentage == request.VipVirtualSportsRebatePercentage
+                                , stoppingToken))
+                    {
+                        continue;
+                    }
 
-                await Policy.Handle<Exception>()
-                    .RetryAsync(
-                        1,
-                        (exception, retryCount) => _logger.LogError(
-                            "PlayerCode:{request.PlayerCode} RebateAmount:{request.RebateAmount} retryCount:{retryCount} Exception:{exception}",
-                            request.PlayerCode,
-                            request.RebateAmount,
-                            retryCount,
-                            exception))
-                    .ExecuteAsync(
-                        async () =>
-                        {
-                            await playerRebateFactory
-                                .CreatePlayerBucketsAsync(new CreatePlayerBucketRequest(
-                                    request.PlayerCode,
-                                    Service.PlayerBuckets.BucketType.Vip,
-                                    request.RebateAmount,
-                                    rebate.Id.ToString()))
-                                .ConfigureAwait(false);
-                        });
+                    var vipPlayerRebate = new VipPlayerRebateModel
+                    {
+                        BrandId = request.BrandId,
+                        PlayerCode = request.PlayerCode,
+                        AgentId = request.AgentId,
+                        ReportDate = request.ReportDate,
+                        VipCardGameRebatePercentage = request.VipCardGameRebatePercentage,
+                        VipLiveDealerRebatePercentage = request.VipLiveDealerRebatePercentage,
+                        VipLotteryRebatePercentage = request.VipLotteryRebatePercentage,
+                        VipSlotRebatePercentage = request.VipSlotRebatePercentage,
+                        VipSportsRebatePercentage = request.VipSportsRebatePercentage,
+                        VipVirtualSportsRebatePercentage = request.VipVirtualSportsRebatePercentage,
+                        SportsTurnover = request.SportsTurnover,
+                        SportsRebateAmount = request.SportsRebateAmount,
+                        VirtualSportsTurnover = request.VirtualSportsTurnover,
+                        VirtualSportsRebateAmount = request.VirtualSportsRebateAmount,
+                        LiveDealerTurnover = request.LiveDealerTurnover,
+                        LiveDealerRebateAmount = request.LiveDealerRebateAmount,
+                        CardGameTurnover = request.CardGameTurnover,
+                        CardGameRebateAmount = request.CardGameRebateAmount,
+                        SlotTurnover = request.SlotTurnover,
+                        SlotRebateAmount = request.SlotRebateAmount,
+                        LotteryTurnover = request.LotteryTurnover,
+                        LotteryRebateAmount = request.LotteryRebateAmount,
+                        RebateAmount = request.RebateAmount
+                    };
 
-                _logger.LogInformation("player vip rebate send request: {request.PlayerCode} {request.RebateAmount}", request.PlayerCode, request.RebateAmount);
+                    var rebate = await playerRebateFactory
+                        .CreateVipPlayerRebateAsync(vipPlayerRebate, request.IsAutoSend ? DateTimeOffset.UtcNow : null)
+                        .ConfigureAwait(false);
 
-                await Policy.Handle<HttpRequestException>()
-                    .WaitAndRetryAsync(
-                        1,
-                        retryAttempt => TimeSpan.FromSeconds(3),
-                        (exception, time, retryCount, context) => _logger.LogError(
-                            "externalId:{externalId} retryCount:{retryCount} Exception:{exception}",
-                            rebate.Id,
-                            retryCount,
-                            exception))
-                    .ExecuteAsync(
-                        async () =>
-                        {
-                            if (!await transactionService.GetQueries()
-                                    .AnyAsync(
-                                        x => x.PlayerCode == request.PlayerCode
-                                            && x.ExternalTransactionId == rebate.Id.ToString(),
-                                        cancellationToken: stoppingToken))
+                    if (!request.IsAutoSend)
+                    {
+                        continue;
+                    }
+
+                    _logger.LogInformation(
+                        "player vip rebate create player bucket request: {request.PlayerCode} {request.RebateAmount}",
+                        request.PlayerCode, request.RebateAmount);
+
+                    await Policy.Handle<Exception>()
+                        .RetryAsync(
+                            3,
+                            (exception, retryCount) => _logger.LogError(
+                                "PlayerCode:{request.PlayerCode} RebateAmount:{request.RebateAmount} retryCount:{retryCount} Exception:{exception}",
+                                request.PlayerCode,
+                                request.RebateAmount,
+                                retryCount,
+                                exception))
+                        .ExecuteAsync(
+                            async () =>
                             {
-                                _ = await cashServiceClient.RebateAsync(
-                                    request.DefaultWalletId,
-                                    request.RebateAmount,
-                                    "player rebate",
-                                    rebate.Id.ToString(), stoppingToken).ConfigureAwait(false);
-                            }
-                        });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred executing task work item.");
-            }
+                                await playerRebateFactory
+                                    .CreatePlayerBucketsAsync(new CreatePlayerBucketRequest(
+                                        request.PlayerCode,
+                                        Service.PlayerBuckets.BucketType.Vip,
+                                        request.RebateAmount,
+                                        rebate.Id.ToString()))
+                                    .ConfigureAwait(false);
+                            });
+
+                    _logger.LogInformation(
+                        "player vip rebate send request: {request.PlayerCode} {request.RebateAmount}",
+                        request.PlayerCode, request.RebateAmount);
+
+                    await Policy.Handle<HttpRequestException>()
+                        .WaitAndRetryAsync(
+                            3,
+                            retryAttempt => TimeSpan.FromSeconds(3),
+                            (exception, time, retryCount, context) => _logger.LogError(
+                                "externalId:{externalId} retryCount:{retryCount} Exception:{exception}",
+                                rebate.Id,
+                                retryCount,
+                                exception))
+                        .ExecuteAsync(
+                            async () =>
+                            {
+                                if (!await transactionService.GetQueries()
+                                        .AnyAsync(
+                                            x => x.PlayerCode == request.PlayerCode
+                                                && x.ExternalTransactionId == rebate.Id.ToString(),
+                                            cancellationToken: stoppingToken))
+                                {
+                                    _ = await cashServiceClient.RebateAsync(
+                                        request.DefaultWalletId,
+                                        request.RebateAmount,
+                                        "player rebate",
+                                        rebate.Id.ToString(), stoppingToken).ConfigureAwait(false);
+                                }
+                            });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error occurred executing task work item.");
+                }
+
+            _logger.LogInformation(
+                "Execution ended. Cancellation token cancelled = {IsCancellationRequested}",
+                stoppingToken.IsCancellationRequested);
+        }
+        catch (Exception ex) when (stoppingToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(ex, "Execution Cancelled");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled exception. Execution Stopping");
+        }
     }
 }

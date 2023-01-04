@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Core;
 using Tgs.ProfitRebate.Core.Commands;
+using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
-using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Tests;
 
@@ -56,7 +56,7 @@ public class CreatePlayerAllAgentRebatesHandlerTest
 		_ = await sut.Handle(request, default);
 
 		await fakePlayerRebateFactory.Received(0)
-			.CreateAllAgentPlayerRebatesAsync(Arg.Any<PlayerAllAgentRebateModel[]>(), Arg.Any<DateTimeOffset>());
+			.CreateAllAgentPlayerRebateAsync(Arg.Any<PlayerAllAgentRebateModel[]>(), Arg.Any<DateTimeOffset>());
 	}
 
 	[Test]
@@ -107,7 +107,7 @@ public class CreatePlayerAllAgentRebatesHandlerTest
 		_ = await sut.Handle(request, default);
 
 		await fakePlayerRebateFactory.Received(1)
-			.CreateAllAgentPlayerRebatesAsync(Arg.Any<PlayerAllAgentRebateModel[]>(), Arg.Any<DateTimeOffset>());
+			.CreateAllAgentPlayerRebateAsync(Arg.Any<PlayerAllAgentRebateModel[]>(), Arg.Any<DateTimeOffset>());
 		await fakePlayerRebateFactory.Received(1)
 			.CreatePlayerBucketsAsync(Arg.Any<CreatePlayerBucketRequest[]>());
 	}

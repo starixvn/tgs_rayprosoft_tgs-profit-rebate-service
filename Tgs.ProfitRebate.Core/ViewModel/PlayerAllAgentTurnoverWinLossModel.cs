@@ -1,7 +1,6 @@
-﻿using System;
-using Tgs.ProfitRebate.Enum;
+﻿using Tgs.ProfitRebate.Enum;
 
-namespace Tgs.ProfitRebate.ViewModel;
+namespace Tgs.ProfitRebate.Core.ViewModel;
 
 public class PlayerAllAgentTurnoverWinLossModel
 {
@@ -9,7 +8,11 @@ public class PlayerAllAgentTurnoverWinLossModel
 
 	public string ParentPlayerCode { get; set; } = default!;
 
-	public GameType GameType { get; set; }
+    public string PlayerCode { get; set; } = default!;
+
+    public string PlayerUsername { get; set; } = default!;
+
+    public GameType GameType { get; set; }
 
 	public int PlayerNumber { get; set; }
 

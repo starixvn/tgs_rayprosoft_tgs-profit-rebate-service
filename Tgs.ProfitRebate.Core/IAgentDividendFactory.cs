@@ -1,6 +1,6 @@
-﻿using Tgs.ProfitRebate.Enum;
+﻿using Tgs.ProfitRebate.Core.ViewModel;
+using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
-using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core;
 

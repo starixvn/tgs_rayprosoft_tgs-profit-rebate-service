@@ -1,6 +1,6 @@
 ﻿using MediatR;
+using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
-using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Commands;
 

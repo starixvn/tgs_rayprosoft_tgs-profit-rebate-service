@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
-using Tgs.ProfitRebate.ViewModel;
 using Tgs.Service.PlayerBuckets;
 using TGS.Core.Infrastructures.Extensions;
+using Tgs.ProfitRebate.Core.ViewModel;
+using Tgs.ProfitRebate.Core.Workers;
 
 namespace Tgs.ProfitRebate.Core.Commands;
 
@@ -16,12 +17,14 @@ public class CreatePlayerAllAgentRebatesHandler : IRequestHandler<CreatePlayerAl
 	private readonly ITgsService<PlayerAllAgentRebate> _playerAllAgentRebateService;
 	private readonly IPlayerRebateFactory _playerRebateFactory;
 	private readonly ITgsService<Player> _playerService;
+    private readonly IPlayerAllAgentRebateTaskQueue _taskQueue;
 
-	public CreatePlayerAllAgentRebatesHandler(
+    public CreatePlayerAllAgentRebatesHandler(
 		ICashServiceClient cashServiceClient,
 		ITgsService<Player> playerService,
 		ITgsService<PlayerAllAgentRebate> playerAllAgentRebateService,
-		IPlayerRebateFactory playerRebateFactory)
+		IPlayerRebateFactory playerRebateFactory,
+        IPlayerAllAgentRebateTaskQueue taskQueue)
 	{
 		_cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
 		_playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
@@ -29,9 +32,10 @@ public class CreatePlayerAllAgentRebatesHandler : IRequestHandler<CreatePlayerAl
 			playerRebateFactory ?? throw new ArgumentNullException(nameof(playerRebateFactory));
 		_playerAllAgentRebateService = playerAllAgentRebateService ??
 			throw new ArgumentNullException(nameof(playerAllAgentRebateService));
+        _taskQueue = taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
 	}
 
-	public async Task<MessageResponse> Handle(CreatePlayerAllAgentRebatesRequest request,
+    public async Task<MessageResponse> Handle(CreatePlayerAllAgentRebatesRequest request,
 		CancellationToken cancellationToken)
 	{
 		var previousDay = DateTimeOffset.Now.ToOffset(new(8, 0, 0)).AddDays(-1);
@@ -45,75 +49,109 @@ public class CreatePlayerAllAgentRebatesHandler : IRequestHandler<CreatePlayerAl
 				result.Offset);
 		}
 
-		if (await _playerAllAgentRebateService.GetQueries()
-				.AnyAsync(x => x.ReportDate == reportDate.ToUniversalTime(), cancellationToken))
-		{
-			return new MessageResponse
-			{
-				Valid = false,
-				Message = $"The all agent rebates of {reportDate} have generated."
-			};
-		}
+		//if (await _playerAllAgentRebateService.GetQueries()
+		//		.AnyAsync(x => x.ReportDate == reportDate.ToUniversalTime(), cancellationToken))
+		//{
+		//	return new MessageResponse
+		//	{
+		//		Valid = false,
+		//		Message = $"The all agent rebates of {reportDate} have generated."
+		//	};
+		//}
 
-		var playerTurnoverWinLoss = await _playerRebateFactory.GetPlayerTurnoverWinLossAsync(reportDate);
+		var validPlayerCodes = await _playerRebateFactory.GetValidAllAgentPlayerCodesAsync(reportDate).ConfigureAwait(false);
 
-		var brandIds = playerTurnoverWinLoss.Select(x => x.BrandId).Distinct().ToArray();
+        var brandIds = validPlayerCodes.Select(x => x.Item1).Distinct().ToArray();
 
-		var brandAllAgentGameTypeConditions =
-			await _playerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(brandIds);
+        var brandAllAgentGameTypeConditions =
+            await _playerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(brandIds);
 
-		var playerRebates = playerTurnoverWinLoss
-			.Where(x => MatchConditionSetting(x, brandAllAgentGameTypeConditions))
-			.SelectMany(x => GetRebates(x, brandAllAgentGameTypeConditions, reportDate)).ToArray();
+        foreach (var (brandId, playerCode) in validPlayerCodes)
+        {
+            var conditions = brandAllAgentGameTypeConditions.Where(x => x.BrandId == brandId);
+            await _taskQueue.QueuePlayerRebateAsync(new PlayerAllAgentRebateQueueModel
+            {
+                ReportDate = reportDate,
+				ParentPlayerCode = playerCode,
+				Conditions = conditions
+            });
+        }
 
-		if (playerRebates.Length <= 0)
-		{
-			return new() { Valid = false, Message = "Has no player rebate data." };
-		}
+		//var playerTurnoverWinLoss = await _playerRebateFactory.GetPlayerTurnoverWinLossAsync(reportDate);
 
-		var players = _playerService.GetQueries()
-			.Where(x => playerRebates.Select(p => p.PlayerCode).Distinct().Contains(x.PlayerCode)).ToArray();
+		//var brandIds = playerTurnoverWinLoss.Select(x => x.BrandId).Distinct().ToArray();
 
-		var sentToPlayerRebates = playerRebates
-			.Where(x => x.RebateAmount > 0)
-			.Join(players,
-				pb => pb.PlayerCode,
-				p => p.PlayerCode,
-				(pb, p) => new { pb, p }).Select(x => new
-				{
-					x.pb.PlayerCode,
-					x.pb.RebateAmount,
-					x.p.DefaultWalletId
-				}).GroupBy(x => new { x.PlayerCode, x.DefaultWalletId }, (group, list) => new
-				{
-					group.PlayerCode,
-					group.DefaultWalletId,
-					RebateAmount = list.Sum(x => x.RebateAmount)
-				}).ToArray();
+		//var brandAllAgentGameTypeConditions =
+		//	await _playerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(brandIds);
 
-		using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+		//var playerRebates = playerTurnoverWinLoss
+		//	.Where(x => MatchConditionSetting(x, brandAllAgentGameTypeConditions))
+		//	.SelectMany(x => GetRebates(x, brandAllAgentGameTypeConditions, reportDate)).ToArray();
 
-		await _playerRebateFactory.CreateAllAgentPlayerRebatesAsync(playerRebates, DateTimeOffset.UtcNow);
-		await _playerRebateFactory
-			.CreatePlayerBucketsAsync(sentToPlayerRebates
-				.Select(x => new CreatePlayerBucketRequest(
-					x.PlayerCode,
-					BucketType.AllAgent,
-					x.RebateAmount,
-					null))
-				.ToArray())
-			.ConfigureAwait(false);
+		//if (playerRebates.Length <= 0)
+		//{
+		//	return new() { Valid = false, Message = "Has no player rebate data." };
+		//}
 
-		scope.Complete();
+    //    foreach (var rebate in playerRebates)
+    //    {
+    //        await _taskQueue.QueuePlayerRebateAsync(new PlayerAllAgentRebateQueueModel
+    //        {
+    //            BrandId = rebate.BrandId,
+				//PlayerCode= rebate.PlayerCode,
+				//ReportDate= reportDate,
+				//AllAgentGameType= rebate.AllAgentGameType,
+				//GameType= rebate.GameType,
+				//AllAgentRebateType = rebate.AllAgentRebateType,
+				//Rank= rebate.Rank,
+				//ActiveNumber= rebate.ActiveNumber,
+				//ConditionAmount= rebate.ConditionAmount,
+				//RebatePercentage= rebate.RebatePercentage,
+				//ActualPlayerNumber= rebate.ActualPlayerNumber,
+				//ActualConditionAmount= rebate.ActualConditionAmount,
+				//RebateAmount= rebate.RebateAmount,
+    //        });
+    //    }
+		//var players = _playerService.GetQueries()
+		//	.Where(x => playerRebates.Select(p => p.PlayerCode).Distinct().Contains(x.PlayerCode)).ToArray();
 
-		foreach (var playerBonus in sentToPlayerRebates)
-		{
-			var response = await _cashServiceClient.DividendAllAgentRebateAsync(
-				playerBonus.DefaultWalletId,
-				playerBonus.RebateAmount,
-				null,
-				null).ConfigureAwait(false);
-		}
+		//var sentToPlayerRebates = playerRebates
+		//	.Where(x => x.RebateAmount > 0)
+		//	.Join(players,
+		//		pb => pb.PlayerCode,
+		//		p => p.PlayerCode,
+		//		(pb, p) => new { pb, p }).Select(x => new
+		//		{
+		//			x.pb.PlayerCode,
+		//			x.pb.RebateAmount,
+		//			x.p.DefaultWalletId
+		//		}).GroupBy(x => new { x.PlayerCode, x.DefaultWalletId }, (group, list) => new
+		//		{
+		//			group.PlayerCode,
+		//			group.DefaultWalletId,
+		//			RebateAmount = list.Sum(x => x.RebateAmount)
+		//		}).ToArray();
+
+		//await _playerRebateFactory.CreateAllAgentPlayerRebatesAsync(playerRebates);
+
+		//await _playerRebateFactory
+		//	.CreatePlayerBucketsAsync(sentToPlayerRebates
+		//		.Select(x => new CreatePlayerBucketRequest(
+		//			x.PlayerCode,
+		//			BucketType.AllAgent,
+		//			x.RebateAmount,
+		//			null))
+		//		.ToArray())
+		//	.ConfigureAwait(false);
+
+		//foreach (var playerBonus in sentToPlayerRebates)
+		//{
+		//	var response = await _cashServiceClient.DividendAllAgentRebateAsync(
+		//		playerBonus.DefaultWalletId,
+		//		playerBonus.RebateAmount,
+		//		null,
+		//		null).ConfigureAwait(false);
+		//}
 
 		return new MessageResponse
 		{

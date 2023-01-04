@@ -1,7 +1,6 @@
-﻿using System;
-using Tgs.ProfitRebate.Enum;
+﻿using Tgs.ProfitRebate.Enum;
 
-namespace Tgs.ProfitRebate.ViewModel;
+namespace Tgs.ProfitRebate.Core.ViewModel;
 
 public class PlayerAllAgentRebateModel
 {

@@ -23,7 +23,13 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.HasIndex(e => e.BetLimitId, "ix_players_bet_limit_id");
 
+            entity.HasIndex(e => e.Username, "ix_players_username");
+
             entity.HasIndex(e => e.VipId, "ix_players_vip_id");
+
+            entity.HasIndex(e => e.Username, "ix_trgm_players_username")
+                .HasMethod("gin")
+                .HasOperators(new[] { "gin_trgm_ops" });
 
             entity.HasIndex(e => new { e.BrandId, e.AreaCode, e.Phone }, "ux_players_brand_phone")
                 .IsUnique();
@@ -49,7 +55,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.Property(e => e.Birthday)
                 .HasMaxLength(4)
                 .HasColumnName("birthday")
-                .HasComputedColumnSql("(lpad((EXTRACT(month FROM birthdate))::text, 2, '0'::text) || lpad((EXTRACT(day FROM birthdate))::text, 2, '0'::text))", true);
+                .HasComputedColumnSql("(lpad((date_part('month'::text, birthdate))::text, 2, '0'::text) || lpad((date_part('day'::text, birthdate))::text, 2, '0'::text))", true);
 
             entity.Property(e => e.BrandId).HasColumnName("brand_id");
 

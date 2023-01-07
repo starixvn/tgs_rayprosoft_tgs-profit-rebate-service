@@ -11,7 +11,6 @@ using Tgs.MessageQueue.MongoDB.Configuration;
 using Tgs.PlayerBucket.Clients.DependencyInjection;
 using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration

@@ -37,7 +37,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public virtual DbSet<Licensee> Licensees { get; set; } = null!;
         public virtual DbSet<Player> Players { get; set; } = null!;
         public virtual DbSet<PlayerAggregate> PlayerAggregates { get; set; } = null!;
-        public virtual DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; } = null!;
+        public virtual DbSet<PlayerAllAgentRebateContributor> PlayerAllAgentRebateContributors { get; set; } = null!;
+        public virtual DbSet<PlayerAllAgentRebateRecord> PlayerAllAgentRebateRecords { get; set; } = null!;
         public virtual DbSet<PlayerBonusAggregate> PlayerBonusAggregates { get; set; } = null!;
         public virtual DbSet<PlayerGameRebateAggregate> PlayerGameRebateAggregates { get; set; } = null!;
         public virtual DbSet<PlayerParent> PlayerParents { get; set; } = null!;
@@ -56,7 +57,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("ltree")
-                .HasPostgresExtension("pg_trgm");
+                .HasPostgresExtension("pg_trgm")
+                .HasPostgresExtension("uuid-ossp");
 
             modelBuilder.ApplyConfiguration(new Configurations.AdjustPlayerRecordConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.AgentConfiguration());
@@ -76,7 +78,8 @@ namespace Tgs.ProfitRebate.Repository.Entities
             modelBuilder.ApplyConfiguration(new Configurations.LicenseeConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerAggregateConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerAllAgentRebateConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.PlayerAllAgentRebateContributorConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.PlayerAllAgentRebateRecordConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerBonusAggregateConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerGameRebateAggregateConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerParentConfiguration());

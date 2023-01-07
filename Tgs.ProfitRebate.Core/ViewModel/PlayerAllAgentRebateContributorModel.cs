@@ -1,0 +1,38 @@
+﻿using Tgs.ProfitRebate.Enum;
+
+namespace Tgs.ProfitRebate.Core.ViewModel;
+
+public class PlayerAllAgentRebateContributorModel
+{
+    public Guid BrandId { get; set; }
+    public string PlayerUsername { get; set; } = string.Empty;
+    public string PlayerCode { get; set; } = string.Empty;
+    public string ChildPlayerCode { get; set; } = string.Empty;
+    public GameType GameType { get; set; }
+    public decimal SportsTurnover { get; set; }
+    public decimal VirtualSportsTurnover { get; set; }
+    public decimal LiveDealerTurnover { get; set; }
+    public decimal CardGameTurnover { get; set; }
+    public decimal SlotTurnover { get; set; }
+    public decimal LotteryTurnover { get; set; }
+    public decimal SportsWinLoss { get; set; }
+    public decimal VirtualSportsWinLoss { get; set; }
+    public decimal LiveDealerWinLoss { get; set; }
+    public decimal CardGameWinLoss { get; set; }
+    public decimal SlotWinLoss { get; set; }
+    public decimal LotteryWinLoss { get; set; }
+    public decimal SportsTurnoverRebate { get; set; }
+    public decimal VirtualSportsTurnoverRebate { get; set; }
+    public decimal LiveDealerTurnoverRebate { get; set; }
+    public decimal CardGameTurnoverRebate { get; set; }
+    public decimal SlotTurnoverRebate { get; set; }
+    public decimal LotteryTurnoverRebate { get; set; }
+    public decimal SportsWinLossRebate { get; set; }
+    public decimal VirtualSportsWinLossRebate { get; set; }
+    public decimal LiveDealerWinLossRebate { get; set; }
+    public decimal CardGameWinLossRebate { get; set; }
+    public decimal SlotWinLossRebate { get; set; }
+    public decimal LotteryWinLossRebate { get; set; }
+    public DateTimeOffset From { get; set; }
+    public DateTimeOffset To { get; set; }
+}

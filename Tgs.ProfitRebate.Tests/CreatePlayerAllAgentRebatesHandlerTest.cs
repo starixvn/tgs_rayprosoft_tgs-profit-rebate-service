@@ -1,16 +1,14 @@
 ﻿using AutoFixture;
-using MockQueryable.Moq;
 using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Core;
 using Tgs.ProfitRebate.Core.Commands;
 using Tgs.ProfitRebate.Core.ViewModel;
+using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.Enum;
-using Tgs.ProfitRebate.Repository.Entities;
 
 namespace Tgs.ProfitRebate.Tests;
 
@@ -18,59 +16,14 @@ namespace Tgs.ProfitRebate.Tests;
 public class CreatePlayerAllAgentRebatesHandlerTest
 {
 	[Test]
-	public async Task Can_Create_All_Agent_Rebates_With_Not_Match()
+	public async Task Can_Create_All_Agent_Rebates_EnQueue()
 	{
-		var fakePlayerRebateFactory = Substitute.For<IPlayerRebateFactory>();
-		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakePlayerRepository = Substitute.For<ITgsService<Player>>();
-		var fakePlayerAllAgentRebateRepository = Substitute.For<ITgsService<PlayerAllAgentRebate>>();
+        var fakePlayerRebateFactory = Substitute.For<IPlayerAllAgentRebateFactory>();
+        var fakePlayerAllAgentRebateTaskQueue = Substitute.For<IPlayerAllAgentRebateTaskQueue>();
 
-		var sut = new CreatePlayerAllAgentRebatesHandler(fakeCashServiceClient, fakePlayerRepository,
-			fakePlayerAllAgentRebateRepository, fakePlayerRebateFactory);
-
-		var request = new CreatePlayerAllAgentRebatesRequest(null);
-
-		var fixture = new Fixture();
-
-		var allAgentPlayerTurnoverWinLoss = fixture.CreateMany<PlayerAllAgentTurnoverWinLossModel>(1);
-		var brandAllAgentGameTypeConditions = fixture.CreateMany<BrandAllAgentGameTypeConditionModel>(1);
-
-		_ = fakePlayerRebateFactory.GetPlayerTurnoverWinLossAsync(Arg.Any<DateTimeOffset>())
-			.Returns(allAgentPlayerTurnoverWinLoss.ToArray());
-
-		_ = fakePlayerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(Arg.Any<Guid[]>())
-			.Returns(brandAllAgentGameTypeConditions.ToArray());
-
-		var players = CreatePlayerFixture("playerCode")
-			.CreateMany<Player>(1)
-			.AsQueryable()
-			.BuildMock();
-
-		_ = fakePlayerRepository.GetQueries()
-			.Returns(players);
-
-		var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock();
-		_ = fakePlayerAllAgentRebateRepository.GetQueries()
-			.Returns(playerAllAgentRebates);
-
-		_ = await sut.Handle(request, default);
-
-		await fakePlayerRebateFactory.Received(0)
-			.CreateAllAgentPlayerRebateAsync(Arg.Any<PlayerAllAgentRebateModel[]>(), Arg.Any<DateTimeOffset>());
-	}
-
-	[Test]
-	public async Task Can_Create_All_Agent_Rebates()
-	{
-		var fakePlayerRebateFactory = Substitute.For<IPlayerRebateFactory>();
-		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakePlayerRepository = Substitute.For<ITgsService<Player>>();
-		var fakePlayerAllAgentRebateRepository = Substitute.For<ITgsService<PlayerAllAgentRebate>>();
-
-		var sut = new CreatePlayerAllAgentRebatesHandler(fakeCashServiceClient, fakePlayerRepository,
-			fakePlayerAllAgentRebateRepository, fakePlayerRebateFactory);
-
-		var request = new CreatePlayerAllAgentRebatesRequest(null);
+        var sut = new CreatePlayerAllAgentRebatesHandler(fakePlayerRebateFactory, fakePlayerAllAgentRebateTaskQueue);
+		
+        var request = new CreatePlayerAllAgentRebatesRequest(null);
 
 		var fixture = new Fixture();
 
@@ -86,37 +39,25 @@ public class CreatePlayerAllAgentRebatesHandlerTest
 			CreateBrandAllAgentGameTypeConditionModelFixture(firstPlayerAllAgentTurnoverWinLoss)
 				.CreateMany<BrandAllAgentGameTypeConditionModel>(1);
 
-		_ = fakePlayerRebateFactory.GetPlayerTurnoverWinLossAsync(Arg.Any<DateTimeOffset>())
-			.Returns(playerAllAgentTurnoverWinLoss.ToArray());
+        var validPlayerCodes = new[]{ (Guid.NewGuid(), "playerCode") };
 
-		_ = fakePlayerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(Arg.Any<Guid[]>())
-			.Returns(brandAllAgentGameTypeConditions.ToArray());
+		_ = fakePlayerRebateFactory.GetValidAllAgentPlayerCodesAsync(Arg.Any<DateTimeOffset>())
+			.Returns(validPlayerCodes);
 
-		var players = CreatePlayerFixture("playerCode")
-			.CreateMany<Player>(1)
-			.AsQueryable()
-			.BuildMock();
-
-		_ = fakePlayerRepository.GetQueries()
-			.Returns(players);
-
-		var playerAllAgentRebates = fixture.CreateMany<PlayerAllAgentRebate>(0).AsQueryable().BuildMock();
-		_ = fakePlayerAllAgentRebateRepository.GetQueries()
-			.Returns(playerAllAgentRebates);
+        _ = fakePlayerRebateFactory.GetBrandAllAgentGameTypeConditionsAsync(Arg.Any<Guid[]>())
+            .Returns(brandAllAgentGameTypeConditions.ToArray());
 
 		_ = await sut.Handle(request, default);
 
-		await fakePlayerRebateFactory.Received(1)
-			.CreateAllAgentPlayerRebateAsync(Arg.Any<PlayerAllAgentRebateModel[]>(), Arg.Any<DateTimeOffset>());
-		await fakePlayerRebateFactory.Received(1)
-			.CreatePlayerBucketsAsync(Arg.Any<CreatePlayerBucketRequest[]>());
+		await fakePlayerAllAgentRebateTaskQueue.Received(1)
+			.QueuePlayerRebateAsync(Arg.Any<PlayerAllAgentRebateQueueModel>());
 	}
 
 	private static Fixture CreatePlayerAllAgentTurnoverWinLossModelFixture(GameType type)
 	{
 		var fixture = new Fixture();
 		fixture.Customize<PlayerAllAgentTurnoverWinLossModel>(u
-			=> u.With(x => x.ParentPlayerCode, "playerCode")
+			=> u.With(x => x.PlayerCode, "playerCode")
 				.With(x => x.GameType, type));
 
 		fixture.Behaviors.Add(new OmitOnRecursionBehavior());
@@ -130,22 +71,10 @@ public class CreatePlayerAllAgentRebatesHandlerTest
 		fixture.Customize<BrandAllAgentGameTypeConditionModel>(u
 			=> u.With(x => x.BrandId, model.BrandId)
 				.With(x => x.AllAgentGameType, AllAgentGameType.Sportsbook)
-				.With(x => x.ActiveNumber, model.PlayerNumber)
-				.With(x => x.NetProfit, model.SportsTurnover)
+				.With(x => x.NetProfit, model.Turnover)
 				.With(x => x.HasValidBet, true)
 				.With(x => x.HasWinLoss, true));
 
-		fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-		return fixture;
-	}
-
-	private static Fixture CreatePlayerFixture(string playerCode)
-	{
-		var fixture = new Fixture();
-		fixture.Customize<Player>(u => u
-			.With(s => s.PlayerCode, playerCode)
-			.With(s => s.Wallets, Array.Empty<Wallet>())
-			.With(s => s.Birthdate, new DateOnly()));
 		fixture.Behaviors.Add(new OmitOnRecursionBehavior());
 		return fixture;
 	}

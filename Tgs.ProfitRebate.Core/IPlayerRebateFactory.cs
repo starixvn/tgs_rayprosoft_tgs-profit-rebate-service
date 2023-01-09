@@ -7,5 +7,5 @@ public interface IPlayerRebateFactory
 {
     ValueTask CreatePlayerBucketsAsync(params CreatePlayerBucketRequest[] requests);
 
-	ValueTask<PlayerRebate> CreateVipPlayerRebateAsync(VipPlayerRebateModel model, DateTimeOffset? sentOn);
+    ValueTask<PlayerRebate> CreateVipPlayerRebateAsync(VipPlayerRebateModel model, DateTimeOffset? sentOn);
 }

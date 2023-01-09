@@ -8,11 +8,12 @@ public interface IPlayerAllAgentRebateFactory
 
     ValueTask CreatePlayerBucketsAsync(params CreatePlayerBucketRequest[] requests);
 
-	ValueTask<BrandAllAgentGameTypeConditionModel[]> GetBrandAllAgentGameTypeConditionsAsync(Guid[] brandIds);
+    ValueTask<BrandAllAgentGameTypeConditionModel[]> GetBrandAllAgentGameTypeConditionsAsync(Guid[] brandIds);
 
     ValueTask<ValueTuple<Guid, string>[]> GetValidAllAgentPlayerCodesAsync(DateTimeOffset reportDate);
 
-    ValueTask<PlayerAllAgentTurnoverWinLossModel[]> GetPlayerAllAgentTurnoverWinLossAsync(DateTimeOffset reportDate, string parentPlayerCode);
+    ValueTask<PlayerAllAgentTurnoverWinLossModel[]> GetPlayerAllAgentTurnoverWinLossAsync(DateTimeOffset reportDate,
+        string parentPlayerCode);
 
     ValueTask<Guid> CreateAllAgentPlayerRebateContributorAsync(PlayerAllAgentRebateContributorModel model);
 }

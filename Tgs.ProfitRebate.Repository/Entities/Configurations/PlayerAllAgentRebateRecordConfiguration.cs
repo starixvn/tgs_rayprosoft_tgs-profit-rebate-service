@@ -58,8 +58,6 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasPrecision(9, 6)
                 .HasColumnName("rebate_percentage");
 
-            entity.Property(e => e.SentOn).HasColumnName("sent_on");
-
             entity.Property(e => e.To).HasColumnName("to");
 
             OnConfigurePartial(entity);

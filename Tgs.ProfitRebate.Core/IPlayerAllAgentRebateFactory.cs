@@ -1,5 +1,4 @@
 ﻿using Tgs.ProfitRebate.Core.ViewModel;
-using Tgs.ProfitRebate.Repository.Entities;
 
 namespace Tgs.ProfitRebate.Core;
 

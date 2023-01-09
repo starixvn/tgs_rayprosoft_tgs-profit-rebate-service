@@ -535,10 +535,9 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
 
         var contributors = new PlayerAllAgentRebateContributor[]
             {
-                CreatePlayerAllAgentRebateContributorFixture(brandId, reportDate, parentPlayerCode, "player", GameType.Sportsbook)
+                CreatePlayerAllAgentRebateContributorFixture(brandId, reportDate, parentPlayerCode, "player")
                     .Create<PlayerAllAgentRebateContributor>(),
-                CreatePlayerAllAgentRebateContributorFixture(brandId, reportDate, parentPlayerCode, "player1",
-                        GameType.VirtualSports)
+                CreatePlayerAllAgentRebateContributorFixture(brandId, reportDate, parentPlayerCode, "player1")
                     .Create<PlayerAllAgentRebateContributor>()
             }
             .AsQueryable()
@@ -570,8 +569,7 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
         Guid brandId,
         DateTimeOffset reportDate,
         string playerCode,
-        string childPlayerCode,
-        GameType gameType)
+        string childPlayerCode)
     {
         var fixture = new Fixture();
         fixture.Customize<PlayerAllAgentRebateContributor>(u
@@ -580,7 +578,6 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
                 .With(x => x.To, reportDate.UtcDateTime)
                 .With(x => x.PlayerCode, playerCode)
                 .With(x => x.ChildPlayerCode, childPlayerCode)
-                .With(x => x.GameType, (short)gameType)
                 .With(x => x.SentOn, (DateTimeOffset?)null));
 
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());

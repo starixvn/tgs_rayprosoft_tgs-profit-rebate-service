@@ -3,6 +3,7 @@ using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.Service.PlayerBuckets;
+using TGS.Core.Infrastructures.Extensions;
 
 namespace Tgs.ProfitRebate.Core;
 
@@ -34,6 +35,7 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
     public ValueTask CreateAllAgentPlayerRebatesAsync(PlayerAllAgentRebateModel[] models)
         => _allAgentPlayerRebateService.CreateEntitiesAsync(models.Select(model => new PlayerAllAgentRebateRecord
         {
+            Id = Guid.NewGuid(),
             BrandId = model.BrandId,
             PlayerCode = model.PlayerCode,
             From = model.From.UtcDateTime,
@@ -85,7 +87,7 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
             .BrandAllAgents
             .Join(
                 _allAgentPlayerRebateService.Repository.PlayerGameRebateAggregates
-                    .Where(x => x.ReportDate == reportDate.ToUniversalTime()),
+                    .Where(x => x.ReportDate == reportDate.UtcDateTime),
                 brand => brand.BrandId,
                 aggregate => aggregate.BrandId,
                 (brandAllAgent, aggregate) => new
@@ -144,7 +146,7 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
     {
         return await _allAgentPlayerRebateService.Repository
             .PlayerGameRebateAggregates
-            .Where(x => x.ReportDate == reportDate)
+            .Where(x => x.ReportDate == reportDate.UtcDateTime)
             .Join(_allAgentPlayerRebateService.Repository.PlayerParents,
                 group => group.PlayerCode,
                 player => player.PlayerCode,
@@ -157,13 +159,17 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
             .GroupBy(
                 x => new
                 {
+                    x.Aggregate.BrandId,
                     x.PlayerUsername,
+                    x.Player.ParentPlayerCode,
                     x.Aggregate.PlayerCode,
                     x.Aggregate.GameType
                 },
                 (x, list) => new PlayerAllAgentTurnoverWinLossModel
                 {
+                    BrandId = x.BrandId,
                     PlayerUsername = x.PlayerUsername,
+                    PlayerCode = x.ParentPlayerCode,
                     ChildPlayerCode = x.PlayerCode,
                     GameType = (GameType)x.GameType,
                     Turnover = list.Sum(x => x.Aggregate.Turnover),
@@ -177,13 +183,14 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
     {
         var contributor = new PlayerAllAgentRebateContributor
         {
+            Id = Guid.NewGuid(),
             BrandId = model.BrandId,
             PlayerCode = model.PlayerCode,
             ChildPlayerCode = model.ChildPlayerCode,
             From = model.From.UtcDateTime,
+            To= model.To.UtcDateTime,
             CreatedOn = DateTime.UtcNow,
             SentOn = DateTime.UtcNow,
-            GameType = (short)model.GameType,
             SportsTurnover = model.SportsTurnover,
             VirtualSportsTurnover = model.VirtualSportsTurnover,
             LiveDealerTurnover = model.LiveDealerTurnover,
@@ -213,14 +220,5 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
         await _playerAllAgentRebateContributorService.CreateEntityAsync(contributor);
 
         return contributor.Id;
-    }
-
-    public async ValueTask SetAllAgentPlayerRebateContributorSentOnAsync(string playerCode)
-    {
-        var player = await _allAgentPlayerRebateService.Repository.PlayerAllAgentRebateRecords.SingleAsync(x => x.PlayerCode == playerCode);
-
-        player.SentOn = DateTime.UtcNow;
-
-        await _allAgentPlayerRebateService.CreateEntityAsync(player);
     }
 }

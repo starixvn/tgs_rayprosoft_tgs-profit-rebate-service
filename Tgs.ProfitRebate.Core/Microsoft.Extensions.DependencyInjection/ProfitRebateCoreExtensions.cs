@@ -13,5 +13,6 @@ public static class ProfitRebateCoreExtensions
 			.AddTransient(typeof(ITgsService<>), typeof(TgsService<>))
 			.AddTransient<IAgentDividendFactory, AgentDividendFactory>()
 			.AddTransient<IPlayerRebateFactory, PlayerRebateFactory>()
+            .AddTransient<IPlayerAllAgentRebateFactory, PlayerAllAgentRebateFactory>()
             .AddTransient<IPlayerAllAgentRebateTaskQueueProcessor, PlayerAllAgentRebateTaskQueueProcessor>();
 }

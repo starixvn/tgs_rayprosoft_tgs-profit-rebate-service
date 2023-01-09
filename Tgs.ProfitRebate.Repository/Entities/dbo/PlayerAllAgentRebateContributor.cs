@@ -11,7 +11,6 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public Guid BrandId { get; set; }
         public string PlayerCode { get; set; } = null!;
         public string ChildPlayerCode { get; set; } = null!;
-        public short GameType { get; set; }
         public decimal SportsTurnover { get; set; }
         public decimal VirtualSportsTurnover { get; set; }
         public decimal LiveDealerTurnover { get; set; }

@@ -22,6 +22,5 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public DateTime CreatedOn { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
-        public DateTime? SentOn { get; set; }
     }
 }

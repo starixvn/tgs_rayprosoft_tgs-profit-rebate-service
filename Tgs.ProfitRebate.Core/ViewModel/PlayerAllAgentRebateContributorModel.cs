@@ -8,7 +8,6 @@ public class PlayerAllAgentRebateContributorModel
     public string PlayerUsername { get; set; } = string.Empty;
     public string PlayerCode { get; set; } = string.Empty;
     public string ChildPlayerCode { get; set; } = string.Empty;
-    public GameType GameType { get; set; }
     public decimal SportsTurnover { get; set; }
     public decimal VirtualSportsTurnover { get; set; }
     public decimal LiveDealerTurnover { get; set; }

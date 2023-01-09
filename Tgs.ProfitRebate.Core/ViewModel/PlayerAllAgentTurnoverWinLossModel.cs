@@ -4,9 +4,9 @@ namespace Tgs.ProfitRebate.Core.ViewModel;
 
 public class PlayerAllAgentTurnoverWinLossModel
 {
-	public Guid BrandId { get; set; }
+    public Guid BrandId { get; set; }
 
-	public string PlayerCode { get; set; } = default!;
+    public string PlayerCode { get; set; } = default!;
 
     public string ChildPlayerCode { get; set; } = default!;
 

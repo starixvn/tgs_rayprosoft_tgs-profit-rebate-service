@@ -1,17 +1,11 @@
-﻿using Tgs.ProfitRebate.Repository.Entities;
-using Tgs.ProfitRebate.ViewModel;
+﻿using Tgs.ProfitRebate.Core.ViewModel;
+using Tgs.ProfitRebate.Repository.Entities;
 
 namespace Tgs.ProfitRebate.Core;
 
 public interface IPlayerRebateFactory
 {
-	ValueTask CreateAllAgentPlayerRebatesAsync(PlayerAllAgentRebateModel[] models, DateTimeOffset? sentOn);
+    ValueTask CreatePlayerBucketsAsync(params CreatePlayerBucketRequest[] requests);
 
-	ValueTask CreatePlayerBucketsAsync(params CreatePlayerBucketRequest[] requests);
-
-	ValueTask<PlayerAllAgentTurnoverWinLossModel[]> GetPlayerTurnoverWinLossAsync(DateTimeOffset reportDate);
-
-	ValueTask<BrandAllAgentGameTypeConditionModel[]> GetBrandAllAgentGameTypeConditionsAsync(Guid[] brandIds);
-
-	ValueTask<PlayerRebate> CreateVipPlayerRebateAsync(VipPlayerRebateModel model, DateTimeOffset? sentOn);
+    ValueTask<PlayerRebate> CreateVipPlayerRebateAsync(VipPlayerRebateModel model, DateTimeOffset? sentOn);
 }

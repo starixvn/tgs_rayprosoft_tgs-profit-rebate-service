@@ -47,9 +47,11 @@ public interface ITgsRepository
 
 	DbSet<BrandAllAgentGameTypeCondition> BrandAllAgentGameTypeConditions { get; set; }
 
-	DbSet<PlayerAllAgentRebate> PlayerAllAgentRebates { get; set; }
+	DbSet<PlayerAllAgentRebateRecord> PlayerAllAgentRebateRecords { get; set; }
 
-	DbSet<PlayerBonusAggregate> PlayerBonusAggregates { get; set; }
+    DbSet<PlayerAllAgentRebateContributor> PlayerAllAgentRebateContributors { get; set; }
+
+    DbSet<PlayerBonusAggregate> PlayerBonusAggregates { get; set; }
 
 	IDbContextTransaction? CurrentTransaction { get; }
 

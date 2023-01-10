@@ -50,7 +50,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.TransactionRecordedOn)
                 .HasColumnName("transaction_recorded_on")
-                .HasDefaultValueSql("'-infinity'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.TransferTarget).HasColumnName("transfer_target");
 

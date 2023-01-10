@@ -10,15 +10,17 @@ using Tgs.ProfitRebate.Repository.Entities;
 
 namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 {
-    public partial class PlayerAllAgentRebateConfiguration : IEntityTypeConfiguration<PlayerAllAgentRebate>
+    public partial class PlayerAllAgentRebateRecordConfiguration : IEntityTypeConfiguration<PlayerAllAgentRebateRecord>
     {
-        public void Configure(EntityTypeBuilder<PlayerAllAgentRebate> entity)
+        public void Configure(EntityTypeBuilder<PlayerAllAgentRebateRecord> entity)
         {
-            entity.ToTable("player_all_agent_rebates", "dbo");
+            entity.ToTable("player_all_agent_rebate_records", "dbo");
 
-            entity.HasIndex(e => new { e.BrandId, e.ReportDate, e.PlayerCode }, "ix_player_all_agent_rebates_brand_id_report_date_player_code");
+            entity.HasIndex(e => new { e.ReportDate, e.BrandId, e.PlayerCode }, "ix_player_all_agent_rebate_records_report_date_brand_id_player_");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
 
             entity.Property(e => e.ActiveNumber).HasColumnName("active_number");
 
@@ -40,8 +42,6 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.CreatedOn).HasColumnName("created_on");
 
-            entity.Property(e => e.GameType).HasColumnName("game_type");
-
             entity.Property(e => e.PlayerCode)
                 .HasMaxLength(16)
                 .HasColumnName("player_code");
@@ -58,11 +58,9 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.ReportDate).HasColumnName("report_date");
 
-            entity.Property(e => e.SentOn).HasColumnName("sent_on");
-
             OnConfigurePartial(entity);
         }
 
-        partial void OnConfigurePartial(EntityTypeBuilder<PlayerAllAgentRebate> entity);
+        partial void OnConfigurePartial(EntityTypeBuilder<PlayerAllAgentRebateRecord> entity);
     }
 }

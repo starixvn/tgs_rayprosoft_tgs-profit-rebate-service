@@ -1,4 +1,4 @@
-﻿namespace Tgs.ProfitRebate.ViewModel;
+﻿namespace Tgs.ProfitRebate.Core.ViewModel;
 
 public class PageableRequest
 {

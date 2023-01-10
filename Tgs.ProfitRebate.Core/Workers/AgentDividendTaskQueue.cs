@@ -15,14 +15,14 @@ public class AgentDividendTaskQueue : IAgentDividendTaskQueue
 {
 	private readonly Channel<AgentDividendQueueModel> _queue;
 
-	public AgentDividendTaskQueue(int capacity)
+	public AgentDividendTaskQueue()
 	{
-		var options = new BoundedChannelOptions(capacity)
-		{
-			FullMode = BoundedChannelFullMode.Wait
-		};
+		var options = new UnboundedChannelOptions
+        {
+            SingleReader = true
+        };
 		_queue = Channel
-			.CreateBounded<AgentDividendQueueModel>(options);
+			.CreateUnbounded<AgentDividendQueueModel>(options);
 	}
 
 	public async ValueTask QueueAgentDividendAsync(

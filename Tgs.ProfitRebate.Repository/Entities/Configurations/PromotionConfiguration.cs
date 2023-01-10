@@ -81,6 +81,8 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.SettlementIntervalType).HasColumnName("settlement_interval_type");
 
+            entity.Property(e => e.SnapshotEventId).HasColumnName("snapshot_event_id");
+
             entity.Property(e => e.Status).HasColumnName("status");
 
             entity.Property(e => e.SubSubject)

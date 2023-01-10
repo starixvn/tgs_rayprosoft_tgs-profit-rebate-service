@@ -79,7 +79,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
         IEnumerable<BrandAllAgentGameTypeConditionModel> conditions)
     {
         return conditions.Any(x => model.BrandId == x.BrandId &&
-            (short)model.AllAgentGameType == (short)x.AllAgentGameType);
+            model.AllAgentGameType == x.AllAgentGameType);
     }
 
     private static IEnumerable<PlayerAllAgentRebateModel> CheckRebates(
@@ -87,24 +87,27 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
         IEnumerable<BrandAllAgentGameTypeConditionModel> gameTypeConditions, DateTimeOffset reportDate)
     {
         var conditions = gameTypeConditions.Where(x => model.BrandId == x.BrandId &&
-            ((short)model.AllAgentGameType == (short)x.AllAgentGameType)).ToArray();
+            model.AllAgentGameType == x.AllAgentGameType).ToArray();
 
         var validBetConditions = conditions.Where(x
-            => x.HasValidBet && (short)x.AllAgentRebateType == (short)AllAgentRebateType.ValidBet).ToArray();
+            => x.HasValidBet && x.AllAgentRebateType == AllAgentRebateType.ValidBet).ToArray();
 
         var winLossConditions = conditions.Where(x
-            => x.HasWinLoss && (short)x.AllAgentRebateType == (short)AllAgentRebateType.WinLoss).ToArray();
+            => x.HasWinLoss && x.AllAgentRebateType == AllAgentRebateType.WinLoss).ToArray();
 
         var allAgentGameType = model.AllAgentGameType;
+
         var validBetRebateCondition = validBetConditions.Where(x => x.AllAgentGameType == allAgentGameType)
             .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                 model.Turnover >= x.NetProfit);
+
         var winLossRebateCondition = winLossConditions.Where(x => x.AllAgentGameType == allAgentGameType)
             .OrderByDescending(x => x.Rank).FirstOrDefault(x => model.PlayerNumber >= x.ActiveNumber &&
                 model.WinLoss >= x.NetProfit);
-        var actualTurnoverAmount = model.Turnover;
-        var actualWinLossAmount = model.WinLoss;
 
+        var actualTurnoverAmount = model.Turnover;
+
+        var actualWinLossAmount = model.WinLoss;
 
         return new[]
         {

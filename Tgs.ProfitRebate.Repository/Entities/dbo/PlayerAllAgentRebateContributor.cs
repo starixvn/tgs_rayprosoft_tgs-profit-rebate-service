@@ -35,8 +35,7 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal CardGameWinLossRebate { get; set; }
         public decimal SlotWinLossRebate { get; set; }
         public decimal LotteryWinLossRebate { get; set; }
-        public DateTime From { get; set; }
-        public DateTime To { get; set; }
+        public DateTime ReportDate { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime? SentOn { get; set; }
     }

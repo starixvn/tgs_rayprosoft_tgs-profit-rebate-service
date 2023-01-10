@@ -61,7 +61,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
         if (await _playerAllAgentRebateService.GetQueries()
                 .AnyAsync(
                     x => x.PlayerCode == request.PlayerCode &&
-                        x.From == request.ReportDate.UtcDateTime && x.To == request.ReportDate.UtcDateTime, cancellationToken))
+                        x.ReportDate == request.ReportDate.UtcDateTime, cancellationToken))
         {
             _logger.LogInformation("save the all_agent_rebate already. request: {request}", request);
         }
@@ -116,8 +116,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                 BrandId = model.BrandId,
                 PlayerCode = model.PlayerCode,
                 AllAgentGameType = allAgentGameType,
-                From = reportDate.ToUniversalTime(),
-                To = reportDate.ToUniversalTime(),
+                ReportDate = reportDate.ToUniversalTime(),
                 AllAgentRebateType = AllAgentRebateType.ValidBet,
                 Rank = validBetRebateCondition?.Rank ?? 0,
                 ActiveNumber = validBetRebateCondition?.ActiveNumber ?? 0,
@@ -132,8 +131,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                 BrandId = model.BrandId,
                 PlayerCode = model.PlayerCode,
                 AllAgentGameType = allAgentGameType,
-                From = reportDate.ToUniversalTime(),
-                To = reportDate.ToUniversalTime(),
+                ReportDate = reportDate.ToUniversalTime(),
                 AllAgentRebateType = AllAgentRebateType.WinLoss,
                 Rank = winLossRebateCondition?.Rank ?? 0,
                 ActiveNumber = winLossRebateCondition?.ActiveNumber ?? 0,
@@ -282,8 +280,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                     PlayerCode = child.PlayerCode,
                     PlayerUsername = child.PlayerUsername,
                     ChildPlayerCode = child.ChildPlayerCode,
-                    From = reportDate.UtcDateTime,
-                    To = reportDate.UtcDateTime,
+                    ReportDate = reportDate.UtcDateTime,
                     SportsTurnover = list.Sum(s => s.SportsTurnover),
                     VirtualSportsTurnover = list.Sum(s => s.VirtualSportsTurnover),
                     LiveDealerTurnover = list.Sum(s => s.LiveDealerTurnover),
@@ -312,7 +309,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
         CancellationToken cancellationToken)
     {
         var savedPlayerContributors = await _playerAllAgentRebateContributorService.GetQueries()
-            .Where(x => x.From == reportDate.UtcDateTime && x.To == reportDate.UtcDateTime && x.PlayerCode == playerCode && x.SentOn != null)
+            .Where(x => x.ReportDate == reportDate.UtcDateTime && x.PlayerCode == playerCode && x.SentOn != null)
             .Select(x => x.ChildPlayerCode)
             .ToArrayAsync(cancellationToken);
 

@@ -347,8 +347,7 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
                 x.Any(a =>
                     a.BrandId == brandId &&
                     a.PlayerCode == parentPlayerCode &&
-                    a.From == reportDate.UtcDateTime &&
-                    a.To == reportDate.UtcDateTime &&
+                    a.ReportDate == reportDate.UtcDateTime &&
                     a.AllAgentGameType == AllAgentGameType.Sportsbook &&
                     a.AllAgentRebateType == AllAgentRebateType.ValidBet &&
                     a.Rank == 1 &&
@@ -523,6 +522,16 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
                 GameType= GameType.Sportsbook,
                 Turnover = 10,
                 WinLoss= 10,
+            },
+            new PlayerAllAgentTurnoverWinLossModel
+            {
+                BrandId = brandId,
+                PlayerCode = "parentPlayerCode",
+                ChildPlayerCode = "playerCode1",
+                PlayerUsername= "username1",
+                GameType= GameType.VirtualSports,
+                Turnover = 10,
+                WinLoss= 10,
             }
         };
 
@@ -574,8 +583,7 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
         var fixture = new Fixture();
         fixture.Customize<PlayerAllAgentRebateContributor>(u
             => u.With(x => x.BrandId, brandId)
-                .With(x => x.From, reportDate.UtcDateTime)
-                .With(x => x.To, reportDate.UtcDateTime)
+                .With(x => x.ReportDate, reportDate.UtcDateTime)
                 .With(x => x.PlayerCode, playerCode)
                 .With(x => x.ChildPlayerCode, childPlayerCode)
                 .With(x => x.SentOn, (DateTimeOffset?)null));

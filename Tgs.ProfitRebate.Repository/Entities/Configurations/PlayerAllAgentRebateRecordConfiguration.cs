@@ -16,7 +16,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
         {
             entity.ToTable("player_all_agent_rebate_records", "dbo");
 
-            entity.HasIndex(e => new { e.BrandId, e.From, e.To, e.PlayerCode }, "ix_player_all_agent_rebate_records_brand_id_report_date_player_");
+            entity.HasIndex(e => new { e.ReportDate, e.BrandId, e.PlayerCode }, "ix_player_all_agent_rebate_records_report_date_brand_id_player_");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -42,8 +42,6 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.CreatedOn).HasColumnName("created_on");
 
-            entity.Property(e => e.From).HasColumnName("from");
-
             entity.Property(e => e.PlayerCode)
                 .HasMaxLength(16)
                 .HasColumnName("player_code");
@@ -58,7 +56,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasPrecision(9, 6)
                 .HasColumnName("rebate_percentage");
 
-            entity.Property(e => e.To).HasColumnName("to");
+            entity.Property(e => e.ReportDate).HasColumnName("report_date");
 
             OnConfigurePartial(entity);
         }

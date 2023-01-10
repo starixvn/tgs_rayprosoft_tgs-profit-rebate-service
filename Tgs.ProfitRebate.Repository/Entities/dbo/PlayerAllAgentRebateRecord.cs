@@ -20,7 +20,6 @@ namespace Tgs.ProfitRebate.Repository.Entities
         public decimal RebateAmount { get; set; }
         public decimal RebatePercentage { get; set; }
         public DateTime CreatedOn { get; set; }
-        public DateTime From { get; set; }
-        public DateTime To { get; set; }
+        public DateTime ReportDate { get; set; }
     }
 }

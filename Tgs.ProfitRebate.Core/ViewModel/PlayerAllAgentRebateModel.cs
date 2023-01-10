@@ -8,9 +8,7 @@ public class PlayerAllAgentRebateModel
 
     public string PlayerCode { get; set; } = default!;
 
-    public DateTimeOffset From { get; set; }
-
-    public DateTimeOffset To { get; set; }
+    public DateTimeOffset ReportDate { get; set; }
 
     public AllAgentGameType AllAgentGameType { get; set; }
 

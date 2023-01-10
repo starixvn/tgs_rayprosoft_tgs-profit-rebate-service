@@ -16,7 +16,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
         {
             entity.ToTable("player_all_agent_rebate_contributors", "dbo");
 
-            entity.HasIndex(e => new { e.From, e.To, e.PlayerCode, e.ChildPlayerCode }, "ix_player_all_agent_rebate_contributors_from_to_player_code");
+            entity.HasIndex(e => new { e.ReportDate, e.PlayerCode, e.ChildPlayerCode }, "ix_player_all_agent_rebate_contributors_report_date_player_code");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -45,8 +45,6 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasColumnName("child_player_code");
 
             entity.Property(e => e.CreatedOn).HasColumnName("created_on");
-
-            entity.Property(e => e.From).HasColumnName("from");
 
             entity.Property(e => e.LiveDealerTurnover)
                 .HasPrecision(18, 6)
@@ -84,6 +82,8 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
                 .HasMaxLength(16)
                 .HasColumnName("player_code");
 
+            entity.Property(e => e.ReportDate).HasColumnName("report_date");
+
             entity.Property(e => e.SentOn).HasColumnName("sent_on");
 
             entity.Property(e => e.SlotTurnover)
@@ -117,8 +117,6 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.Property(e => e.SportsWinLossRebate)
                 .HasPrecision(18, 6)
                 .HasColumnName("sports_win_loss_rebate");
-
-            entity.Property(e => e.To).HasColumnName("to");
 
             entity.Property(e => e.VirtualSportsTurnover)
                 .HasPrecision(18, 6)

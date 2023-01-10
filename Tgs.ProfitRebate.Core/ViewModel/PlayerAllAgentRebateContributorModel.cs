@@ -32,6 +32,5 @@ public class PlayerAllAgentRebateContributorModel
     public decimal CardGameWinLossRebate { get; set; }
     public decimal SlotWinLossRebate { get; set; }
     public decimal LotteryWinLossRebate { get; set; }
-    public DateTimeOffset From { get; set; }
-    public DateTimeOffset To { get; set; }
+    public DateTimeOffset ReportDate { get; set; }
 }

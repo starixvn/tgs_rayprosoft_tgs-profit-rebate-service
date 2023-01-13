@@ -9,9 +9,8 @@ using OpenTelemetry.Trace;
 using Tgs.MessageQueue;
 using Tgs.MessageQueue.MongoDB.Configuration;
 using Tgs.PlayerBucket.Clients.DependencyInjection;
+using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
-using Tgs.ProfitRebate.ViewModel;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
@@ -21,38 +20,30 @@ builder.Configuration
 builder.Host.ConfigureServices((context, services) => services
 	.AddHostedService<AgentDividendBackground>()
 	.AddHostedService<PlayerRebateBackground>()
-	.AddSingleton<IAgentDividendTaskQueue>(_ =>
-	{
-		if (!int.TryParse(context.Configuration["QueueCapacity"], out var queueCapacity))
-		{
-			queueCapacity = 100;
-		}
-
-		return new AgentDividendTaskQueue(queueCapacity);
-	})
-	.AddSingleton<IPlayerRebateTaskQueue>(_ =>
-	{
-		if (!int.TryParse(context.Configuration["QueueCapacity"], out var queueCapacity))
-		{
-			queueCapacity = 1500;
-		}
-
-		return new PlayerRebateTaskQueue(queueCapacity);
-	}));
+    .AddHostedService<PlayerAllAgentRebateBackground>()
+	.AddSingleton<IAgentDividendTaskQueue>(_ => new AgentDividendTaskQueue())
+	.AddSingleton<IPlayerRebateTaskQueue>(_ => new PlayerRebateTaskQueue())
+    .AddSingleton<IPlayerAllAgentRebateTaskQueue, PlayerAllAgentRebateTaskQueue>());
 
 // Add services to the container.
 builder.Services
-	.AddTgsRepository(builder.Configuration.GetConnectionString("Tgs"))
-	.AddSystemJsonSerializer()
-	.AddTgsLog()
-	.AddProfitRebateCore()
-	.AddCashServiceClient((options, sp) =>
-	{
-		var config = sp.GetRequiredService<IConfiguration>();
+    .AddTgsRepository(builder.Configuration.GetConnectionString("Tgs"))
+    .AddSystemJsonSerializer()
+    .AddTgsLog()
+    .AddProfitRebateCore()
+    .AddCashServiceClient((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
 
-		options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
-	})
-	.AddPlayerBucketClient();
+        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
+    })
+    .AddPlayerBucketClient()
+    .AddPlayerServiceClient((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+
+        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:PlayerServiceBaseUrl");
+    });
 
 builder.Services
 	.AddMessageQueue()

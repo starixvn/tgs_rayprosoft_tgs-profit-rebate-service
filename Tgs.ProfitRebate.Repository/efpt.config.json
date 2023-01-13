@@ -79,7 +79,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "dbo.player_all_agent_rebates",
+         "Name": "dbo.player_all_agent_rebate_contributors",
+         "ObjectType": 0
+      },
+      {
+         "Name": "dbo.player_all_agent_rebate_records",
          "ObjectType": 0
       },
       {
@@ -147,7 +151,7 @@
          "ObjectType": 0
       }
    ],
-   "UiHint": "tgs-local",
+   "UiHint": "tgs",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDbContextSplitting": true,

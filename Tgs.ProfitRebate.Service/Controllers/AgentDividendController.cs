@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Tgs.ProfitRebate.ViewModel;
+using Tgs.ProfitRebate.Core.ViewModel;
 
 namespace Tgs.ProfitRebate.Service.Controllers;
 

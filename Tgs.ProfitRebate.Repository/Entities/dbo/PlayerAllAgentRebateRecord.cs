@@ -5,23 +5,21 @@ using System.Collections.Generic;
 
 namespace Tgs.ProfitRebate.Repository.Entities
 {
-    public partial class PlayerAllAgentRebate
+    public partial class PlayerAllAgentRebateRecord
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public Guid BrandId { get; set; }
         public string PlayerCode { get; set; } = null!;
-        public DateTime ReportDate { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime? SentOn { get; set; }
         public short AllAgentGameType { get; set; }
-        public short GameType { get; set; }
         public short AllAgentRebateType { get; set; }
         public int Rank { get; set; }
         public int ActiveNumber { get; set; }
         public decimal ConditionAmount { get; set; }
-        public decimal RebatePercentage { get; set; }
         public int ActualPlayerNumber { get; set; }
         public decimal ActualConditionAmount { get; set; }
         public decimal RebateAmount { get; set; }
+        public decimal RebatePercentage { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime ReportDate { get; set; }
     }
 }

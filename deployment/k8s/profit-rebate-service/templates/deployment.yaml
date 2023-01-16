@@ -67,11 +67,6 @@ spec:
                 secretKeyRef:
                   name: tgs-connections
                   key: tgs
-            - name: ConnectionStrings__MongoDBMessagingConnectionString
-              valueFrom:
-                secretKeyRef:
-                  name: tgs-connections
-                  key: mongo-messaging
           volumeMounts:
             - mountPath: /config/appsettings.json
               name: appsettings

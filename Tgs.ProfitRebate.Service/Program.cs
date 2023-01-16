@@ -47,15 +47,6 @@ builder.Services
 
 builder.Services
 	.AddMessageQueue()
-	.AddMongoMessageQueue(config => config
-		.DefineMessageQueue(
-			"viplevel.database",
-			sp => new MongoMessageQueueBuilderOptions
-			{
-				MessageQueue = MessageQueue.Default,
-				ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoDBMessagingConnectionString")
-			})
-		.DeclareQueue("tgs.viplevel.database.promotion"))
 	.AddNatsMessageQueue(natsConfig => natsConfig
 		.ConfigQueueOptions((options, sp) =>
 		{
@@ -72,8 +63,7 @@ builder.Services
 		}))
 	.ClearAllExchanges()
 	.AddRabbitGlobPatternExchange("report.error", "amq.direct")
-	.AddMongoGlobPatternExchange("tgs.viplevel.database.promotion", "viplevel.database", "tgs.viplevel.database.promotion")
-	.AddNatsGlobPatternExchange("*");
+    .AddNatsGlobPatternExchange("*");
 
 builder.Services.AddHealthChecks();
 

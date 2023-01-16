@@ -385,7 +385,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                                         && x.ExternalTransactionId == id.ToString(),
                                     cancellationToken: cancellationToken))
                         {
-                            _ = await _cashServiceClient.RebateAsync(
+                            _ = await _cashServiceClient.DividendAllAgentRebateAsync(
                                 defaultWalletId,
                                 totalRebate,
                                 player?.UserName,

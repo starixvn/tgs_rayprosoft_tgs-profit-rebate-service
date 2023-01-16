@@ -167,7 +167,6 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                     return new
                     {
                         x.BrandId,
-                        x.PlayerUsername,
                         x.PlayerCode,
                         x.ChildPlayerCode,
                         x.Turnover,
@@ -233,7 +232,6 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
             {
                 BrandId = x.BrandId,
                 PlayerCode = x.PlayerCode,
-                PlayerUsername = x.PlayerUsername,
                 ChildPlayerCode = x.ChildPlayerCode,
                 SportsTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook ?
                     x.Turnover : 0M,
@@ -273,12 +271,11 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                     (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss : 0M,
             };
         })
-            .GroupBy(x => new {x.BrandId,x.PlayerCode,x.PlayerUsername,x.ChildPlayerCode},
+            .GroupBy(x => new {x.BrandId,x.PlayerCode,x.ChildPlayerCode},
                 (child, list) => new PlayerAllAgentRebateContributorModel
                 {
                     BrandId = child.BrandId,
                     PlayerCode = child.PlayerCode,
-                    PlayerUsername = child.PlayerUsername,
                     ChildPlayerCode = child.ChildPlayerCode,
                     ReportDate = reportDate.UtcDateTime,
                     SportsTurnover = list.Sum(s => s.SportsTurnover),

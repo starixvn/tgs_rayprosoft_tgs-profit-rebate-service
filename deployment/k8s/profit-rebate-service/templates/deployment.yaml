@@ -67,6 +67,36 @@ spec:
                 secretKeyRef:
                   name: tgs-connections
                   key: tgs
+            - name: ConnectionStrings__Redis
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: redis
+            - name: ConnectionStrings__Nats
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: nats
+            - name: RabbitMQ__RabbitMQUrl
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: rabbitmq-url
+            - name: RabbitMQ__UserName
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: rabbitmq-user
+            - name: RabbitMQ__Password
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: rabbitmq-pass
+            - name: RabbitMQ__VirtualHost
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: rabbitmq-vhost
           volumeMounts:
             - mountPath: /config/appsettings.json
               name: appsettings

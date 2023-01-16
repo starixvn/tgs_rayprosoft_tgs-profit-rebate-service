@@ -3,7 +3,6 @@ using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
 using Tgs.Service.PlayerBuckets;
-using TGS.Core.Infrastructures.Extensions;
 
 namespace Tgs.ProfitRebate.Core;
 
@@ -32,6 +31,7 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
 				request.BucketType,
 				request.ExternalId).ConfigureAwait(false);
 	}
+
     public ValueTask CreateAllAgentPlayerRebatesAsync(PlayerAllAgentRebateModel[] models)
         => _allAgentPlayerRebateService.CreateEntitiesAsync(models.Select(model => new PlayerAllAgentRebateRecord
         {

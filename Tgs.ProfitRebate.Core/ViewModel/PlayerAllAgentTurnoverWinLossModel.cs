@@ -10,8 +10,6 @@ public class PlayerAllAgentTurnoverWinLossModel
 
     public string ChildPlayerCode { get; set; } = default!;
 
-    public string PlayerUsername { get; set; } = default!;
-
     public GameType GameType { get; set; }
 
     public decimal Turnover { get; set; }

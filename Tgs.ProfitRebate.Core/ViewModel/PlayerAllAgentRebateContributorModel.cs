@@ -5,7 +5,6 @@ namespace Tgs.ProfitRebate.Core.ViewModel;
 public class PlayerAllAgentRebateContributorModel
 {
     public Guid BrandId { get; set; }
-    public string PlayerUsername { get; set; } = string.Empty;
     public string PlayerCode { get; set; } = string.Empty;
     public string ChildPlayerCode { get; set; } = string.Empty;
     public decimal SportsTurnover { get; set; }

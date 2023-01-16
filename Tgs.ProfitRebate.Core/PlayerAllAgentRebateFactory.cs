@@ -151,15 +151,10 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
                 player => player.PlayerCode,
                 (group, player) => new { Aggregate = group, Player = player })
             .Where(x => x.Player.ParentPlayerCode == parentPlayerCode)
-            .Join(_allAgentPlayerRebateService.Repository.Players,
-                group => group.Aggregate.PlayerCode,
-                player => player.PlayerCode,
-                (group, player) => new { group.Aggregate ,group.Player, PlayerUsername = player.Username })
             .GroupBy(
                 x => new
                 {
                     x.Aggregate.BrandId,
-                    x.PlayerUsername,
                     x.Player.ParentPlayerCode,
                     x.Aggregate.PlayerCode,
                     x.Aggregate.GameType
@@ -167,7 +162,6 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
                 (x, list) => new PlayerAllAgentTurnoverWinLossModel
                 {
                     BrandId = x.BrandId,
-                    PlayerUsername = x.PlayerUsername,
                     PlayerCode = x.ParentPlayerCode,
                     ChildPlayerCode = x.PlayerCode,
                     GameType = (GameType)x.GameType,

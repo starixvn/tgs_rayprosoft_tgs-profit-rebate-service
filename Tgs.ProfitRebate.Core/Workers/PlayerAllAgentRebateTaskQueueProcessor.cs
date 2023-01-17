@@ -340,7 +340,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
             var id = await _playerRebateFactory.CreateAllAgentPlayerRebateContributorAsync(rebate)
                 .ConfigureAwait(false);
 
-            var player = await _playerServiceClient.GetPlayerInfoAsync(rebate.PlayerCode, cancellationToken)
+            var player = await _playerServiceClient.GetPlayerInfoAsync(rebate.ChildPlayerCode, cancellationToken)
                 .ConfigureAwait(false);
 
             await Policy.Handle<Exception>()
@@ -385,7 +385,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                             _ = await _cashServiceClient.DividendAllAgentRebateAsync(
                                 defaultWalletId,
                                 totalRebate,
-                                player?.UserName,
+                                $"player name: {player?.UserName}",
                                 id.ToString(), cancellationToken).ConfigureAwait(false);
                         }
                     });

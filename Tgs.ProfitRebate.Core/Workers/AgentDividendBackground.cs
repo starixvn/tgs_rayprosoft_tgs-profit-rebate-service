@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
-using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Workers;
 

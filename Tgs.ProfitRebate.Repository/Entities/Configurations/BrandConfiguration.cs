@@ -16,7 +16,13 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
         {
             entity.ToTable("brands", "dbo");
 
+            entity.HasIndex(e => new { e.Code, e.Name, e.Description, e.OperationalEmail }, "ix_brands_code_name_description_operational_email");
+
             entity.HasIndex(e => e.LicenseeId, "ix_brands_licensee_id");
+
+            entity.HasIndex(e => new { e.Code, e.Name, e.Description, e.OperationalEmail }, "ix_trgm_brands_code_name_description_operational_email")
+                .HasMethod("gin")
+                .HasOperators(new[] { "gin_trgm_ops", "gin_trgm_ops", "gin_trgm_ops", "gin_trgm_ops" });
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -56,11 +62,11 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.CurrentSettlementFrom)
                 .HasColumnName("current_settlement_from")
-                .HasDefaultValueSql("'-infinity'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.CurrentSettlementTo)
                 .HasColumnName("current_settlement_to")
-                .HasDefaultValueSql("'-infinity'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.DepositHandlingFeeRateTenPercentile).HasColumnName("deposit_handling_fee_rate_ten_percentile");
 
@@ -94,11 +100,11 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.NextSettlementFrom)
                 .HasColumnName("next_settlement_from")
-                .HasDefaultValueSql("'-infinity'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.NextSettlementTo)
                 .HasColumnName("next_settlement_to")
-                .HasDefaultValueSql("'-infinity'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.OperationalEmail)
                 .HasMaxLength(128)
@@ -114,11 +120,11 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.Property(e => e.PreviousSettlementFrom)
                 .HasColumnName("previous_settlement_from")
-                .HasDefaultValueSql("'-infinity'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.PreviousSettlementTo)
                 .HasColumnName("previous_settlement_to")
-                .HasDefaultValueSql("'-infinity'::timestamp with time zone");
+                .HasDefaultValueSql("'0001-01-01 00:00:00+00'::timestamp with time zone");
 
             entity.Property(e => e.SecretKey)
                 .HasMaxLength(32)

@@ -16,6 +16,9 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
         {
             entity.ToTable("player_aggregates", "report");
 
+            entity.HasIndex(e => new { e.BrandId, e.ReportDate, e.AgentId, e.PlayerCode }, "ix_player_aggregate_brand_id_and_report_date_desc_and_player_co")
+                .HasSortOrder(new[] { SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending, SortOrder.Ascending });
+
             entity.HasIndex(e => e.AgentId, "ix_player_aggregates_agent_id");
 
             entity.HasIndex(e => new { e.ReportDate, e.BrandId, e.AgentId, e.PlayerCode }, "ix_player_aggregates_multiple_keys");

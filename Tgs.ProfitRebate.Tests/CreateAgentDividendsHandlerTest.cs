@@ -3,8 +3,8 @@ using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 using Tgs.ProfitRebate.Core.Commands;
+using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
-using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Tests;
 

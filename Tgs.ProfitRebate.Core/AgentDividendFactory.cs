@@ -5,8 +5,8 @@ using Tgs.Core.Infrastructures.Utility;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository;
 using Tgs.ProfitRebate.Repository.Entities;
-using Tgs.ProfitRebate.ViewModel;
 using TGS.Core.Infrastructures.Extensions;
+using Tgs.ProfitRebate.Core.ViewModel;
 
 namespace Tgs.ProfitRebate.Core;
 
@@ -655,10 +655,10 @@ public class AgentDividendFactory : IAgentDividendFactory
 	}
 
 	private static decimal GetAgentDividendPercentage(AgentDividendCondition[] agentDividendCondition,
-		AgentConditionModel currentCondition, bool checkDividendActiveCount)
+		AgentConditionModel? currentCondition, bool checkDividendActiveCount)
 		=> agentDividendCondition.OrderByDescending(x => x.Rank).Where(!checkDividendActiveCount,
-				x => currentCondition.NetProfit >= x.NetProfit)
-			.Where(checkDividendActiveCount, x => currentCondition.ActiveCount >= x.ActiveNumber &&
+				x => currentCondition?.NetProfit >= x.NetProfit)
+			.Where(checkDividendActiveCount, x => currentCondition?.ActiveCount >= x.ActiveNumber &&
 				currentCondition.NetProfit >= x.NetProfit).Select(x => x.DividendPercentage).FirstOrDefault();
 
 	private static IEnumerable<AgentDividendMultipleLayerModel> GetAgentDividendsByMultipleLayer(
@@ -672,7 +672,7 @@ public class AgentDividendFactory : IAgentDividendFactory
 		var layer = agent.Id.ToString();
 
 		var agentDividendPercentage = GetAgentDividendPercentage(agent.AgentDividendConditions.ToArray(),
-			agentCurrentConditions.First(x => x.AgentId == currentAgentId), checkDividendActiveCount);
+			agentCurrentConditions.FirstOrDefault(x => x.AgentId == currentAgentId), checkDividendActiveCount);
 
 		yield return new()
 		{

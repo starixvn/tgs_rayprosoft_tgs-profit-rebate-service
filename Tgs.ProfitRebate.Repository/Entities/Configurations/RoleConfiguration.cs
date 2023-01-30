@@ -16,6 +16,12 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
         {
             entity.ToTable("roles", "dbo");
 
+            entity.HasIndex(e => e.Name, "ix_roles_name");
+
+            entity.HasIndex(e => e.Name, "ix_trgm_roles_name")
+                .HasMethod("gin")
+                .HasOperators(new[] { "gin_trgm_ops" });
+
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");

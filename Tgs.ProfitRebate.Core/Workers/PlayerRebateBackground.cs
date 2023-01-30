@@ -4,8 +4,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Tgs.CashService.Client;
+using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Repository.Entities;
-using Tgs.ProfitRebate.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Workers;
 

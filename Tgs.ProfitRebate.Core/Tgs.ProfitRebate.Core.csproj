@@ -12,7 +12,7 @@
     <PackageReference Include="Tgs.CashService.Client" Version="0.1.5" />
     <PackageReference Include="Tgs.Core.Infrastructures.Utility" Version="0.0.3" />
     <PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.1.2" />
-    <PackageReference Include="Tgs.PlayerBucket.Client" Version="0.0.3" />
+    <PackageReference Include="Tgs.PlayerBucket.Client" Version="0.0.8" />
     <PackageReference Include="Tgs.PlayerService.Client" Version="0.0.27" />
   </ItemGroup>
 

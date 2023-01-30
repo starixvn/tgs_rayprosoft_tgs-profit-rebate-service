@@ -27,17 +27,19 @@ builder.Host.ConfigureServices((context, services) => services
 
 // Add services to the container.
 builder.Services
-    .AddTgsRepository(builder.Configuration.GetConnectionString("Tgs"))
-    .AddSystemJsonSerializer()
-    .AddTgsLog()
-    .AddProfitRebateCore()
-    .AddCashServiceClient((options, sp) =>
-    {
-        var config = sp.GetRequiredService<IConfiguration>();
+	.AddTgsRepository(builder.Configuration.GetConnectionString("Tgs")!)
+	.AddSystemJsonSerializer()
+	.AddTgsLog()
+	.AddProfitRebateCore()
+	.AddCashServiceClient((options, sp) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
 
-        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
-    })
-    .AddPlayerBucketClient()
+		options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
+	})
+	.AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
+        .ConfigureHttpClient(httpClient => httpClient.BaseAddress =
+            builder.Configuration.GetValue<Uri>("ProfitRebate:PlayerBucketBaseUrl")))
     .AddPlayerServiceClient((options, sp) =>
     {
         var config = sp.GetRequiredService<IConfiguration>();
@@ -53,7 +55,7 @@ builder.Services
 			sp => new MongoMessageQueueBuilderOptions
 			{
 				MessageQueue = MessageQueue.Default,
-				ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoDBMessagingConnectionString")
+				ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoDBMessagingConnectionString")!
 			})
 		.DeclareQueue("tgs.viplevel.database.promotion"))
 	.AddNatsMessageQueue(natsConfig => natsConfig

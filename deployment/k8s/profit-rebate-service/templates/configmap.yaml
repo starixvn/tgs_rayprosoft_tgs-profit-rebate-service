@@ -14,7 +14,8 @@ data:
         "Urls": "{{ .Values.nats.urls }}"
       },
       "ProfitRebate": {
-        "CashBaseUrl": "http://cashservice-api"
+        "CashBaseUrl": "http://cashservice-api",
+        "PlayerBucketBaseUrl": "http://tgs-playerbucket-service"
       },
       "RabbitMQ": {
         "RabbitMQUrl": "{{ .Values.rabbit.url }}",

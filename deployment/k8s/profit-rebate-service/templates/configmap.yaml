@@ -8,6 +8,7 @@ data:
     {
       "ProfitRebate": {
         "CashBaseUrl": "http://cashservice-api",
+        "PlayerBucketBaseUrl": "http://tgs-playerbucket-service",
         "PlayerServiceBaseUrl": "http://player-api"
       }
     }

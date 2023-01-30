@@ -26,17 +26,19 @@ builder.Host.ConfigureServices((context, services) => services
 
 // Add services to the container.
 builder.Services
-    .AddTgsRepository(builder.Configuration.GetConnectionString("Tgs"))
-    .AddSystemJsonSerializer()
-    .AddTgsLog()
-    .AddProfitRebateCore()
-    .AddCashServiceClient((options, sp) =>
-    {
-        var config = sp.GetRequiredService<IConfiguration>();
+	.AddTgsRepository(builder.Configuration.GetConnectionString("Tgs")!)
+	.AddSystemJsonSerializer()
+	.AddTgsLog()
+	.AddProfitRebateCore()
+	.AddCashServiceClient((options, sp) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
 
-        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
-    })
-    .AddPlayerBucketClient()
+		options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
+	})
+	.AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
+        .ConfigureHttpClient(httpClient => httpClient.BaseAddress =
+            builder.Configuration.GetValue<Uri>("ProfitRebate:PlayerBucketBaseUrl")))
     .AddPlayerServiceClient((options, sp) =>
     {
         var config = sp.GetRequiredService<IConfiguration>();
@@ -51,7 +53,7 @@ builder.Services
         {
             var config = sp.GetRequiredService<IConfiguration>();
 
-            options.Url = config.GetConnectionString("Nats");
+            options.Url = config.GetConnectionString("Nats")!;
         }))
     .AddRabbitMessageQueue(config => config
         .ConfigQueueOptions((options, sp) =>
@@ -67,7 +69,7 @@ builder.Services
 builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -87,14 +89,14 @@ builder.Logging
 
 builder.Services
     .AddOptions<OtlpExporterOptions>()
-    .Configure<IConfiguration>((options, conifg) =>
+    .Configure<IConfiguration>((options, config) =>
     {
-        var nodeIp = conifg.GetValue<string>("NODE_IP");
+        var nodeIp = config.GetValue<string>("NODE_IP");
 
         if (!string.IsNullOrWhiteSpace(nodeIp))
             options.Endpoint = new Uri($"http://{nodeIp}:4317");
 
-        conifg.GetSection("Opentelemetry:Tracing").Bind(options);
+        config.GetSection("Opentelemetry:Tracing").Bind(options);
     });
 
 builder.Services

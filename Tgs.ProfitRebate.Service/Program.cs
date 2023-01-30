@@ -54,7 +54,13 @@ builder.Services
 	})
 	.AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
         .ConfigureHttpClient(httpClient => httpClient.BaseAddress =
-            builder.Configuration.GetValue<Uri>("ProfitRebate:PlayerBucketBaseUrl")));
+            builder.Configuration.GetValue<Uri>("ProfitRebate:PlayerBucketBaseUrl")))
+    .AddPlayerServiceClient((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+
+        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:PlayerServiceBaseUrl");
+    });
 
 builder.Services
 	.AddMessageQueue()

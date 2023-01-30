@@ -17,19 +17,6 @@ imagePullSecrets:
 nameOverride: "profit-rebate-service"
 fullnameOverride: "profit-rebate-service"
 
-connectionStrings:
-  tgs: Server=localhost;Database=tgs;User Id=tgs;Password=1qaz2wsx!@
-  redis: localhost,abortConnect=false,connectTimeout=3000
-
-nats:
-  urls: nats://nats-client:4222
-
-rabbit:
-  url: amqp://localhost:5672
-  user: devadmin
-  password: devadmin
-  vhost: /devhost
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

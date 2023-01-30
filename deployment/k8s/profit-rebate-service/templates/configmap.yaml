@@ -6,22 +6,9 @@ metadata:
 data:
   appsettings.json: |
     {
-      "ConnectionStrings": {
-        "Tgs": "{{ .Values.connectionStrings.tgs }}",
-        "RedisConfigurationString": "{{ .Values.connectionStrings.redis }}"
-      },
-      "NatsSetting": {
-        "Urls": "{{ .Values.nats.urls }}"
-      },
       "ProfitRebate": {
         "CashBaseUrl": "http://cashservice-api",
         "PlayerBucketBaseUrl": "http://tgs-playerbucket-service",
         "PlayerServiceBaseUrl": "http://player-api"
-      },
-      "RabbitMQ": {
-        "RabbitMQUrl": "{{ .Values.rabbit.url }}",
-        "UserName": "{{ .Values.rabbit.user }}",
-        "Password": "{{ .Values.rabbit.password }}",
-        "VirtualHost": "{{ .Values.rabbit.vhost  }}"
       }
     }

@@ -42,7 +42,7 @@ builder.Host.ConfigureServices((context, services) => services
 
 // Add services to the container.
 builder.Services
-	.AddTgsRepository(builder.Configuration.GetConnectionString("Tgs"))
+	.AddTgsRepository(builder.Configuration.GetConnectionString("Tgs")!)
 	.AddSystemJsonSerializer()
 	.AddTgsLog()
 	.AddProfitRebateCore()
@@ -52,7 +52,15 @@ builder.Services
 
 		options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
 	})
-	.AddPlayerBucketClient();
+	.AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
+        .ConfigureHttpClient(httpClient => httpClient.BaseAddress =
+            builder.Configuration.GetValue<Uri>("ProfitRebate:PlayerBucketBaseUrl")))
+    .AddPlayerServiceClient((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+
+        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:PlayerServiceBaseUrl");
+    });
 
 builder.Services
 	.AddMessageQueue()
@@ -62,7 +70,7 @@ builder.Services
 			sp => new MongoMessageQueueBuilderOptions
 			{
 				MessageQueue = MessageQueue.Default,
-				ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoDBMessagingConnectionString")
+				ConnectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("MongoDBMessagingConnectionString")!
 			})
 		.DeclareQueue("tgs.viplevel.database.promotion"))
 	.AddNatsMessageQueue(natsConfig => natsConfig

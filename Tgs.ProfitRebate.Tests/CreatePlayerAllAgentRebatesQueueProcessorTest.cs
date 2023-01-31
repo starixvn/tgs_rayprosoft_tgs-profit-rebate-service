@@ -353,7 +353,7 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
     }
 
     [Test]
-    public async Task Can_Save_All_Agent_Rebate_Contributors_And_Right_Record()
+    public async Task Can_Save_All_Agent_Rebate_Contributors_For_Turnover()
     {
         var fakePlayerAllAgentRebateTaskQueue = Substitute.For<IPlayerAllAgentRebateTaskQueue>();
         var fakePlayerRebateFactory = Substitute.For<IPlayerAllAgentRebateFactory>();
@@ -443,10 +443,117 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
 
         await sut.ProcessQueue(default);
 
-        var rebates = new decimal[] { 10M,1M };
+        var rebates = new (decimal SportsTurnover, decimal SportsTurnoverRebate)[] { (100M, 10M), (10M, 1M) };
         await fakePlayerRebateFactory.Received(2)
             .CreateAllAgentPlayerRebateContributorAsync(Arg.Is<PlayerAllAgentRebateContributorModel>(x =>
-                rebates.Contains(x.SportsTurnoverRebate)));
+                rebates.Any(r => r.SportsTurnover == x.SportsTurnover && r.SportsTurnoverRebate == x.SportsTurnoverRebate)));
+    }
+
+    [Test]
+    public async Task Can_Save_All_Agent_Rebate_Contributors_For_WinLoss()
+    {
+        var fakePlayerAllAgentRebateTaskQueue = Substitute.For<IPlayerAllAgentRebateTaskQueue>();
+        var fakePlayerRebateFactory = Substitute.For<IPlayerAllAgentRebateFactory>();
+        var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+        var fakePlayerServiceClient = Substitute.For<IPlayerServiceClient>();
+        var fakePlayerAllAgentRebateService = Substitute.For<ITgsService<PlayerAllAgentRebateRecord>>();
+        var fakePlayerAllAgentRebateContributorService = Substitute.For<ITgsService<PlayerAllAgentRebateContributor>>();
+        var fakeTransactionService = Substitute.For<ITgsService<Transaction>>();
+        var fakeLogger = Substitute.For<ILogger<PlayerAllAgentRebateTaskQueueProcessor>>();
+
+        var sut = new PlayerAllAgentRebateTaskQueueProcessor(
+            fakePlayerAllAgentRebateTaskQueue,
+            fakePlayerRebateFactory,
+            fakeCashServiceClient,
+            fakePlayerServiceClient,
+            fakePlayerAllAgentRebateService,
+            fakePlayerAllAgentRebateContributorService,
+            fakeTransactionService,
+            fakeLogger);
+
+        var brandId = Guid.NewGuid();
+        var reportDate = DateTimeOffset.Parse("2023/01/01 00:00:00+8");
+        var parentPlayerCode = "parentPlayerCode";
+
+        var conditions = new BrandAllAgentGameTypeConditionModel[]
+        {
+            new BrandAllAgentGameTypeConditionModel
+            {
+                BrandId= brandId,
+                GameTypeSwitch = true,
+                HasValidBet = true,
+                HasWinLoss= true,
+                AllAgentGameType = AllAgentGameType.Sportsbook,
+                AllAgentRebateType = AllAgentRebateType.WinLoss,
+                Rank = 1,
+                ActiveNumber= 1,
+                NetProfit= 110,
+                RebatePercentage = 10
+            }
+        };
+
+        var turnoverWinLoss = new PlayerAllAgentTurnoverWinLossModel[]
+        {
+            new PlayerAllAgentTurnoverWinLossModel
+            {
+                BrandId = brandId,
+                PlayerCode = "parentPlayerCode",
+                ChildPlayerCode = "playerCode",
+                GameType= GameType.Sportsbook,
+                Turnover = 100,
+                WinLoss= 100,
+            },
+            new PlayerAllAgentTurnoverWinLossModel
+            {
+                BrandId = brandId,
+                PlayerCode = "parentPlayerCode",
+                ChildPlayerCode = "playerCode1",
+                GameType= GameType.Sportsbook,
+                Turnover = 10,
+                WinLoss= 10,
+            },
+            new PlayerAllAgentTurnoverWinLossModel
+            {
+                BrandId = brandId,
+                PlayerCode = "parentPlayerCode",
+                ChildPlayerCode = "playerCode2",
+                GameType= GameType.Sportsbook,
+                Turnover = 10,
+                WinLoss= 10,
+            }
+        };
+
+        var request = new PlayerAllAgentRebateQueueModel
+        {
+            PlayerCode = parentPlayerCode,
+            ReportDate = reportDate,
+            Conditions = conditions
+        };
+
+        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }.ToImmutableDictionary();
+
+        _ = fakePlayerServiceClient.GetPlayerPropertiesAsync(Arg.Any<string>())
+            .Returns(player);
+
+        _ = fakePlayerAllAgentRebateService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
+
+        _ = fakePlayerAllAgentRebateContributorService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
+
+        _ = fakePlayerAllAgentRebateTaskQueue.DequeueAsync(Arg.Any<CancellationToken>()).Returns(request);
+
+        _ = fakePlayerRebateFactory.GetPlayerAllAgentTurnoverWinLossAsync(Arg.Any<DateTimeOffset>(), Arg.Any<string>())
+            .Returns(turnoverWinLoss);
+
+        _ = fakeTransactionService.GetQueries()
+            .Returns(Array.Empty<Transaction>().AsQueryable().BuildMock());
+
+        await sut.ProcessQueue(default);
+
+        var rebates = new (decimal SportsWinLoss, decimal SportsWinLossRebate)[] { (100M, 10M), (10M, 1M) };
+
+        await fakePlayerRebateFactory.Received(3)
+            .CreateAllAgentPlayerRebateContributorAsync(Arg.Is<PlayerAllAgentRebateContributorModel>(x =>
+                rebates.Any(r => r.SportsWinLoss == x.SportsWinLoss && r.SportsWinLossRebate == x.SportsWinLossRebate)));
     }
 
     [Test]

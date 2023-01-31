@@ -245,6 +245,18 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                     x.Turnover : 0M,
                 LotteryTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.Lottery ?
                     x.Turnover : 0M,
+                SportsWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook ?
+                    x.WinLoss : 0M,
+                VirtualSportsWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.VirtualSports ?
+                    x.WinLoss : 0M,
+                LiveDealerWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.LiveDealer ?
+                    x.WinLoss : 0M,
+                CardGameWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.CardGame ?
+                    x.WinLoss : 0M,
+                SlotWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Slot ?
+                    x.WinLoss : 0M,
+                LotteryWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Lottery ?
+                    x.WinLoss : 0M,
                 SportsTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook ?
                     (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover : 0M,
                 VirtualSportsTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.VirtualSports ?
@@ -284,6 +296,12 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                     CardGameTurnover = list.Sum(s => s.CardGameTurnover),
                     SlotTurnover = list.Sum(s => s.SlotTurnover),
                     LotteryTurnover = list.Sum(s => s.LotteryTurnover),
+                    SportsWinLoss = list.Sum(s => s.SportsWinLoss),
+                    VirtualSportsWinLoss = list.Sum(s => s.VirtualSportsWinLoss),
+                    LiveDealerWinLoss = list.Sum(s => s.LiveDealerWinLoss),
+                    CardGameWinLoss = list.Sum(s => s.CardGameWinLoss),
+                    SlotWinLoss = list.Sum(s => s.SlotWinLoss),
+                    LotteryWinLoss = list.Sum(s => s.LotteryWinLoss),
                     SportsTurnoverRebate = list.Sum(s => s.SportsTurnoverRebate),
                     VirtualSportsTurnoverRebate = list.Sum(s => s.VirtualSportsTurnoverRebate),
                     LiveDealerTurnoverRebate = list.Sum(s => s.LiveDealerTurnoverRebate),

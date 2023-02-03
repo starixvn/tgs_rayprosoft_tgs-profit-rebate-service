@@ -155,7 +155,7 @@ public class
 
         foreach (var player in sendPlayers.Join(players, pb => pb.PlayerRebate.PlayerCode, p => p.PlayerCode,
                      (pb, p) => new { Rebate = pb.PlayerRebate, pb.IsAutoSend, p }))
-            await _taskQueue.QueuePlayerRebateAsync(new(cancellationToken)
+            await _taskQueue.QueuePlayerRebateAsync(new PlayerRebateQueueModel
             {
                 BrandId = player.Rebate.BrandId,
                 PlayerCode = player.Rebate.PlayerCode,
@@ -179,7 +179,7 @@ public class
                 SlotRebateAmount = player.Rebate.SlotRebateAmount,
                 LotteryTurnover = player.Rebate.LotteryTurnover,
                 LotteryRebateAmount = player.Rebate.LotteryRebateAmount,
-                RebateAmount = player.Rebate.RebateAmount,
+                RebateAmount = player.Rebate.RebateAmount.Truncate(2),
                 DefaultWalletId = player.p.DefaultWalletId,
                 IsAutoSend = player.IsAutoSend
             });

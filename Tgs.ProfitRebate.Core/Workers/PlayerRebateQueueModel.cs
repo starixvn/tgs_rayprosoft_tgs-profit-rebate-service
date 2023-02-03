@@ -1,6 +1,6 @@
 ﻿namespace Tgs.ProfitRebate.Core.Workers;
 
-public record PlayerRebateQueueModel(CancellationToken CancellationToken)
+public record PlayerRebateQueueModel
 {
 	public Guid BrandId { get; set; }
 	public Guid? AgentId { get; set; }

@@ -20,6 +20,9 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
 
             entity.HasIndex(e => e.PlayerCode, "ix_round_aggregate_player_code");
 
+            entity.HasIndex(e => new { e.ReportDate, e.Hour, e.Minute }, "ix_round_aggregate_report_date_desc_and_hour_minute")
+                .HasSortOrder(new[] { SortOrder.Descending, SortOrder.Ascending, SortOrder.Ascending });
+
             entity.Property(e => e.Id).HasColumnName("id");
 
             entity.Property(e => e.AgentId).HasColumnName("agent_id");

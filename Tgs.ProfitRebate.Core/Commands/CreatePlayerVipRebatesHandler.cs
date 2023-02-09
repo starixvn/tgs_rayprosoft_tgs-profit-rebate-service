@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
-using Tgs.ProfitRebate.ViewModel;
 using TGS.Core.Infrastructures.Extensions;
+using Tgs.ProfitRebate.Core.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Commands;
 

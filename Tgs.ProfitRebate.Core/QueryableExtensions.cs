@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Tgs.ProfitRebate.ViewModel;
+using Tgs.ProfitRebate.Core.ViewModel;
 
 namespace Tgs.ProfitRebate.Core;
 

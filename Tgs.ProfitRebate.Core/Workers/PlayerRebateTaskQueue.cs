@@ -15,14 +15,14 @@ public class PlayerRebateTaskQueue : IPlayerRebateTaskQueue
 {
 	private readonly Channel<PlayerRebateQueueModel> _queue;
 
-	public PlayerRebateTaskQueue(int capacity)
+	public PlayerRebateTaskQueue()
 	{
-		var options = new BoundedChannelOptions(capacity)
+		var options = new UnboundedChannelOptions
 		{
-			FullMode = BoundedChannelFullMode.Wait
-		};
+            SingleReader = true
+        };
 		_queue = Channel
-			.CreateBounded<PlayerRebateQueueModel>(options);
+			.CreateUnbounded<PlayerRebateQueueModel>(options);
 	}
 
 	public async ValueTask QueuePlayerRebateAsync(

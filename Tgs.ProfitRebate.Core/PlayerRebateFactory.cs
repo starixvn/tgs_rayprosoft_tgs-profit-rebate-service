@@ -24,7 +24,8 @@ public class PlayerRebateFactory : IPlayerRebateFactory
 				request.PlayerCode,
 				request.BucketAmount,
 				request.BucketType,
-				request.ExternalId).ConfigureAwait(false);
+				request.ExternalId,
+                "").ConfigureAwait(false);
 	}
 
 	public async ValueTask<PlayerRebate> CreateVipPlayerRebateAsync(VipPlayerRebateModel model, DateTimeOffset? sentOn)

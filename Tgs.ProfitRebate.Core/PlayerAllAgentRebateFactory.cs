@@ -29,7 +29,8 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
 				request.PlayerCode,
 				request.BucketAmount,
 				request.BucketType,
-				request.ExternalId).ConfigureAwait(false);
+				request.ExternalId,
+                "").ConfigureAwait(false);
 	}
 
     public ValueTask CreateAllAgentPlayerRebatesAsync(PlayerAllAgentRebateModel[] models)

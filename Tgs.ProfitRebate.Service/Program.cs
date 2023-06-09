@@ -34,7 +34,7 @@ builder.Services
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
 
-		options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl");
+		options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl")!;
 	})
 	.AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
         .ConfigureHttpClient(httpClient => httpClient.BaseAddress =
@@ -43,7 +43,7 @@ builder.Services
     {
         var config = sp.GetRequiredService<IConfiguration>();
 
-        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:PlayerServiceBaseUrl");
+        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:PlayerServiceBaseUrl")!;
     });
 
 builder.Services
@@ -81,8 +81,8 @@ builder.Logging
         _ = options.AddFluentdForwardExporter(fluentOptions =>
         {
             var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
-            fluentOptions.Host = nodeIp;
-            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
+            fluentOptions.Host = nodeIp!;
+            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME")!;
             fluentOptions.UseMessagePack();
         });
     });
@@ -100,7 +100,8 @@ builder.Services
     });
 
 builder.Services
-    .AddOpenTelemetryTracing(builder => builder
+    .AddOpenTelemetry()
+    .WithTracing(builder => builder
         .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddEnvironmentVariableDetector())
         .AddSource("Tgs.*")
@@ -110,6 +111,8 @@ builder.Services
         .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
         .AddProfileViewExporter()
         .AddOtlpExporter())
+    .WithMetrics()
+    .Services
     .Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =
         httpContext => !httpContext.Request.Path.HasValue
                        || !httpContext.Request.Path.StartsWithSegments("/swagger")

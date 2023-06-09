@@ -1,0 +1,39 @@
+variables:
+  BuildCacheKey: Tgs.Profit.Rebate.$CI_PIPELINE_IID
+
+stages:
+  - build
+  - test
+
+build-code:
+  stage: build
+  script:
+    - dotnet build -c $BuildConfiguration
+  only:
+    - merge_requests
+    - develop
+    - release
+    - main
+  cache:
+    key: $BuildCacheKey
+    untracked: true
+
+unit-test:
+  stage: test
+  script:
+    - dotnet test -c $BuildConfiguration -l:"junit;LogFilePath=../TestReports/{assembly}-TestReport.xml" --no-restore --no-build
+  needs:
+    - build-code
+  only:
+    - merge_requests
+    - develop
+    - release
+    - main
+  cache:
+    key: $BuildCacheKey
+    untracked: true
+    policy: pull
+  artifacts:
+    when: always
+    reports:
+      junit: ./TestReports/*-TestReport.xml

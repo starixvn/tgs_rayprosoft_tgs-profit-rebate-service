@@ -15,6 +15,9 @@ public class PlayerRebateBackground : BackgroundService
     private readonly IServiceProvider _serviceProvider;
     private readonly IPlayerRebateTaskQueue _taskQueue;
 
+    private static readonly Guid[] brandIds = new[]
+        { Guid.Parse("0187e5c8-7680-0000-0001-07e79f4d606c"), Guid.Parse("0187eae3-7823-0000-0001-07e785f2b37a") };
+
     public PlayerRebateBackground(IPlayerRebateTaskQueue taskQueue,
         IServiceProvider serviceProvider,
         ILogger<PlayerRebateBackground> logger)
@@ -109,17 +112,21 @@ public class PlayerRebateBackground : BackgroundService
                         continue;
                     }
 
+                    var playerBucketAmount = brandIds.Contains(request.BrandId)
+                        ? request.RebateAmount * 5
+                        : request.RebateAmount;
+
                     _logger.LogInformation(
-                        "player vip rebate create player bucket request: {request.PlayerCode} {request.RebateAmount}",
-                        request.PlayerCode, request.RebateAmount);
+                        "player vip rebate create player bucket request: {request.PlayerCode} {request.RebateAmount},bucket amount {playerBucketAmount}",
+                        request.PlayerCode, request.RebateAmount, playerBucketAmount);
 
                     await Policy.Handle<Exception>()
                         .RetryAsync(
                             3,
                             (exception, retryCount) => _logger.LogError(
-                                "PlayerCode:{request.PlayerCode} RebateAmount:{request.RebateAmount} retryCount:{retryCount} Exception:{exception}",
+                                "PlayerCode:{request.PlayerCode} BucketAmount:{playerBucketAmount} retryCount:{retryCount} Exception:{exception}",
                                 request.PlayerCode,
-                                request.RebateAmount,
+                                playerBucketAmount,
                                 retryCount,
                                 exception))
                         .ExecuteAsync(
@@ -129,7 +136,7 @@ public class PlayerRebateBackground : BackgroundService
                                     .CreatePlayerBucketsAsync(new CreatePlayerBucketRequest(
                                         request.PlayerCode,
                                         Service.PlayerBuckets.BucketType.Vip,
-                                        request.RebateAmount,
+                                        playerBucketAmount,
                                         rebate.Id.ToString()))
                                     .ConfigureAwait(false);
                             });

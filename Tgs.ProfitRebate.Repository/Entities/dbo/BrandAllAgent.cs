@@ -3,10 +3,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class BrandAllAgent
 {
-    public partial class BrandAllAgent
-    {
-        public Guid BrandId { get; set; }
-    }
+    public Guid BrandId { get; set; }
 }

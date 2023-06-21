@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using MediatR;
 using Tgs.ProfitRebate.Core;
 using Tgs.ProfitRebate.Core.Workers;
 
@@ -9,8 +8,8 @@ public static class ProfitRebateCoreExtensions
 {
 	public static IServiceCollection AddProfitRebateCore(this IServiceCollection services)
 		=> services
-			.AddMediatR(Assembly.GetExecutingAssembly())
-			.AddTransient(typeof(ITgsService<>), typeof(TgsService<>))
+            .AddMediatR(r => r.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
+            .AddTransient(typeof(ITgsService<>), typeof(TgsService<>))
 			.AddTransient<IAgentDividendFactory, AgentDividendFactory>()
 			.AddTransient<IPlayerRebateFactory, PlayerRebateFactory>()
             .AddTransient<IPlayerAllAgentRebateFactory, PlayerAllAgentRebateFactory>()

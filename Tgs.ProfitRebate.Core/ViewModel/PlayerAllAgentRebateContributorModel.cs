@@ -1,6 +1,4 @@
-﻿using Tgs.ProfitRebate.Enum;
-
-namespace Tgs.ProfitRebate.Core.ViewModel;
+﻿namespace Tgs.ProfitRebate.Core.ViewModel;
 
 public class PlayerAllAgentRebateContributorModel
 {

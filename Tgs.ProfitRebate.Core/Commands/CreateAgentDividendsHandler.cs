@@ -5,25 +5,25 @@ using Tgs.ProfitRebate.Core.Workers;
 namespace Tgs.ProfitRebate.Core.Commands;
 
 public class CreateAgentDividendsHandler : IRequestHandler<CreateAgentDividendsRequest,
-	MessageResponse>
+    MessageResponse>
 {
-	private readonly IAgentDividendTaskQueue _taskQueue;
+    private readonly IAgentDividendTaskQueue _taskQueue;
 
-	public CreateAgentDividendsHandler(
-		IAgentDividendTaskQueue taskQueue)
-	{
-		_taskQueue = taskQueue;
-	}
+    public CreateAgentDividendsHandler(
+        IAgentDividendTaskQueue taskQueue)
+    {
+        _taskQueue = taskQueue;
+    }
 
-	public async Task<MessageResponse> Handle(
-		CreateAgentDividendsRequest request,
-		CancellationToken cancellationToken)
-	{
-		await _taskQueue.QueueAgentDividendAsync(new AgentDividendQueueModel(request.BrandCode!, cancellationToken));
+    public async Task<MessageResponse> Handle(
+        CreateAgentDividendsRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _taskQueue.QueueAgentDividendAsync(new(request.BrandCode!, cancellationToken));
 
-		return new MessageResponse
-		{
-			Valid = true
-		};
-	}
+        return new()
+        {
+            Valid = true
+        };
+    }
 }

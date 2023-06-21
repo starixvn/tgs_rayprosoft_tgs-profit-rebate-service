@@ -3,49 +3,75 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class Promotion
 {
-    public partial class Promotion
-    {
-        public Promotion()
-        {
-            TransactionPromotions = new HashSet<TransactionPromotion>();
-        }
+    public Guid Id { get; set; }
 
-        public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public DateTime From { get; set; }
-        public DateTime To { get; set; }
-        public short Status { get; set; }
-        public bool AutoSentPlayerBonus { get; set; }
-        public Guid BrandId { get; set; }
-        public string PromotionType { get; set; } = null!;
-        public string? SettlementIntervalType { get; set; }
-        public decimal TotalAmountLimit { get; set; }
-        public decimal AmountUsed { get; set; }
-        public short Unlimited { get; set; }
-        public short? GameType { get; set; }
-        public decimal Percentage { get; set; }
-        public decimal BonusAmountLimit { get; set; }
-        public decimal TurnoverMultiple { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
-        public string? CreatedByUsername { get; set; }
-        public string? UpdatedByUsername { get; set; }
-        public Guid? VipLevelId { get; set; }
-        public string? Content { get; set; }
-        public string? DesktopBanner { get; set; }
-        public string? Localization { get; set; }
-        public string? MobileBanner { get; set; }
-        public string? SubSubject { get; set; }
-        public string? Terms { get; set; }
-        public string CampaignDetail { get; set; } = null!;
-        public int DisplayOrder { get; set; }
-        public Guid? AmountUsedSnapshotId { get; set; }
-        public Guid? SnapshotEventId { get; set; }
+    public string Name { get; set; } = null!;
 
-        public virtual Brand Brand { get; set; } = null!;
-        public virtual VipLevel? VipLevel { get; set; }
-        public virtual ICollection<TransactionPromotion> TransactionPromotions { get; set; }
-    }
+    public DateTime From { get; set; }
+
+    public DateTime To { get; set; }
+
+    public short Status { get; set; }
+
+    public bool AutoSentPlayerBonus { get; set; }
+
+    public Guid BrandId { get; set; }
+
+    public string PromotionType { get; set; } = null!;
+
+    public string? SettlementIntervalType { get; set; }
+
+    public decimal TotalAmountLimit { get; set; }
+
+    public decimal AmountUsed { get; set; }
+
+    public short Unlimited { get; set; }
+
+    public short? GameType { get; set; }
+
+    public decimal Percentage { get; set; }
+
+    public decimal BonusAmountLimit { get; set; }
+
+    public decimal TurnoverMultiple { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public string? CreatedByUsername { get; set; }
+
+    public string? UpdatedByUsername { get; set; }
+
+    public Guid? VipLevelId { get; set; }
+
+    public string? Content { get; set; }
+
+    public string? DesktopBanner { get; set; }
+
+    public string? Localization { get; set; }
+
+    public string? MobileBanner { get; set; }
+
+    public string? SubSubject { get; set; }
+
+    public string? Terms { get; set; }
+
+    public string CampaignDetail { get; set; } = null!;
+
+    public int DisplayOrder { get; set; }
+
+    public Guid? AmountUsedSnapshotId { get; set; }
+
+    public Guid? SnapshotEventId { get; set; }
+
+    public virtual Brand Brand { get; set; } = null!;
+
+    public virtual ICollection<TransactionPromotion> TransactionPromotions { get; set; } = new List<TransactionPromotion>();
+
+    public virtual VipLevel? VipLevel { get; set; }
 }

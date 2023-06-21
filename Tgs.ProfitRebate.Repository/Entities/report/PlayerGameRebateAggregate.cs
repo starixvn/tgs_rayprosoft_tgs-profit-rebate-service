@@ -3,33 +3,59 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class PlayerGameRebateAggregate
 {
-    public partial class PlayerGameRebateAggregate
-    {
-        public int Id { get; set; }
-        public Guid BrandId { get; set; }
-        public Guid? AgentId { get; set; }
-        public Guid GameProviderId { get; set; }
-        public int GameId { get; set; }
-        public string PlayerCode { get; set; } = null!;
-        public int? VipLevel { get; set; }
-        public short GameType { get; set; }
-        public int Hour { get; set; }
-        public int Minute { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime ReportDate { get; set; }
-        public decimal Turnover { get; set; }
-        public decimal WinLoss { get; set; }
-        public decimal VipLiveDealerRebatePercentage { get; set; }
-        public decimal VipSlotRebatePercentage { get; set; }
-        public decimal VipCardGameRebatePercentage { get; set; }
-        public decimal VipSportsRebatePercentage { get; set; }
-        public decimal VipVirtualSportsRebatePercentage { get; set; }
-        public decimal VipLotteryRebatePercentage { get; set; }
-        public decimal VipRebateAmount { get; set; }
-        public decimal BetAmount { get; set; }
-        public decimal OriginalTurnover { get; set; }
-        public decimal ValidBetAmount { get; set; }
-    }
+    public int Id { get; set; }
+
+    public Guid BrandId { get; set; }
+
+    public Guid? AgentId { get; set; }
+
+    public Guid GameProviderId { get; set; }
+
+    public int GameId { get; set; }
+
+    public string PlayerCode { get; set; } = null!;
+
+    public int? VipLevel { get; set; }
+
+    public short GameType { get; set; }
+
+    public int Hour { get; set; }
+
+    public int Minute { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime ReportDate { get; set; }
+
+    public decimal Turnover { get; set; }
+
+    public decimal WinLoss { get; set; }
+
+    public decimal VipLiveDealerRebatePercentage { get; set; }
+
+    public decimal VipSlotRebatePercentage { get; set; }
+
+    public decimal VipCardGameRebatePercentage { get; set; }
+
+    public decimal VipSportsRebatePercentage { get; set; }
+
+    public decimal VipVirtualSportsRebatePercentage { get; set; }
+
+    public decimal VipLotteryRebatePercentage { get; set; }
+
+    public decimal VipRebateAmount { get; set; }
+
+    public decimal BetAmount { get; set; }
+
+    public decimal OriginalTurnover { get; set; }
+
+    public decimal ValidBetAmount { get; set; }
+
+    public DateTime? ReportDateTime { get; set; }
+
+    public int RoundCount { get; set; }
 }

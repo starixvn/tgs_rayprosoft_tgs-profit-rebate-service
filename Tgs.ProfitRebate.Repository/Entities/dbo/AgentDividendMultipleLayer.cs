@@ -3,22 +3,31 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
-{
-    public partial class AgentDividendMultipleLayer
-    {
-        public int Id { get; set; }
-        public int AgentDividendId { get; set; }
-        public Guid AgentId { get; set; }
-        public Guid DividendProviderAgentId { get; set; }
-        public string Layer { get; set; } = null!;
-        public decimal Dividend { get; set; }
-        public decimal ActualDividendPercentage { get; set; }
-        public decimal? AgentCoveredBonus { get; set; }
-        public decimal? AgentCoveredBonusAdjust { get; set; }
-        public decimal AgentDividendPercentage { get; set; }
-        public int DividendProviderId { get; set; }
+namespace Tgs.ProfitRebate.Repository.Entities;
 
-        public virtual AgentDividend AgentDividend { get; set; } = null!;
-    }
+public partial class AgentDividendMultipleLayer
+{
+    public int Id { get; set; }
+
+    public int AgentDividendId { get; set; }
+
+    public Guid AgentId { get; set; }
+
+    public Guid DividendProviderAgentId { get; set; }
+
+    public string Layer { get; set; } = null!;
+
+    public decimal Dividend { get; set; }
+
+    public decimal ActualDividendPercentage { get; set; }
+
+    public decimal? AgentCoveredBonus { get; set; }
+
+    public decimal? AgentCoveredBonusAdjust { get; set; }
+
+    public decimal AgentDividendPercentage { get; set; }
+
+    public int DividendProviderId { get; set; }
+
+    public virtual AgentDividend AgentDividend { get; set; } = null!;
 }

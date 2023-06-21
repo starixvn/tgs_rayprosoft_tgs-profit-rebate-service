@@ -3,78 +3,117 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class Brand
 {
-    public partial class Brand
-    {
-        public Brand()
-        {
-            AgentTransactions = new HashSet<AgentTransaction>();
-            Agents = new HashSet<Agent>();
-            BrandAgentDividendConditions = new HashSet<BrandAgentDividendCondition>();
-            BrandGames = new HashSet<BrandGame>();
-            Departments = new HashSet<Department>();
-            Players = new HashSet<Player>();
-            Promotions = new HashSet<Promotion>();
-            Transactions = new HashSet<Transaction>();
-            VipLevels = new HashSet<VipLevel>();
-            WithdrawForms = new HashSet<WithdrawForm>();
-        }
+    public Guid Id { get; set; }
 
-        public Guid Id { get; set; }
-        public short Status { get; set; }
-        public string? Description { get; set; }
-        public string? OperationalEmail { get; set; }
-        public string? TimeZoneId { get; set; }
-        public Guid LicenseeId { get; set; }
-        public string ClientId { get; set; } = null!;
-        public string SecretKey { get; set; } = null!;
-        public string ApiKey { get; set; } = null!;
-        public short SettlementIntervalType { get; set; }
-        public DateTime PreviousSettlementFrom { get; set; }
-        public DateTime PreviousSettlementTo { get; set; }
-        public DateTime CurrentSettlementFrom { get; set; }
-        public DateTime CurrentSettlementTo { get; set; }
-        public DateTime NextSettlementFrom { get; set; }
-        public DateTime NextSettlementTo { get; set; }
-        public bool AutoSentPlayerBonus { get; set; }
-        public bool AutoSentAgentBonus { get; set; }
-        public string Code { get; set; } = null!;
-        public string Name { get; set; } = null!;
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
-        public string CreatedByUsername { get; set; } = null!;
-        public string UpdatedByUsername { get; set; } = null!;
-        public int? SettlementDay { get; set; }
-        public string? LogoInfo { get; set; }
-        public bool EnableSms { get; set; }
-        public string? SmsVendorCode { get; set; }
-        public string? SmsVendorSettings { get; set; }
-        public decimal PlatformCharge { get; set; }
-        public bool CheckDividendActiveCount { get; set; }
-        public bool EnableSmsRegisterFlow { get; set; }
-        public short AgentDividendType { get; set; }
-        public bool EnableAgentSms { get; set; }
-        public bool EnablePlayerIdentity { get; set; }
-        public bool AutoClearWageringRequirement { get; set; }
-        public decimal AutoClearWageringRequirementBalance { get; set; }
-        public decimal DepositHandlingFeeRateTenPercentile { get; set; }
-        public decimal WithdrawHandlingFeeRateTenPercentile { get; set; }
-        public bool EnableEmailRegisterFlow { get; set; }
-        public string? PlayerRegisterFlowSettings { get; set; }
-        public bool EnableBankInfoRegisterFlow { get; set; }
-        public bool DepositPaymentLockEnabled { get; set; }
+    public short Status { get; set; }
 
-        public virtual Licensee Licensee { get; set; } = null!;
-        public virtual ICollection<AgentTransaction> AgentTransactions { get; set; }
-        public virtual ICollection<Agent> Agents { get; set; }
-        public virtual ICollection<BrandAgentDividendCondition> BrandAgentDividendConditions { get; set; }
-        public virtual ICollection<BrandGame> BrandGames { get; set; }
-        public virtual ICollection<Department> Departments { get; set; }
-        public virtual ICollection<Player> Players { get; set; }
-        public virtual ICollection<Promotion> Promotions { get; set; }
-        public virtual ICollection<Transaction> Transactions { get; set; }
-        public virtual ICollection<VipLevel> VipLevels { get; set; }
-        public virtual ICollection<WithdrawForm> WithdrawForms { get; set; }
-    }
+    public string? Description { get; set; }
+
+    public string? OperationalEmail { get; set; }
+
+    public string? TimeZoneId { get; set; }
+
+    public Guid LicenseeId { get; set; }
+
+    public string ClientId { get; set; } = null!;
+
+    public string SecretKey { get; set; } = null!;
+
+    public string ApiKey { get; set; } = null!;
+
+    public short SettlementIntervalType { get; set; }
+
+    public DateTime PreviousSettlementFrom { get; set; }
+
+    public DateTime PreviousSettlementTo { get; set; }
+
+    public DateTime CurrentSettlementFrom { get; set; }
+
+    public DateTime CurrentSettlementTo { get; set; }
+
+    public DateTime NextSettlementFrom { get; set; }
+
+    public DateTime NextSettlementTo { get; set; }
+
+    public bool AutoSentPlayerBonus { get; set; }
+
+    public bool AutoSentAgentBonus { get; set; }
+
+    public string Code { get; set; } = null!;
+
+    public string Name { get; set; } = null!;
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public string CreatedByUsername { get; set; } = null!;
+
+    public string UpdatedByUsername { get; set; } = null!;
+
+    public int? SettlementDay { get; set; }
+
+    public string? LogoInfo { get; set; }
+
+    public bool EnableSms { get; set; }
+
+    public string? SmsVendorCode { get; set; }
+
+    public string? SmsVendorSettings { get; set; }
+
+    public decimal PlatformCharge { get; set; }
+
+    public bool CheckDividendActiveCount { get; set; }
+
+    public bool EnableSmsRegisterFlow { get; set; }
+
+    public short AgentDividendType { get; set; }
+
+    public bool EnableAgentSms { get; set; }
+
+    public bool EnablePlayerIdentity { get; set; }
+
+    public bool AutoClearWageringRequirement { get; set; }
+
+    public decimal AutoClearWageringRequirementBalance { get; set; }
+
+    public decimal DepositHandlingFeeRateTenPercentile { get; set; }
+
+    public decimal WithdrawHandlingFeeRateTenPercentile { get; set; }
+
+    public bool EnableEmailRegisterFlow { get; set; }
+
+    public string? PlayerRegisterFlowSettings { get; set; }
+
+    public bool EnableBankInfoRegisterFlow { get; set; }
+
+    public bool DepositPaymentLockEnabled { get; set; }
+
+    public int? TimeSpanMinutes { get; set; }
+
+    public virtual ICollection<AgentTransaction> AgentTransactions { get; set; } = new List<AgentTransaction>();
+
+    public virtual ICollection<Agent> Agents { get; set; } = new List<Agent>();
+
+    public virtual ICollection<BrandAgentDividendCondition> BrandAgentDividendConditions { get; set; } = new List<BrandAgentDividendCondition>();
+
+    public virtual ICollection<BrandGame> BrandGames { get; set; } = new List<BrandGame>();
+
+    public virtual ICollection<Department> Departments { get; set; } = new List<Department>();
+
+    public virtual Licensee Licensee { get; set; } = null!;
+
+    public virtual ICollection<Player> Players { get; set; } = new List<Player>();
+
+    public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
+
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+
+    public virtual ICollection<VipLevel> VipLevels { get; set; } = new List<VipLevel>();
+
+    public virtual ICollection<WithdrawForm> WithdrawForms { get; set; } = new List<WithdrawForm>();
 }

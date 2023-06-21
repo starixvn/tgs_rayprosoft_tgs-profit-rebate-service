@@ -1,7 +1,7 @@
 ﻿using MediatR;
+using TGS.Core.Infrastructures.Extensions;
 using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
-using TGS.Core.Infrastructures.Extensions;
 
 namespace Tgs.ProfitRebate.Core.Commands;
 
@@ -33,7 +33,8 @@ public class CreatePlayerAllAgentRebatesHandler : IRequestHandler<CreatePlayerAl
                 result.Offset);
         }
 
-        var validPlayerCodes = await _playerAllAgentRebateFactory.GetValidAllAgentPlayerCodesAsync(reportDate).ConfigureAwait(false);
+        var validPlayerCodes = await _playerAllAgentRebateFactory.GetValidAllAgentPlayerCodesAsync(reportDate)
+            .ConfigureAwait(false);
 
         var brandIds = validPlayerCodes.Select(x => x.Item1).Distinct().ToArray();
 
@@ -43,7 +44,7 @@ public class CreatePlayerAllAgentRebatesHandler : IRequestHandler<CreatePlayerAl
         foreach (var (brandId, playerCode) in validPlayerCodes)
         {
             var conditions = brandAllAgentGameTypeConditions.Where(x => x.BrandId == brandId);
-            await _taskQueue.QueuePlayerRebateAsync(new PlayerAllAgentRebateQueueModel
+            await _taskQueue.QueuePlayerRebateAsync(new()
             {
                 ReportDate = reportDate,
                 PlayerCode = playerCode,
@@ -51,7 +52,7 @@ public class CreatePlayerAllAgentRebatesHandler : IRequestHandler<CreatePlayerAl
             });
         }
 
-        return new MessageResponse
+        return new()
         {
             Valid = true
         };

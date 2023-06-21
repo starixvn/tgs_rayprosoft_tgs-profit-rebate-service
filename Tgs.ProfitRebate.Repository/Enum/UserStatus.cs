@@ -2,6 +2,6 @@
 
 public enum UserStatus
 {
-	Enabled = 0,
-	Disabled = 1
+    Enabled = 0,
+    Disabled = 1
 }

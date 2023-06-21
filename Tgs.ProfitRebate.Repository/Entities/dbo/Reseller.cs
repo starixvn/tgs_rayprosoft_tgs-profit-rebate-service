@@ -3,29 +3,33 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class Reseller
 {
-    public partial class Reseller
-    {
-        public Reseller()
-        {
-            Departments = new HashSet<Department>();
-            Licensees = new HashSet<Licensee>();
-        }
+    public Guid Id { get; set; }
 
-        public Guid Id { get; set; }
-        public short Status { get; set; }
-        public string? Description { get; set; }
-        public string? OperationalEmail { get; set; }
-        public short BusinessType { get; set; }
-        public string Code { get; set; } = null!;
-        public string Name { get; set; } = null!;
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
-        public string CreatedByUsername { get; set; } = null!;
-        public string UpdatedByUsername { get; set; } = null!;
+    public short Status { get; set; }
 
-        public virtual ICollection<Department> Departments { get; set; }
-        public virtual ICollection<Licensee> Licensees { get; set; }
-    }
+    public string? Description { get; set; }
+
+    public string? OperationalEmail { get; set; }
+
+    public short BusinessType { get; set; }
+
+    public string Code { get; set; } = null!;
+
+    public string Name { get; set; } = null!;
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public string CreatedByUsername { get; set; } = null!;
+
+    public string UpdatedByUsername { get; set; } = null!;
+
+    public virtual ICollection<Department> Departments { get; set; } = new List<Department>();
+
+    public virtual ICollection<Licensee> Licensees { get; set; } = new List<Licensee>();
 }

@@ -10,45 +10,44 @@ namespace Tgs.ProfitRebate.Core.Workers;
 
 public class AgentDividendBackground : BackgroundService
 {
-	private readonly ILogger<AgentDividendBackground> _logger;
-	private readonly IServiceProvider _serviceProvider;
-	private readonly IAgentDividendTaskQueue _taskQueue;
+    private readonly ILogger<AgentDividendBackground> _logger;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IAgentDividendTaskQueue _taskQueue;
 
-	public AgentDividendBackground(IAgentDividendTaskQueue taskQueue,
-		IServiceProvider serviceProvider,
-		ILogger<AgentDividendBackground> logger)
-	{
-		_taskQueue = taskQueue;
-		_logger = logger;
-		_serviceProvider = serviceProvider;
-	}
+    public AgentDividendBackground(IAgentDividendTaskQueue taskQueue,
+        IServiceProvider serviceProvider,
+        ILogger<AgentDividendBackground> logger)
+    {
+        _taskQueue = taskQueue;
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
 
-	public override async Task StopAsync(CancellationToken stoppingToken)
-	{
-		_logger.LogInformation("Queued Hosted Service is stopping.");
+    public override async Task StopAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Queued Hosted Service is stopping.");
 
-		await base.StopAsync(stoppingToken);
-	}
+        await base.StopAsync(stoppingToken);
+    }
 
-	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-	{
-		_logger.LogInformation(
-			"Queued Hosted Service is running.{0}" +
-				"{1}Tap W to add a work item to the " +
-				"background queue.{2}",
-			Environment.NewLine,
-			Environment.NewLine,
-			Environment.NewLine);
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation(
+            "Queued Hosted Service is running.{0}" +
+            "{1}Tap W to add a work item to the " +
+            "background queue.{2}",
+            Environment.NewLine,
+            Environment.NewLine,
+            Environment.NewLine);
 
-		await BackgroundProcessing(stoppingToken);
-	}
+        await BackgroundProcessing(stoppingToken);
+    }
 
-	private async Task BackgroundProcessing(CancellationToken stoppingToken)
-	{
+    private async Task BackgroundProcessing(CancellationToken stoppingToken)
+    {
         try
         {
             while (!stoppingToken.IsCancellationRequested)
-            {
                 try
                 {
                     using var scope = _serviceProvider.CreateScope();
@@ -114,7 +113,6 @@ public class AgentDividendBackground : BackgroundService
                 {
                     _logger.LogError(ex, "Error occurred executing task work item.");
                 }
-            }
 
             _logger.LogInformation(
                 "Execution ended. Cancellation token cancelled = {IsCancellationRequested}",
@@ -128,5 +126,5 @@ public class AgentDividendBackground : BackgroundService
         {
             _logger.LogError(ex, "Unhandled exception. Execution Stopping");
         }
-	}
+    }
 }

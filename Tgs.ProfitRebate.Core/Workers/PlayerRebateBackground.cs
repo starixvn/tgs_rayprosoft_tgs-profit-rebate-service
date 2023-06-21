@@ -6,17 +6,18 @@ using Polly;
 using Tgs.CashService.Client;
 using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Repository.Entities;
+using Tgs.Service.PlayerBuckets;
 
 namespace Tgs.ProfitRebate.Core.Workers;
 
 public class PlayerRebateBackground : BackgroundService
 {
+    private static readonly Guid[] brandIds =
+        { Guid.Parse("0187e5c8-7680-0000-0001-07e79f4d606c"), Guid.Parse("0187eae3-7823-0000-0001-07e785f2b37a") };
+
     private readonly ILogger<PlayerRebateBackground> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IPlayerRebateTaskQueue _taskQueue;
-
-    private static readonly Guid[] brandIds = new[]
-        { Guid.Parse("0187e5c8-7680-0000-0001-07e79f4d606c"), Guid.Parse("0187eae3-7823-0000-0001-07e785f2b37a") };
 
     public PlayerRebateBackground(IPlayerRebateTaskQueue taskQueue,
         IServiceProvider serviceProvider,
@@ -135,7 +136,7 @@ public class PlayerRebateBackground : BackgroundService
                                 await playerRebateFactory
                                     .CreatePlayerBucketsAsync(new CreatePlayerBucketRequest(
                                         request.PlayerCode,
-                                        Service.PlayerBuckets.BucketType.Vip,
+                                        BucketType.Vip,
                                         playerBucketAmount,
                                         rebate.Id.ToString()))
                                     .ConfigureAwait(false);
@@ -161,7 +162,7 @@ public class PlayerRebateBackground : BackgroundService
                                         .AnyAsync(
                                             x => x.PlayerCode == request.PlayerCode
                                                 && x.ExternalTransactionId == rebate.Id.ToString(),
-                                            cancellationToken: stoppingToken))
+                                            stoppingToken))
                                 {
                                     _ = await cashServiceClient.RebateAsync(
                                         request.DefaultWalletId,

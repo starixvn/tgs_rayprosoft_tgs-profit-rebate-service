@@ -2,6 +2,6 @@
 
 public enum AllAgentRebateType
 {
-	ValidBet = 1,
-	WinLoss = 2
+    ValidBet = 1,
+    WinLoss = 2
 }

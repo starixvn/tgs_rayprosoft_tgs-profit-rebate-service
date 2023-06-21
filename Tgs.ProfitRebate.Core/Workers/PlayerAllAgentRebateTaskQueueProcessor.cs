@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Polly;
-using Microsoft.EntityFrameworkCore;
 using Tgs.CashService.Client;
 using Tgs.PlayerService.Client;
 using Tgs.ProfitRebate.Core.ViewModel;
@@ -12,19 +12,19 @@ namespace Tgs.ProfitRebate.Core.Workers;
 
 public interface IPlayerAllAgentRebateTaskQueueProcessor
 {
-	Task ProcessQueue(CancellationToken cancellationToken);
+    Task ProcessQueue(CancellationToken cancellationToken);
 }
 
 public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQueueProcessor
 {
-    private readonly IPlayerAllAgentRebateTaskQueue _taskQueue;
-    private readonly IPlayerAllAgentRebateFactory _playerRebateFactory;
     private readonly ICashServiceClient _cashServiceClient;
-    private readonly IPlayerServiceClient _playerServiceClient;
-    private readonly ITgsService<PlayerAllAgentRebateRecord> _playerAllAgentRebateService;
-    private readonly ITgsService<PlayerAllAgentRebateContributor> _playerAllAgentRebateContributorService;
-    private readonly ITgsService<Transaction> _transactionService;
     private readonly ILogger<PlayerAllAgentRebateTaskQueueProcessor> _logger;
+    private readonly ITgsService<PlayerAllAgentRebateContributor> _playerAllAgentRebateContributorService;
+    private readonly ITgsService<PlayerAllAgentRebateRecord> _playerAllAgentRebateService;
+    private readonly IPlayerAllAgentRebateFactory _playerRebateFactory;
+    private readonly IPlayerServiceClient _playerServiceClient;
+    private readonly IPlayerAllAgentRebateTaskQueue _taskQueue;
+    private readonly ITgsService<Transaction> _transactionService;
 
     public PlayerAllAgentRebateTaskQueueProcessor(
         IPlayerAllAgentRebateTaskQueue taskQueue,
@@ -148,7 +148,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
         IEnumerable<PlayerAllAgentTurnoverWinLossModel> models,
         IEnumerable<BrandAllAgentGameTypeConditionModel> gameTypeConditions, DateTimeOffset reportDate)
     {
-        var playerTurnovers = 
+        var playerTurnovers =
             models
                 .Select(x =>
                 {
@@ -175,25 +175,25 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                     };
                 })
                 .GroupBy(x => new { x.BrandId, x.PlayerCode, x.AllAgentGameType },
-                (x, list) => new
+                    (x, list) => new
+                    {
+                        x.BrandId,
+                        x.PlayerCode,
+                        x.AllAgentGameType,
+                        list
+                    })
+                .Select(x => new PlayerAllAgentTurnoverWinLossPlayerNumberModel
                 {
                     BrandId = x.BrandId,
                     PlayerCode = x.PlayerCode,
                     AllAgentGameType = x.AllAgentGameType,
-                    list
-                })
-            .Select(x => new PlayerAllAgentTurnoverWinLossPlayerNumberModel
-            {
-                BrandId = x.BrandId,
-                PlayerCode = x.PlayerCode,
-                AllAgentGameType = x.AllAgentGameType,
-                PlayerNumber = 
-                    x.list.Select(l => l.ChildPlayerCode).Distinct().Count(),
-                Turnover =
-                    x.list.Sum(a => a.Turnover),
-                WinLoss =
-                    x.list.Sum(a => a.WinLoss)
-            });
+                    PlayerNumber =
+                        x.list.Select(l => l.ChildPlayerCode).Distinct().Count(),
+                    Turnover =
+                        x.list.Sum(a => a.Turnover),
+                    WinLoss =
+                        x.list.Sum(a => a.WinLoss)
+                });
 
         return playerTurnovers
             .Where(x => MatchConditionSetting(x, gameTypeConditions))
@@ -202,88 +202,100 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
 
     private IEnumerable<PlayerAllAgentRebateContributorModel>
         GetChildPlayers(
-        IEnumerable<PlayerAllAgentTurnoverWinLossModel> models,
-        IEnumerable<PlayerAllAgentRebateModel> playerRebates,
-        DateTimeOffset reportDate)
+            IEnumerable<PlayerAllAgentTurnoverWinLossModel> models,
+            IEnumerable<PlayerAllAgentRebateModel> playerRebates,
+            DateTimeOffset reportDate)
     {
         return models.Select(x =>
-        {
-            var allAgentGameType = x.GameType switch
             {
-                GameType.Sportsbook or GameType.ESports => AllAgentGameType.Sportsbook,
-                GameType.VirtualSports                  => AllAgentGameType.VirtualSports,
-                GameType.LiveDealer                     => AllAgentGameType.LiveDealer,
-                GameType.CardGame                       => AllAgentGameType.CardGame,
-                GameType.Fishing or GameType.Arcade or GameType.Slot or GameType.TableGame => AllAgentGameType
-                    .Slot,
-                GameType.Lottery => AllAgentGameType.Lottery,
-                _                => throw new ArgumentOutOfRangeException()
-            };
+                var allAgentGameType = x.GameType switch
+                {
+                    GameType.Sportsbook or GameType.ESports => AllAgentGameType.Sportsbook,
+                    GameType.VirtualSports                  => AllAgentGameType.VirtualSports,
+                    GameType.LiveDealer                     => AllAgentGameType.LiveDealer,
+                    GameType.CardGame                       => AllAgentGameType.CardGame,
+                    GameType.Fishing or GameType.Arcade or GameType.Slot or GameType.TableGame => AllAgentGameType
+                        .Slot,
+                    GameType.Lottery => AllAgentGameType.Lottery,
+                    _                => throw new ArgumentOutOfRangeException()
+                };
 
-            var turnoverCondition = playerRebates.FirstOrDefault(p
-                => p.AllAgentGameType == allAgentGameType &&
-                p.AllAgentRebateType == AllAgentRebateType.ValidBet);
+                var turnoverCondition = playerRebates.FirstOrDefault(p
+                    => p.AllAgentGameType == allAgentGameType &&
+                    p.AllAgentRebateType == AllAgentRebateType.ValidBet);
 
-            var winLossCondition = playerRebates.FirstOrDefault(p
-                => p.AllAgentGameType == allAgentGameType &&
-                p.AllAgentRebateType == AllAgentRebateType.WinLoss);
+                var winLossCondition = playerRebates.FirstOrDefault(p
+                    => p.AllAgentGameType == allAgentGameType &&
+                    p.AllAgentRebateType == AllAgentRebateType.WinLoss);
 
-            return new
-            {
-                BrandId = x.BrandId,
-                PlayerCode = x.PlayerCode,
-                ChildPlayerCode = x.ChildPlayerCode,
-                SportsTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook ?
-                    x.Turnover : 0M,
-                VirtualSportsTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.VirtualSports ?
-                    x.Turnover : 0M,
-                LiveDealerTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.LiveDealer ?
-                    x.Turnover : 0M,
-                CardGameTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.CardGame ?
-                    x.Turnover : 0M,
-                SlotTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.Slot ?
-                    x.Turnover : 0M,
-                LotteryTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.Lottery ?
-                    x.Turnover : 0M,
-                SportsWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook ?
-                    x.WinLoss : 0M,
-                VirtualSportsWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.VirtualSports ?
-                    x.WinLoss : 0M,
-                LiveDealerWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.LiveDealer ?
-                    x.WinLoss : 0M,
-                CardGameWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.CardGame ?
-                    x.WinLoss : 0M,
-                SlotWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Slot ?
-                    x.WinLoss : 0M,
-                LotteryWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Lottery ?
-                    x.WinLoss : 0M,
-                SportsTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook ?
-                    (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover : 0M,
-                VirtualSportsTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.VirtualSports ?
-                    (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover : 0M,
-                LiveDealerTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.LiveDealer ?
-                    (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover : 0M,
-                CardGameTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.CardGame ?
-                    (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover : 0M,
-                SlotTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.Slot ?
-                    (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover : 0M,
-                LotteryTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.Lottery ?
-                    (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover : 0M,
-                SportsWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.Sportsbook ?
-                    (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss : 0M,
-                VirtualSportsWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.VirtualSports ?
-                    (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss : 0M,
-                LiveDealerWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.LiveDealer ?
-                    (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss : 0M,
-                CardGameWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.CardGame ?
-                    (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss : 0M,
-                SlotWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.Slot ?
-                    (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss : 0M,
-                LotteryWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.Lottery ?
-                    (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss : 0M,
-            };
-        })
-            .GroupBy(x => new {x.BrandId,x.PlayerCode,x.ChildPlayerCode},
+                return new
+                {
+                    x.BrandId,
+                    x.PlayerCode,
+                    x.ChildPlayerCode,
+                    SportsTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook
+                        ? x.Turnover
+                        : 0M,
+                    VirtualSportsTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.VirtualSports
+                        ? x.Turnover
+                        : 0M,
+                    LiveDealerTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.LiveDealer
+                        ? x.Turnover
+                        : 0M,
+                    CardGameTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.CardGame
+                        ? x.Turnover
+                        : 0M,
+                    SlotTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.Slot ? x.Turnover : 0M,
+                    LotteryTurnover = turnoverCondition?.AllAgentGameType == AllAgentGameType.Lottery ? x.Turnover : 0M,
+                    SportsWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook ? x.WinLoss : 0M,
+                    VirtualSportsWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.VirtualSports
+                        ? x.WinLoss
+                        : 0M,
+                    LiveDealerWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.LiveDealer
+                        ? x.WinLoss
+                        : 0M,
+                    CardGameWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.CardGame ? x.WinLoss : 0M,
+                    SlotWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Slot ? x.WinLoss : 0M,
+                    LotteryWinLoss = turnoverCondition?.AllAgentGameType == AllAgentGameType.Lottery ? x.WinLoss : 0M,
+                    SportsTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.Sportsbook
+                        ? (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover
+                        : 0M,
+                    VirtualSportsTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.VirtualSports
+                        ? (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover
+                        : 0M,
+                    LiveDealerTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.LiveDealer
+                        ? (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover
+                        : 0M,
+                    CardGameTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.CardGame
+                        ? (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover
+                        : 0M,
+                    SlotTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.Slot
+                        ? (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover
+                        : 0M,
+                    LotteryTurnoverRebate = turnoverCondition?.AllAgentGameType == AllAgentGameType.Lottery
+                        ? (turnoverCondition?.RebatePercentage ?? 0M) / 100 * x.Turnover
+                        : 0M,
+                    SportsWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.Sportsbook
+                        ? (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss
+                        : 0M,
+                    VirtualSportsWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.VirtualSports
+                        ? (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss
+                        : 0M,
+                    LiveDealerWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.LiveDealer
+                        ? (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss
+                        : 0M,
+                    CardGameWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.CardGame
+                        ? (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss
+                        : 0M,
+                    SlotWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.Slot
+                        ? (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss
+                        : 0M,
+                    LotteryWinLossRebate = winLossCondition?.AllAgentGameType == AllAgentGameType.Lottery
+                        ? (winLossCondition?.RebatePercentage ?? 0M) / 100 * x.WinLoss
+                        : 0M
+                };
+            })
+            .GroupBy(x => new { x.BrandId, x.PlayerCode, x.ChildPlayerCode },
                 (child, list) => new PlayerAllAgentRebateContributorModel
                 {
                     BrandId = child.BrandId,
@@ -313,7 +325,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                     LiveDealerWinLossRebate = list.Sum(s => s.LiveDealerWinLossRebate),
                     CardGameWinLossRebate = list.Sum(s => s.CardGameWinLossRebate),
                     SlotWinLossRebate = list.Sum(s => s.SlotWinLossRebate),
-                    LotteryWinLossRebate = list.Sum(s => s.LotteryWinLossRebate),
+                    LotteryWinLossRebate = list.Sum(s => s.LotteryWinLossRebate)
                 });
     }
 
@@ -398,7 +410,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                                 .AnyAsync(
                                     x => x.PlayerCode == playerCode
                                         && x.ExternalTransactionId == id.ToString(),
-                                    cancellationToken: cancellationToken))
+                                    cancellationToken))
                         {
                             _ = await _cashServiceClient.DividendAllAgentRebateAsync(
                                 defaultWalletId,
@@ -409,5 +421,4 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
                     });
         }
     }
-
 }

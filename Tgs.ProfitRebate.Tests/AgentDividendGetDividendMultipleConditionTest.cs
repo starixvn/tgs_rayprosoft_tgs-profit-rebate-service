@@ -173,7 +173,9 @@ public class AgentDividendGetDividendMultipleConditionTest
 
             var percentage = agentData.First(x => x.Id == dividend.AgentId).DividendPercentage;
 
-            Assert.IsTrue(dividend.AgentDividendAmount == (winLoss - aggBonus - bonus - bonusAdjust - winLoss * brand.PlatformCharge / 100) * 10 / 100 - agentAdjustAmount);
+            Assert.IsTrue(dividend.AgentDividendAmount ==
+                (winLoss - aggBonus - bonus - bonusAdjust - winLoss * brand.PlatformCharge / 100) * 10 / 100 -
+                agentAdjustAmount);
         }
     }
 
@@ -261,7 +263,9 @@ public class AgentDividendGetDividendMultipleConditionTest
 
             var percentage = agentData.First(x => x.Id == dividend.AgentId).DividendPercentage;
 
-            Assert.IsTrue(dividend.AgentDividendAmount == (winLoss - aggBonus - bonus - bonusAdjust - winLoss * brand.PlatformCharge / 100) * 20 / 100 - agentAdjustAmount);
+            Assert.IsTrue(dividend.AgentDividendAmount ==
+                (winLoss - aggBonus - bonus - bonusAdjust - winLoss * brand.PlatformCharge / 100) * 20 / 100 -
+                agentAdjustAmount);
         }
     }
 
@@ -293,21 +297,21 @@ public class AgentDividendGetDividendMultipleConditionTest
         var agentId = Guid.NewGuid();
         var condition = new AgentDividendCondition[]
         {
-            new AgentDividendCondition
+            new()
             {
                 Rank = 1,
                 AgentId = agentId,
                 NetProfit = 100,
                 ActiveNumber = 1,
-                DividendPercentage = 10,
+                DividendPercentage = 10
             },
-            new AgentDividendCondition
+            new()
             {
                 Rank = 2,
                 AgentId = agentId,
                 NetProfit = 200,
                 ActiveNumber = 1,
-                DividendPercentage = 20,
+                DividendPercentage = 20
             }
         };
 
@@ -343,11 +347,13 @@ public class AgentDividendGetDividendMultipleConditionTest
         return fixture;
     }
 
-    private Fixture CreatePlayerAggregateFixture(Brand brand, Agent? agent, Player player, DateTimeOffset reportDate, decimal winLoss)
+    private Fixture CreatePlayerAggregateFixture(Brand brand, Agent? agent, Player player, DateTimeOffset reportDate,
+        decimal winLoss)
     {
         var fixture = new Fixture();
         var percentageJson =
-            "[{\"AgentId\":\""+ agent!.Id + "\",\"ParentAgentId\":null,\"DividendPercentage\":"+ agent.DividendPercentage +"}]";
+            "[{\"AgentId\":\"" + agent!.Id + "\",\"ParentAgentId\":null,\"DividendPercentage\":" +
+            agent.DividendPercentage + "}]";
         fixture.Customize<PlayerAggregate>(u => u
             .With(s => s.ReportDate, reportDate.UtcDateTime)
             .With(s => s.Hour, 0)
@@ -368,7 +374,8 @@ public class AgentDividendGetDividendMultipleConditionTest
         return fixture;
     }
 
-    private Fixture CreatePlayerBonusAggregateFixture(Brand brand, Agent? agent, Player player, DateTimeOffset reportDate)
+    private Fixture CreatePlayerBonusAggregateFixture(Brand brand, Agent? agent, Player player,
+        DateTimeOffset reportDate)
     {
         var fixture = new Fixture();
         fixture.Customize<PlayerBonusAggregate>(u => u
@@ -385,7 +392,8 @@ public class AgentDividendGetDividendMultipleConditionTest
         return fixture;
     }
 
-    private Fixture CreatePlayerGameAggregateFixture(Brand brand, Agent? agent, Player player, DateTimeOffset reportDate)
+    private Fixture CreatePlayerGameAggregateFixture(Brand brand, Agent? agent, Player player,
+        DateTimeOffset reportDate)
     {
         var fixture = new Fixture();
         fixture.Customize<PlayerGameRebateAggregate>(u => u

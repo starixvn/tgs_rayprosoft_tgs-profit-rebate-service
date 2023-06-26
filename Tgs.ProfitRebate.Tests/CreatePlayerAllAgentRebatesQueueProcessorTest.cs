@@ -1,14 +1,14 @@
-﻿using AutoFixture;
-using Microsoft.Extensions.Logging;
-using MockQueryable.Moq;
-using NSubstitute;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoFixture;
+using Microsoft.Extensions.Logging;
+using MockQueryable.Moq;
+using NSubstitute;
+using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.PlayerService.Client;
 using Tgs.ProfitRebate.Core;
@@ -16,16 +16,15 @@ using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
-using TGS.Core.Infrastructures.Extensions;
 
 namespace Tgs.ProfitRebate.Tests;
 
 [TestFixture]
 public class CreatePlayerAllAgentRebatesQueueProcessorTest
 {
-	[Test]
-	public async Task Can_Save_All_Agent_Rebates()
-	{
+    [Test]
+    public async Task Can_Save_All_Agent_Rebates()
+    {
         var fakePlayerAllAgentRebateTaskQueue = Substitute.For<IPlayerAllAgentRebateTaskQueue>();
         var fakePlayerRebateFactory = Substitute.For<IPlayerAllAgentRebateFactory>();
         var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
@@ -36,7 +35,7 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
         var fakeLogger = Substitute.For<ILogger<PlayerAllAgentRebateTaskQueueProcessor>>();
 
         var sut = new PlayerAllAgentRebateTaskQueueProcessor(
-            fakePlayerAllAgentRebateTaskQueue, 
+            fakePlayerAllAgentRebateTaskQueue,
             fakePlayerRebateFactory,
             fakeCashServiceClient,
             fakePlayerServiceClient,
@@ -45,57 +44,57 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
             fakeTransactionService,
             fakeLogger);
 
-		var brandId = Guid.NewGuid();
+        var brandId = Guid.NewGuid();
         var reportDate = DateTimeOffset.Parse("2023/01/01 00:00:00+8");
         var parentPlayerCode = "parentPlayerCode";
 
         var conditions = new BrandAllAgentGameTypeConditionModel[]
         {
-            new BrandAllAgentGameTypeConditionModel
+            new()
             {
-                BrandId= brandId,
+                BrandId = brandId,
                 GameTypeSwitch = true,
                 HasValidBet = true,
-                HasWinLoss= true,
+                HasWinLoss = true,
                 AllAgentGameType = AllAgentGameType.Sportsbook,
                 Rank = 1,
-                ActiveNumber= 1,
-                NetProfit= 110,
+                ActiveNumber = 1,
+                NetProfit = 110,
                 RebatePercentage = 10
             },
-            new BrandAllAgentGameTypeConditionModel
+            new()
             {
-                BrandId= brandId,
+                BrandId = brandId,
                 GameTypeSwitch = true,
                 HasValidBet = true,
-                HasWinLoss= true,
+                HasWinLoss = true,
                 AllAgentGameType = AllAgentGameType.VirtualSports,
                 Rank = 1,
-                ActiveNumber= 1,
-                NetProfit= 110,
+                ActiveNumber = 1,
+                NetProfit = 110,
                 RebatePercentage = 10
             }
         };
 
         var turnoverWinLoss = new PlayerAllAgentTurnoverWinLossModel[]
         {
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 100,
-                WinLoss= 100,
+                WinLoss = 100
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode1",
-                GameType= GameType.ESports,
+                GameType = GameType.ESports,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             }
         };
 
@@ -106,28 +105,31 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
             Conditions = conditions
         };
 
-        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }.ToImmutableDictionary();
+        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }
+            .ToImmutableDictionary();
 
         _ = fakePlayerServiceClient.GetPlayerPropertiesAsync(Arg.Any<string>())
             .Returns(player);
 
-        _ = fakePlayerAllAgentRebateService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
 
-        _ = fakePlayerAllAgentRebateContributorService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateContributorService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
 
         _ = fakePlayerAllAgentRebateTaskQueue.DequeueAsync(Arg.Any<CancellationToken>()).Returns(request);
 
         _ = fakePlayerRebateFactory.GetPlayerAllAgentTurnoverWinLossAsync(Arg.Any<DateTimeOffset>(), Arg.Any<string>())
-			.Returns(turnoverWinLoss);
+            .Returns(turnoverWinLoss);
 
         _ = fakeTransactionService.GetQueries()
             .Returns(Array.Empty<Transaction>().AsQueryable().BuildMock());
 
         await sut.ProcessQueue(default);
 
-		await fakePlayerRebateFactory.Received(1)
+        await fakePlayerRebateFactory.Received(1)
             .CreateAllAgentPlayerRebatesAsync(Arg.Any<PlayerAllAgentRebateModel[]>());
-	}
+    }
 
     [Test]
     public async Task Can_Save_2_Types_All_Agent_Rebates()
@@ -157,60 +159,60 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
 
         var conditions = new BrandAllAgentGameTypeConditionModel[]
         {
-            new BrandAllAgentGameTypeConditionModel
+            new()
             {
-                BrandId= brandId,
+                BrandId = brandId,
                 GameTypeSwitch = true,
                 HasValidBet = true,
-                HasWinLoss= true,
+                HasWinLoss = true,
                 AllAgentGameType = AllAgentGameType.Sportsbook,
                 Rank = 1,
-                ActiveNumber= 1,
-                NetProfit= 110,
+                ActiveNumber = 1,
+                NetProfit = 110,
                 RebatePercentage = 10
             },
-            new BrandAllAgentGameTypeConditionModel
+            new()
             {
-                BrandId= brandId,
+                BrandId = brandId,
                 GameTypeSwitch = true,
                 HasValidBet = true,
-                HasWinLoss= true,
+                HasWinLoss = true,
                 AllAgentGameType = AllAgentGameType.VirtualSports,
                 Rank = 1,
-                ActiveNumber= 1,
-                NetProfit= 5,
+                ActiveNumber = 1,
+                NetProfit = 5,
                 RebatePercentage = 10
             }
         };
 
         var turnoverWinLoss = new PlayerAllAgentTurnoverWinLossModel[]
         {
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 100,
-                WinLoss= 100,
+                WinLoss = 100
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode1",
-                GameType= GameType.ESports,
+                GameType = GameType.ESports,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode1",
-                GameType= GameType.VirtualSports,
+                GameType = GameType.VirtualSports,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             }
         };
 
@@ -221,14 +223,17 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
             Conditions = conditions
         };
 
-        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }.ToImmutableDictionary();
+        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }
+            .ToImmutableDictionary();
 
         _ = fakePlayerServiceClient.GetPlayerPropertiesAsync(Arg.Any<string>())
             .Returns(player);
 
-        _ = fakePlayerAllAgentRebateService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
 
-        _ = fakePlayerAllAgentRebateContributorService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateContributorService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
 
         _ = fakePlayerAllAgentRebateTaskQueue.DequeueAsync(Arg.Any<CancellationToken>()).Returns(request);
 
@@ -272,40 +277,40 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
 
         var conditions = new BrandAllAgentGameTypeConditionModel[]
         {
-            new BrandAllAgentGameTypeConditionModel
+            new()
             {
-                BrandId= brandId,
+                BrandId = brandId,
                 GameTypeSwitch = true,
                 HasValidBet = true,
-                HasWinLoss= true,
+                HasWinLoss = true,
                 AllAgentGameType = AllAgentGameType.Sportsbook,
                 AllAgentRebateType = AllAgentRebateType.ValidBet,
                 Rank = 1,
-                ActiveNumber= 1,
-                NetProfit= 110,
+                ActiveNumber = 1,
+                NetProfit = 110,
                 RebatePercentage = 10
             }
         };
 
         var turnoverWinLoss = new PlayerAllAgentTurnoverWinLossModel[]
         {
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 100,
-                WinLoss= 100,
+                WinLoss = 100
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode1",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             }
         };
 
@@ -316,14 +321,17 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
             Conditions = conditions
         };
 
-        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }.ToImmutableDictionary();
+        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }
+            .ToImmutableDictionary();
 
         _ = fakePlayerServiceClient.GetPlayerPropertiesAsync(Arg.Any<string>())
             .Returns(player);
 
-        _ = fakePlayerAllAgentRebateService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
 
-        _ = fakePlayerAllAgentRebateContributorService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateContributorService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
 
         _ = fakePlayerAllAgentRebateTaskQueue.DequeueAsync(Arg.Any<CancellationToken>()).Returns(request);
 
@@ -380,40 +388,40 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
 
         var conditions = new BrandAllAgentGameTypeConditionModel[]
         {
-            new BrandAllAgentGameTypeConditionModel
+            new()
             {
-                BrandId= brandId,
+                BrandId = brandId,
                 GameTypeSwitch = true,
                 HasValidBet = true,
-                HasWinLoss= true,
+                HasWinLoss = true,
                 AllAgentGameType = AllAgentGameType.Sportsbook,
                 AllAgentRebateType = AllAgentRebateType.ValidBet,
                 Rank = 1,
-                ActiveNumber= 1,
-                NetProfit= 110,
+                ActiveNumber = 1,
+                NetProfit = 110,
                 RebatePercentage = 10
             }
         };
 
         var turnoverWinLoss = new PlayerAllAgentTurnoverWinLossModel[]
         {
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 100,
-                WinLoss= 100,
+                WinLoss = 100
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode1",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             }
         };
 
@@ -424,14 +432,17 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
             Conditions = conditions
         };
 
-        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }.ToImmutableDictionary();
+        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }
+            .ToImmutableDictionary();
 
         _ = fakePlayerServiceClient.GetPlayerPropertiesAsync(Arg.Any<string>())
             .Returns(player);
 
-        _ = fakePlayerAllAgentRebateService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
 
-        _ = fakePlayerAllAgentRebateContributorService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateContributorService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
 
         _ = fakePlayerAllAgentRebateTaskQueue.DequeueAsync(Arg.Any<CancellationToken>()).Returns(request);
 
@@ -446,7 +457,8 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
         var rebates = new (decimal SportsTurnover, decimal SportsTurnoverRebate)[] { (100M, 10M), (10M, 1M) };
         await fakePlayerRebateFactory.Received(2)
             .CreateAllAgentPlayerRebateContributorAsync(Arg.Is<PlayerAllAgentRebateContributorModel>(x =>
-                rebates.Any(r => r.SportsTurnover == x.SportsTurnover && r.SportsTurnoverRebate == x.SportsTurnoverRebate)));
+                rebates.Any(r
+                    => r.SportsTurnover == x.SportsTurnover && r.SportsTurnoverRebate == x.SportsTurnoverRebate)));
     }
 
     [Test]
@@ -477,49 +489,49 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
 
         var conditions = new BrandAllAgentGameTypeConditionModel[]
         {
-            new BrandAllAgentGameTypeConditionModel
+            new()
             {
-                BrandId= brandId,
+                BrandId = brandId,
                 GameTypeSwitch = true,
                 HasValidBet = true,
-                HasWinLoss= true,
+                HasWinLoss = true,
                 AllAgentGameType = AllAgentGameType.Sportsbook,
                 AllAgentRebateType = AllAgentRebateType.WinLoss,
                 Rank = 1,
-                ActiveNumber= 1,
-                NetProfit= 110,
+                ActiveNumber = 1,
+                NetProfit = 110,
                 RebatePercentage = 10
             }
         };
 
         var turnoverWinLoss = new PlayerAllAgentTurnoverWinLossModel[]
         {
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 100,
-                WinLoss= 100,
+                WinLoss = 100
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode1",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode2",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             }
         };
 
@@ -530,14 +542,17 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
             Conditions = conditions
         };
 
-        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }.ToImmutableDictionary();
+        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }
+            .ToImmutableDictionary();
 
         _ = fakePlayerServiceClient.GetPlayerPropertiesAsync(Arg.Any<string>())
             .Returns(player);
 
-        _ = fakePlayerAllAgentRebateService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
 
-        _ = fakePlayerAllAgentRebateContributorService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateContributorService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateContributor>().AsQueryable().BuildMock());
 
         _ = fakePlayerAllAgentRebateTaskQueue.DequeueAsync(Arg.Any<CancellationToken>()).Returns(request);
 
@@ -553,7 +568,8 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
 
         await fakePlayerRebateFactory.Received(3)
             .CreateAllAgentPlayerRebateContributorAsync(Arg.Is<PlayerAllAgentRebateContributorModel>(x =>
-                rebates.Any(r => r.SportsWinLoss == x.SportsWinLoss && r.SportsWinLossRebate == x.SportsWinLossRebate)));
+                rebates.Any(r
+                    => r.SportsWinLoss == x.SportsWinLoss && r.SportsWinLossRebate == x.SportsWinLossRebate)));
     }
 
     [Test]
@@ -584,49 +600,49 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
 
         var conditions = new BrandAllAgentGameTypeConditionModel[]
         {
-            new BrandAllAgentGameTypeConditionModel
+            new()
             {
-                BrandId= brandId,
+                BrandId = brandId,
                 GameTypeSwitch = true,
                 HasValidBet = true,
-                HasWinLoss= true,
+                HasWinLoss = true,
                 AllAgentGameType = AllAgentGameType.Sportsbook,
                 AllAgentRebateType = AllAgentRebateType.ValidBet,
                 Rank = 1,
-                ActiveNumber= 1,
-                NetProfit= 110,
+                ActiveNumber = 1,
+                NetProfit = 110,
                 RebatePercentage = 10
             }
         };
 
         var turnoverWinLoss = new PlayerAllAgentTurnoverWinLossModel[]
         {
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 100,
-                WinLoss= 100,
+                WinLoss = 100
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode1",
-                GameType= GameType.Sportsbook,
+                GameType = GameType.Sportsbook,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             },
-            new PlayerAllAgentTurnoverWinLossModel
+            new()
             {
                 BrandId = brandId,
                 PlayerCode = "parentPlayerCode",
                 ChildPlayerCode = "playerCode1",
-                GameType= GameType.VirtualSports,
+                GameType = GameType.VirtualSports,
                 Turnover = 10,
-                WinLoss= 10,
+                WinLoss = 10
             }
         };
 
@@ -637,7 +653,7 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
             Conditions = conditions
         };
 
-        var contributors = new PlayerAllAgentRebateContributor[]
+        var contributors = new[]
             {
                 CreatePlayerAllAgentRebateContributorFixture(brandId, reportDate, parentPlayerCode, "player")
                     .Create<PlayerAllAgentRebateContributor>(),
@@ -647,12 +663,14 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
             .AsQueryable()
             .BuildMock();
 
-        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }.ToImmutableDictionary();
+        var player = new Dictionary<string, string> { { "DefaultWalletId", Guid.NewGuid().ToString() } }
+            .ToImmutableDictionary();
 
         _ = fakePlayerServiceClient.GetPlayerPropertiesAsync(Arg.Any<string>())
             .Returns(player);
 
-        _ = fakePlayerAllAgentRebateService.GetQueries().Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
+        _ = fakePlayerAllAgentRebateService.GetQueries()
+            .Returns(Array.Empty<PlayerAllAgentRebateRecord>().AsQueryable().BuildMock());
 
         _ = fakePlayerAllAgentRebateContributorService.GetQueries().Returns(contributors);
 
@@ -686,5 +704,4 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         return fixture;
     }
-
 }

@@ -3,16 +3,19 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
-{
-    public partial class AgentDividendCondition
-    {
-        public int Rank { get; set; }
-        public Guid AgentId { get; set; }
-        public decimal NetProfit { get; set; }
-        public int ActiveNumber { get; set; }
-        public decimal DividendPercentage { get; set; }
+namespace Tgs.ProfitRebate.Repository.Entities;
 
-        public virtual Agent Agent { get; set; } = null!;
-    }
+public partial class AgentDividendCondition
+{
+    public int Rank { get; set; }
+
+    public Guid AgentId { get; set; }
+
+    public decimal NetProfit { get; set; }
+
+    public int ActiveNumber { get; set; }
+
+    public decimal DividendPercentage { get; set; }
+
+    public virtual Agent Agent { get; set; } = null!;
 }

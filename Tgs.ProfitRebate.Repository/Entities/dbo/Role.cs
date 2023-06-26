@@ -3,31 +3,39 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class Role
 {
-    public partial class Role
-    {
-        public Role()
-        {
-            Users = new HashSet<User>();
-        }
+    public Guid Id { get; set; }
 
-        public Guid Id { get; set; }
-        public short RoleType { get; set; }
-        public Guid? ResellerId { get; set; }
-        public Guid? LicenseeId { get; set; }
-        public Guid? BrandId { get; set; }
-        public bool IsRoot { get; set; }
-        public string Name { get; set; } = null!;
-        public string? DisplayName { get; set; }
-        public string MenuSetting { get; set; } = null!;
-        public string? Description { get; set; }
-        public short Status { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
-        public string CreatedByUsername { get; set; } = null!;
-        public string UpdatedByUsername { get; set; } = null!;
+    public short RoleType { get; set; }
 
-        public virtual ICollection<User> Users { get; set; }
-    }
+    public Guid? ResellerId { get; set; }
+
+    public Guid? LicenseeId { get; set; }
+
+    public Guid? BrandId { get; set; }
+
+    public bool IsRoot { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public string? DisplayName { get; set; }
+
+    public string MenuSetting { get; set; } = null!;
+
+    public string? Description { get; set; }
+
+    public short Status { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public string CreatedByUsername { get; set; } = null!;
+
+    public string UpdatedByUsername { get; set; } = null!;
+
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

@@ -8,30 +8,32 @@ namespace Tgs.ProfitRebate.Core;
 
 public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
 {
-	private readonly ITgsService<PlayerAllAgentRebateRecord> _allAgentPlayerRebateService;
+    private readonly ITgsService<PlayerAllAgentRebateRecord> _allAgentPlayerRebateService;
     private readonly ITgsService<PlayerAllAgentRebateContributor> _playerAllAgentRebateContributorService;
-	private readonly IPlayerBucketClient _playerBucketClient;
+    private readonly IPlayerBucketClient _playerBucketClient;
 
-	public PlayerAllAgentRebateFactory(
-		ITgsService<PlayerAllAgentRebateRecord> allAgentPlayerRebateService,
+    public PlayerAllAgentRebateFactory(
+        ITgsService<PlayerAllAgentRebateRecord> allAgentPlayerRebateService,
         ITgsService<PlayerAllAgentRebateContributor> playerAllAgentRebateContributorService,
         IPlayerBucketClient playerBucketClient)
-	{
-		_allAgentPlayerRebateService = allAgentPlayerRebateService ?? throw new ArgumentNullException(nameof(allAgentPlayerRebateService));
-		_playerBucketClient = playerBucketClient ?? throw new ArgumentNullException(nameof(playerBucketClient));
-        _playerAllAgentRebateContributorService = playerAllAgentRebateContributorService ?? throw new ArgumentNullException(nameof(playerAllAgentRebateContributorService));
-	}
+    {
+        _allAgentPlayerRebateService = allAgentPlayerRebateService ??
+            throw new ArgumentNullException(nameof(allAgentPlayerRebateService));
+        _playerBucketClient = playerBucketClient ?? throw new ArgumentNullException(nameof(playerBucketClient));
+        _playerAllAgentRebateContributorService = playerAllAgentRebateContributorService ??
+            throw new ArgumentNullException(nameof(playerAllAgentRebateContributorService));
+    }
 
     public async ValueTask CreatePlayerBucketsAsync(CreatePlayerBucketRequest[] requests)
-	{
-		foreach (var request in requests)
-			_ = await _playerBucketClient.CreateBucketAsync(
-				request.PlayerCode,
-				request.BucketAmount,
-				request.BucketType,
-				request.ExternalId,
+    {
+        foreach (var request in requests)
+            _ = await _playerBucketClient.CreateBucketAsync(
+                request.PlayerCode,
+                request.BucketAmount,
+                request.BucketType,
+                request.ExternalId,
                 "").ConfigureAwait(false);
-	}
+    }
 
     public ValueTask CreateAllAgentPlayerRebatesAsync(PlayerAllAgentRebateModel[] models)
         => _allAgentPlayerRebateService.CreateEntitiesAsync(models.Select(model => new PlayerAllAgentRebateRecord
@@ -53,33 +55,33 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
         }).ToArray());
 
     public async ValueTask<BrandAllAgentGameTypeConditionModel[]> GetBrandAllAgentGameTypeConditionsAsync(
-		Guid[] brandIds)
-	{
-		return await _allAgentPlayerRebateService.Repository.BrandAllAgents.Join(
-				_allAgentPlayerRebateService.Repository.BrandAllAgentGameTypes, brand => brand.BrandId,
-				gameType => gameType.BrandId,
-				(brand, gameType) => new { brand.BrandId, GameType = gameType })
-			.Join(_allAgentPlayerRebateService.Repository.BrandAllAgentGameTypeConditions,
-				group => new { group.BrandId, AllAgentGameType = (int)group.GameType.AllAgentGameType },
-				condition => new { condition.BrandId, condition.AllAgentGameType },
-				(group, condition) => new { group.BrandId, group.GameType, Condition = condition })
-			.Where(x => brandIds.Contains(x.BrandId))
-			.Where(x => x.GameType.Switch)
-			.Where(x => x.GameType.HasValidBet || x.GameType.HasWinLoss)
-			.Select(x => new BrandAllAgentGameTypeConditionModel
-			{
-				BrandId = x.BrandId,
-				GameTypeSwitch = x.GameType.Switch,
-				HasValidBet = x.GameType.HasValidBet,
-				HasWinLoss = x.GameType.HasWinLoss,
-				AllAgentGameType = (AllAgentGameType)x.GameType.AllAgentGameType,
-				AllAgentRebateType = (AllAgentRebateType)x.Condition.AllAgentRebateType,
-				Rank = x.Condition.Rank,
-				ActiveNumber = x.Condition.ActiveNumber,
-				NetProfit = x.Condition.NetProfit,
-				RebatePercentage = x.Condition.RebatePercentage
-			}).ToArrayAsync();
-	}
+        Guid[] brandIds)
+    {
+        return await _allAgentPlayerRebateService.Repository.BrandAllAgents.Join(
+                _allAgentPlayerRebateService.Repository.BrandAllAgentGameTypes, brand => brand.BrandId,
+                gameType => gameType.BrandId,
+                (brand, gameType) => new { brand.BrandId, GameType = gameType })
+            .Join(_allAgentPlayerRebateService.Repository.BrandAllAgentGameTypeConditions,
+                group => new { group.BrandId, AllAgentGameType = (int)group.GameType.AllAgentGameType },
+                condition => new { condition.BrandId, condition.AllAgentGameType },
+                (group, condition) => new { group.BrandId, group.GameType, Condition = condition })
+            .Where(x => brandIds.Contains(x.BrandId))
+            .Where(x => x.GameType.Switch)
+            .Where(x => x.GameType.HasValidBet || x.GameType.HasWinLoss)
+            .Select(x => new BrandAllAgentGameTypeConditionModel
+            {
+                BrandId = x.BrandId,
+                GameTypeSwitch = x.GameType.Switch,
+                HasValidBet = x.GameType.HasValidBet,
+                HasWinLoss = x.GameType.HasWinLoss,
+                AllAgentGameType = (AllAgentGameType)x.GameType.AllAgentGameType,
+                AllAgentRebateType = (AllAgentRebateType)x.Condition.AllAgentRebateType,
+                Rank = x.Condition.Rank,
+                ActiveNumber = x.Condition.ActiveNumber,
+                NetProfit = x.Condition.NetProfit,
+                RebatePercentage = x.Condition.RebatePercentage
+            }).ToArrayAsync();
+    }
 
     public async ValueTask<(Guid, string)[]> GetValidAllAgentPlayerCodesAsync(DateTimeOffset reportDate)
     {
@@ -129,13 +131,13 @@ public class PlayerAllAgentRebateFactory : IPlayerAllAgentRebateFactory
             .GroupBy(
                 x => new
                 {
-					x.Aggregate.BrandId,
+                    x.Aggregate.BrandId,
                     x.Player.ParentPlayerCode
                 },
                 (x, list) => new
                 {
-					x.BrandId,
-                    ParentPlayerCode = x.ParentPlayerCode
+                    x.BrandId,
+                    x.ParentPlayerCode
                 })
             .Select(x => new ValueTuple<Guid, string>(x.BrandId, x.ParentPlayerCode))
             .ToArrayAsync();

@@ -12,7 +12,7 @@ builder.Services
         {
             var config = sp.GetRequiredService<IConfiguration>();
 
-            options.Url = config.GetValue<string>("NatsSetting:Urls");
+            options.Url = config.GetValue<string>("NatsSetting:Urls")!;
         }))
     .ClearAllExchanges()
     .AddNatsGlobPatternExchange("*");

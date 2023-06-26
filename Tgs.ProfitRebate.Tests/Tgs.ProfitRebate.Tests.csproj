@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AutoFixture.NUnit3" Version="4.18.0" />
 		<PackageReference Include="JunitXml.TestLogger" Version="3.0.124" />
 		<PackageReference Include="AutoFixture" Version="4.18.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
@@ -26,14 +27,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Tgs.ProfitRebate.Core\Tgs.ProfitRebate.Core.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<EditorConfigFiles
-			Remove="D:\Users\Phoenix\source\repos\tgs-profit-rebate-service\Tgs.ProfitRebate.Tests\.editorconfig" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="D:\Users\Phoenix\source\repos\tgs-profit-rebate-service\Tgs.ProfitRebate.Tests\.editorconfig" />
-	</ItemGroup>
-
 </Project>

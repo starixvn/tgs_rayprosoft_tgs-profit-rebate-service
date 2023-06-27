@@ -166,7 +166,7 @@ internal class PlayerRebateTaskQueueProcessor : IPlayerRebateTaskQueueProcessor
                 })
             .ConfigureAwait(false);
 
-        await _notificationClient.PushNotificationAsync(request.PlayerCode, "vipRebate", new
+        await _notificationClient.PushNotificationAsync(request.PlayerCode, "VipRebate", new
             {
                 Amount = request.RebateAmount
             }.ToJsonDocument(), cancellationToken)

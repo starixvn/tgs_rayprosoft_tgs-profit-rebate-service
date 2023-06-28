@@ -66,6 +66,8 @@ builder.Services
     .AddRabbitGlobPatternExchange("report.error", "amq.direct")
     .AddNatsGlobPatternExchange("*");
 
+builder.Services.AddNotificationClient();
+
 builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers();

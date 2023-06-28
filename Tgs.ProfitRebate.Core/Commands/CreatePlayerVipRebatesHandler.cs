@@ -12,27 +12,25 @@ public class
     CreatePlayerVipRebatesHandler : IRequestHandler<CreateVipPlayerRebatesRequest,
         MessageResponse>
 {
-    private readonly ITgsService<BrandGame> _brandGameRepository;
+    private readonly ITgsService<BrandGame> _brandGameService;
     private readonly ITgsService<Brand> _brandService;
     private readonly ITgsService<PlayerGameRebateAggregate> _playerGameAggregateService;
-    private readonly ITgsService<PlayerRebate> _playerRebateService;
     private readonly ITgsService<Player> _playerService;
     private readonly IPlayerRebateTaskQueue _taskQueue;
 
-    public CreatePlayerVipRebatesHandler(ITgsService<Brand> brandService,
-        ITgsService<PlayerRebate> playerRebateService,
+    public CreatePlayerVipRebatesHandler(
+        ITgsService<Brand> brandService,
         ITgsService<PlayerGameRebateAggregate> playerGameAggregateService,
         ITgsService<Player> playerService,
-        ITgsService<BrandGame> brandGameRepository,
+        ITgsService<BrandGame> brandGameService,
         IPlayerRebateTaskQueue taskQueue)
     {
         _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));
-        _playerRebateService = playerRebateService ?? throw new ArgumentNullException(nameof(playerRebateService));
         _playerGameAggregateService = playerGameAggregateService ??
             throw new ArgumentNullException(nameof(playerGameAggregateService));
         _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
-        _brandGameRepository =
-            brandGameRepository ?? throw new ArgumentNullException(nameof(brandGameRepository));
+        _brandGameService =
+            brandGameService ?? throw new ArgumentNullException(nameof(brandGameService));
         _taskQueue =
             taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
     }
@@ -56,7 +54,7 @@ public class
 
         var playerRebates = await _playerGameAggregateService
             .GetQueries(q => q.Where(x => x.ReportDate == reportDate.ToUniversalTime()))
-            .GroupJoin(_brandGameRepository.GetQueries(),
+            .GroupJoin(_brandGameService.GetQueries(),
                 aggregate => new { aggregate.BrandId, aggregate.GameId },
                 brandGame => new { brandGame.BrandId, brandGame.GameId },
                 (aggregate, brandGame) => new { aggregate, brandGame })

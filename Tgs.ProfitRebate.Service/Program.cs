@@ -10,6 +10,8 @@ using Tgs.PlayerBucket.Clients.DependencyInjection;
 using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
 
+AppContext.SetSwitch("Npgsql.EnableStoredProcedureCompatMode", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration

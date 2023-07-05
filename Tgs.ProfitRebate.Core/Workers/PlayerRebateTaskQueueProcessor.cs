@@ -1,4 +1,5 @@
-﻿using Json.More;
+﻿using System.Text.Json;
+using Json.More;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -167,9 +168,11 @@ internal class PlayerRebateTaskQueueProcessor : IPlayerRebateTaskQueueProcessor
             .ConfigureAwait(false);
 
         await _notificationClient.PushNotificationAsync(request.PlayerCode, "VipRebate", new
-            {
-                Amount = request.RebateAmount
-            }.ToJsonDocument(), cancellationToken)
+                {
+                    Amount = request.RebateAmount
+                }.ToJsonDocument(new JsonSerializerOptions
+                    { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }),
+                cancellationToken)
             .ConfigureAwait(false);
     }
 }

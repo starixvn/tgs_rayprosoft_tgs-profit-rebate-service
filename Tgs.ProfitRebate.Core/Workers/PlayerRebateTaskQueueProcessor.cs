@@ -143,7 +143,7 @@ internal class PlayerRebateTaskQueueProcessor : IPlayerRebateTaskQueueProcessor
         await Policy.Handle<HttpRequestException>()
             .WaitAndRetryAsync(
                 3,
-                retryAttempt => TimeSpan.FromSeconds(3),
+                retryAttempt => TimeSpan.FromSeconds(10),
                 (exception, time, retryCount, context) => _logger.LogError(
                     "externalId:{externalId} retryCount:{retryCount} Exception:{exception}",
                     rebate.Id,

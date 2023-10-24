@@ -151,9 +151,12 @@ public class
             .Select(x => new { x.BrandId, x.PlayerCode, x.Wallets, x.DefaultWalletId })
             .ToArrayAsync(cancellationToken);
 
-        foreach (var player in sendPlayers.Join(players, pb => pb.PlayerRebate.PlayerCode, p => p.PlayerCode,
+        foreach (var player in sendPlayers.Join(players,
+                     pb => pb.PlayerRebate.PlayerCode,
+                     p => p.PlayerCode,
                      (pb, p) => new { Rebate = pb.PlayerRebate, pb.IsAutoSend, p }))
-            await _taskQueue.QueuePlayerRebateAsync(new(cancellationToken)
+        {
+            await _taskQueue.QueuePlayerRebateAsync(new PlayerRebateQueueModel(cancellationToken)
             {
                 BrandId = player.Rebate.BrandId,
                 PlayerCode = player.Rebate.PlayerCode,
@@ -182,7 +185,10 @@ public class
                 IsAutoSend = player.IsAutoSend
             });
 
-        return new()
+            await Task.Delay(200, cancellationToken);
+        }
+
+        return new MessageResponse
         {
             Valid = true
         };

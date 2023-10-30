@@ -140,32 +140,13 @@ internal class PlayerRebateTaskQueueProcessor : IPlayerRebateTaskQueueProcessor
             "player vip rebate send request: {request.PlayerCode} {request.RebateAmount}",
             request.PlayerCode, request.RebateAmount);
 
-        await Policy.Handle<HttpRequestException>()
-            .WaitAndRetryAsync(
-                3,
-                retryAttempt => TimeSpan.FromSeconds(10),
-                (exception, time, retryCount, context) => _logger.LogError(
-                    "externalId:{externalId} retryCount:{retryCount} Exception:{exception}",
-                    rebate.Id,
-                    retryCount,
-                    exception))
-            .ExecuteAsync(
-                async () =>
-                {
-                    if (!await _transactionService.GetQueries()
-                            .AnyAsync(
-                                x => x.PlayerCode == request.PlayerCode
-                                    && x.ExternalTransactionId == rebate.Id.ToString(),
-                                cancellationToken))
-                    {
-                        _ = await _cashServiceClient.RebateAsync(
-                            request.DefaultWalletId,
-                            request.RebateAmount,
-                            "player rebate",
-                            rebate.Id.ToString(), cancellationToken).ConfigureAwait(false);
-                    }
-                })
-            .ConfigureAwait(false);
+        _ = await _cashServiceClient.RebateAsync(
+            request.DefaultWalletId,
+            request.RebateAmount,
+            "player rebate",
+            rebate.Id.ToString(), cancellationToken).ConfigureAwait(false);
+
+        await Task.Delay(1000, cancellationToken);
 
         await _notificationClient.PushNotificationAsync(request.PlayerCode, "vipRebate", new
                 {

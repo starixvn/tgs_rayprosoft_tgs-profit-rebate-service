@@ -145,31 +145,13 @@ public class PlayerRebateBackground : BackgroundService
                         "player vip rebate send request: {request.PlayerCode} {request.RebateAmount}",
                         request.PlayerCode, request.RebateAmount);
 
-                    await Policy.Handle<HttpRequestException>()
-                        .WaitAndRetryAsync(
-                            3,
-                            retryAttempt => TimeSpan.FromSeconds(3),
-                            (exception, time, retryCount, context) => _logger.LogError(
-                                "externalId:{externalId} retryCount:{retryCount} Exception:{exception}",
-                                rebate.Id,
-                                retryCount,
-                                exception))
-                        .ExecuteAsync(
-                            async () =>
-                            {
-                                if (!await transactionService.GetQueries()
-                                        .AnyAsync(
-                                            x => x.PlayerCode == request.PlayerCode
-                                                && x.ExternalTransactionId == rebate.Id.ToString(),
-                                            cancellationToken: stoppingToken))
-                                {
-                                    _ = await cashServiceClient.RebateAsync(
-                                        request.DefaultWalletId,
-                                        request.RebateAmount,
-                                        "player rebate",
-                                        rebate.Id.ToString(), stoppingToken).ConfigureAwait(false);
-                                }
-                            });
+                    _ = await cashServiceClient.RebateAsync(
+                        request.DefaultWalletId,
+                        request.RebateAmount,
+                        "player rebate",
+                        rebate.Id.ToString(), stoppingToken).ConfigureAwait(false);
+
+                    await Task.Delay(1000, stoppingToken);
                 }
                 catch (Exception ex)
                 {

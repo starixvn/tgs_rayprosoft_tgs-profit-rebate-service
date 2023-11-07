@@ -28,17 +28,17 @@ builder.Host.ConfigureServices((context, services) => services
 
 // Add services to the container.
 builder.Services
-	.AddTgsRepository(builder.Configuration.GetConnectionString("Tgs")!)
-	.AddSystemJsonSerializer()
-	.AddTgsLog()
-	.AddProfitRebateCore()
-	.AddCashServiceClient((options, sp) =>
-	{
-		var config = sp.GetRequiredService<IConfiguration>();
+    .AddTgsRepository(builder.Configuration.GetConnectionString("Tgs")!)
+    .AddSystemJsonSerializer()
+    .AddTgsLog()
+    .AddProfitRebateCore()
+    .AddCashServiceClient((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
 
-		options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl")!;
-	})
-	.AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
+        options.BaseUrl = config.GetValue<Uri>("ProfitRebate:CashBaseUrl")!;
+    })
+    .AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
         .ConfigureHttpClient(httpClient => httpClient.BaseAddress =
             builder.Configuration.GetValue<Uri>("ProfitRebate:PlayerBucketBaseUrl")))
     .AddPlayerServiceClient((options, sp) =>
@@ -68,6 +68,8 @@ builder.Services
     .AddRabbitGlobPatternExchange("report.error", "amq.direct")
     .AddNatsGlobPatternExchange("*");
 
+builder.Services.AddNotificationClient();
+
 builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers();
@@ -96,7 +98,9 @@ builder.Services
         var nodeIp = config.GetValue<string>("NODE_IP");
 
         if (!string.IsNullOrWhiteSpace(nodeIp))
-            options.Endpoint = new Uri($"http://{nodeIp}:4317");
+        {
+            options.Endpoint = new($"http://{nodeIp}:4317");
+        }
 
         config.GetSection("Opentelemetry:Tracing").Bind(options);
     });
@@ -117,11 +121,11 @@ builder.Services
     .Services
     .Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =
         httpContext => !httpContext.Request.Path.HasValue
-                       || !httpContext.Request.Path.StartsWithSegments("/swagger")
-                       && !httpContext.Request.Path.StartsWithSegments("/health")
-                       && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-                       && !new[] { "html", "ico", "png", "jpg" }.Any(
-                           ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
+            || (!httpContext.Request.Path.StartsWithSegments("/swagger")
+                && !httpContext.Request.Path.StartsWithSegments("/health")
+                && !httpContext.Request.Path.StartsWithSegments("/profiler/")
+                && !new[] { "html", "ico", "png", "jpg" }.Any(
+                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}"))));
 builder.Services.AddProfileViewer();
 
 var app = builder.Build();

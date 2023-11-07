@@ -2,6 +2,6 @@
 
 public enum AgentConfigStatus
 {
-	DoneForConfigurePercentage = 1,
-	WaitForConfigurePercentage = 2
+    DoneForConfigurePercentage = 1,
+    WaitForConfigurePercentage = 2
 }

@@ -1,23 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
-    <PackageReference Include="Polly" Version="7.2.3" />
-    <PackageReference Include="Tgs.CashService.Client" Version="0.1.6" />
-    <PackageReference Include="Tgs.Core.Infrastructures.Utility" Version="0.0.3" />
-    <PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.3.1" />
-    <PackageReference Include="Tgs.PlayerBucket.Client" Version="0.0.16" />
-    <PackageReference Include="Tgs.PlayerService.Client" Version="0.0.31" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MediatR" Version="12.0.1" />
+		<PackageReference Include="Polly" Version="7.2.4" />
+		<PackageReference Include="Tgs.CashService.Client" Version="0.1.6" />
+		<PackageReference Include="Tgs.Core.Infrastructures.Utility" Version="0.0.3" />
+		<PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.3.1" />
+		<PackageReference Include="Tgs.Notification.Client" Version="0.0.2" />
+		<PackageReference Include="Tgs.PlayerBucket.Client" Version="0.0.16" />
+		<PackageReference Include="Tgs.PlayerService.Client" Version="0.0.33" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Tgs.ProfitRebate.Repository\Tgs.ProfitRebate.Repository.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Tgs.ProfitRebate.Repository\Tgs.ProfitRebate.Repository.csproj" />
+	</ItemGroup>
 
 </Project>

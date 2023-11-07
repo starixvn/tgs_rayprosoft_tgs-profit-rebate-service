@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TGS.Core.Infrastructures.Extensions;
+using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository.Entities;
-using TGS.Core.Infrastructures.Extensions;
-using Tgs.ProfitRebate.Core.ViewModel;
 
 namespace Tgs.ProfitRebate.Core.Commands;
 
@@ -12,27 +12,25 @@ public class
     CreatePlayerVipRebatesHandler : IRequestHandler<CreateVipPlayerRebatesRequest,
         MessageResponse>
 {
-    private readonly ITgsService<BrandGame> _brandGameRepository;
+    private readonly ITgsService<BrandGame> _brandGameService;
     private readonly ITgsService<Brand> _brandService;
     private readonly ITgsService<PlayerGameRebateAggregate> _playerGameAggregateService;
-    private readonly ITgsService<PlayerRebate> _playerRebateService;
     private readonly ITgsService<Player> _playerService;
     private readonly IPlayerRebateTaskQueue _taskQueue;
 
-    public CreatePlayerVipRebatesHandler(ITgsService<Brand> brandService,
-        ITgsService<PlayerRebate> playerRebateService,
+    public CreatePlayerVipRebatesHandler(
+        ITgsService<Brand> brandService,
         ITgsService<PlayerGameRebateAggregate> playerGameAggregateService,
         ITgsService<Player> playerService,
-        ITgsService<BrandGame> brandGameRepository,
+        ITgsService<BrandGame> brandGameService,
         IPlayerRebateTaskQueue taskQueue)
     {
         _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));
-        _playerRebateService = playerRebateService ?? throw new ArgumentNullException(nameof(playerRebateService));
         _playerGameAggregateService = playerGameAggregateService ??
             throw new ArgumentNullException(nameof(playerGameAggregateService));
         _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
-        _brandGameRepository =
-            brandGameRepository ?? throw new ArgumentNullException(nameof(brandGameRepository));
+        _brandGameService =
+            brandGameService ?? throw new ArgumentNullException(nameof(brandGameService));
         _taskQueue =
             taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
     }
@@ -56,7 +54,7 @@ public class
 
         var playerRebates = await _playerGameAggregateService
             .GetQueries(q => q.Where(x => x.ReportDate == reportDate.ToUniversalTime()))
-            .GroupJoin(_brandGameRepository.GetQueries(),
+            .GroupJoin(_brandGameService.GetQueries(),
                 aggregate => new { aggregate.BrandId, aggregate.GameId },
                 brandGame => new { brandGame.BrandId, brandGame.GameId },
                 (aggregate, brandGame) => new { aggregate, brandGame })
@@ -153,9 +151,12 @@ public class
             .Select(x => new { x.BrandId, x.PlayerCode, x.Wallets, x.DefaultWalletId })
             .ToArrayAsync(cancellationToken);
 
-        foreach (var player in sendPlayers.Join(players, pb => pb.PlayerRebate.PlayerCode, p => p.PlayerCode,
+        foreach (var player in sendPlayers.Join(players,
+                     pb => pb.PlayerRebate.PlayerCode,
+                     p => p.PlayerCode,
                      (pb, p) => new { Rebate = pb.PlayerRebate, pb.IsAutoSend, p }))
-            await _taskQueue.QueuePlayerRebateAsync(new(cancellationToken)
+        {
+            await _taskQueue.QueuePlayerRebateAsync(new PlayerRebateQueueModel(cancellationToken)
             {
                 BrandId = player.Rebate.BrandId,
                 PlayerCode = player.Rebate.PlayerCode,
@@ -184,7 +185,10 @@ public class
                 IsAutoSend = player.IsAutoSend
             });
 
-        return new()
+            await Task.Delay(200, cancellationToken);
+        }
+
+        return new MessageResponse
         {
             Valid = true
         };

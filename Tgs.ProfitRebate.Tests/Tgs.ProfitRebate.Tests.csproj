@@ -1,38 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
 
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="JunitXml.TestLogger" Version="3.0.124" />
-    <PackageReference Include="AutoFixture" Version="4.18.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
-    <PackageReference Include="MockQueryable.Moq" Version="7.0.0" />
-    <PackageReference Include="Moq" Version="4.18.4" />
-    <PackageReference Include="NSubstitute" Version="5.0.0" />
-    <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="coverlet.collector" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoFixture.NUnit3" Version="4.18.0" />
+		<PackageReference Include="JunitXml.TestLogger" Version="3.0.124" />
+		<PackageReference Include="AutoFixture" Version="4.18.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+		<PackageReference Include="MockQueryable.Moq" Version="7.0.0" />
+		<PackageReference Include="Moq" Version="4.18.4" />
+		<PackageReference Include="NSubstitute" Version="5.0.0" />
+		<PackageReference Include="NUnit" Version="3.13.3" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+		<PackageReference Include="coverlet.collector" Version="6.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Tgs.ProfitRebate.Core\Tgs.ProfitRebate.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EditorConfigFiles Remove="D:\Users\Phoenix\source\repos\tgs-profit-rebate-service\Tgs.ProfitRebate.Tests\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="D:\Users\Phoenix\source\repos\tgs-profit-rebate-service\Tgs.ProfitRebate.Tests\.editorconfig" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<ProjectReference Include="..\Tgs.ProfitRebate.Core\Tgs.ProfitRebate.Core.csproj" />
+	</ItemGroup>
 </Project>

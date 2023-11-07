@@ -9,22 +9,22 @@ namespace Tgs.ProfitRebate.Service.Controllers;
 [ApiController]
 public class PlayerRebateController : ControllerBase
 {
-	private readonly IMediator _mediator;
+    private readonly IMediator _mediator;
 
-	public PlayerRebateController(IMediator mediator)
-	{
-		_mediator = mediator;
-	}
+    public PlayerRebateController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
 
-	[HttpPost("vip")]
-	[Description("create vip player rebate")]
-	public Task<MessageResponse> CreateVipPlayerRebatesAsync(
-		CreateVipPlayerRebatesRequest request)
-		=> _mediator.Send(request);
+    [HttpPost("vip")]
+    [Description("create vip player rebate")]
+    public Task<MessageResponse> CreateVipPlayerRebatesAsync(
+        CreateVipPlayerRebatesRequest request)
+        => _mediator.Send(request);
 
-	[HttpPost("allAgent")]
-	[Description("create all agent player rebate")]
-	public Task<MessageResponse> CreateAllAgentPlayerRebatesAsync(
-		CreatePlayerAllAgentRebatesRequest request)
-		=> _mediator.Send(request);
+    [HttpPost("allAgent")]
+    [Description("create all agent player rebate")]
+    public Task<MessageResponse> CreateAllAgentPlayerRebatesAsync(
+        CreatePlayerAllAgentRebatesRequest request)
+        => _mediator.Send(request);
 }

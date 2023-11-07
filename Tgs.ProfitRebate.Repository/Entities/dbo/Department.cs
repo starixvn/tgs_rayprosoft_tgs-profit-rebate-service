@@ -3,29 +3,35 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class Department
 {
-    public partial class Department
-    {
-        public Department()
-        {
-            Users = new HashSet<User>();
-        }
+    public Guid Id { get; set; }
 
-        public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
-        public string CreatedByUsername { get; set; } = null!;
-        public string UpdatedByUsername { get; set; } = null!;
-        public Guid? ResellerId { get; set; }
-        public Guid? LicenseeId { get; set; }
-        public Guid? BrandId { get; set; }
+    public string Name { get; set; } = null!;
 
-        public virtual Brand? Brand { get; set; }
-        public virtual Licensee? Licensee { get; set; }
-        public virtual Reseller? Reseller { get; set; }
-        public virtual ICollection<User> Users { get; set; }
-    }
+    public string Description { get; set; } = null!;
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public string CreatedByUsername { get; set; } = null!;
+
+    public string UpdatedByUsername { get; set; } = null!;
+
+    public Guid? ResellerId { get; set; }
+
+    public Guid? LicenseeId { get; set; }
+
+    public Guid? BrandId { get; set; }
+
+    public virtual Brand? Brand { get; set; }
+
+    public virtual Licensee? Licensee { get; set; }
+
+    public virtual Reseller? Reseller { get; set; }
+
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

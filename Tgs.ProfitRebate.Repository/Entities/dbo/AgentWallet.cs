@@ -3,24 +3,25 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class AgentWallet
 {
-    public partial class AgentWallet
-    {
-        public AgentWallet()
-        {
-            AgentTransactions = new HashSet<AgentTransaction>();
-        }
+    public Guid Id { get; set; }
 
-        public Guid Id { get; set; }
-        public Guid AgentId { get; set; }
-        public string CurrencyCode { get; set; } = null!;
-        public decimal Balance { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
+    public Guid AgentId { get; set; }
 
-        public virtual Agent Agent { get; set; } = null!;
-        public virtual Currency CurrencyCodeNavigation { get; set; } = null!;
-        public virtual ICollection<AgentTransaction> AgentTransactions { get; set; }
-    }
+    public string CurrencyCode { get; set; } = null!;
+
+    public decimal Balance { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime UpdatedOn { get; set; }
+
+    public virtual Agent Agent { get; set; } = null!;
+
+    public virtual ICollection<AgentTransaction> AgentTransactions { get; set; } = new List<AgentTransaction>();
+
+    public virtual Currency CurrencyCodeNavigation { get; set; } = null!;
 }

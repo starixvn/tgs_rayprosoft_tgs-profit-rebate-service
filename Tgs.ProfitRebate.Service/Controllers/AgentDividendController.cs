@@ -9,15 +9,16 @@ namespace Tgs.ProfitRebate.Service.Controllers;
 [ApiController]
 public class AgentDividendController : ControllerBase
 {
-	private readonly IMediator _mediator;
+    private readonly IMediator _mediator;
 
-	public AgentDividendController(IMediator mediator) => _mediator = mediator;
+    public AgentDividendController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
 
-	[HttpPost("send")]
-	[Description("send agent dividends")]
-	public Task<MessageResponse> CreateAgentDividendsAsync(
-		CreateAgentDividendsRequest request)
-	{
-		return _mediator.Send(request);
-	}
+    [HttpPost("send")]
+    [Description("send agent dividends")]
+    public Task<MessageResponse> CreateAgentDividendsAsync(
+        CreateAgentDividendsRequest request)
+        => _mediator.Send(request);
 }

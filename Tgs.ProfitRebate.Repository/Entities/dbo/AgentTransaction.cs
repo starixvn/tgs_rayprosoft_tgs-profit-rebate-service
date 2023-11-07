@@ -3,25 +3,37 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
-{
-    public partial class AgentTransaction
-    {
-        public Guid Id { get; set; }
-        public Guid AgentId { get; set; }
-        public Guid WalletId { get; set; }
-        public Guid BrandId { get; set; }
-        public string? ExternalTransactionId { get; set; }
-        public decimal Amount { get; set; }
-        public decimal Balance { get; set; }
-        public string? Description { get; set; }
-        public short Type { get; set; }
-        public DateTime RecordedOn { get; set; }
-        public DateTime? SentOn { get; set; }
-        public decimal LockAmount { get; set; }
-        public decimal LockedBalance { get; set; }
+namespace Tgs.ProfitRebate.Repository.Entities;
 
-        public virtual Brand Brand { get; set; } = null!;
-        public virtual AgentWallet Wallet { get; set; } = null!;
-    }
+public partial class AgentTransaction
+{
+    public Guid Id { get; set; }
+
+    public Guid AgentId { get; set; }
+
+    public Guid WalletId { get; set; }
+
+    public Guid BrandId { get; set; }
+
+    public string? ExternalTransactionId { get; set; }
+
+    public decimal Amount { get; set; }
+
+    public decimal Balance { get; set; }
+
+    public string? Description { get; set; }
+
+    public short Type { get; set; }
+
+    public DateTime RecordedOn { get; set; }
+
+    public DateTime? SentOn { get; set; }
+
+    public decimal LockAmount { get; set; }
+
+    public decimal LockedBalance { get; set; }
+
+    public virtual Brand Brand { get; set; } = null!;
+
+    public virtual AgentWallet Wallet { get; set; } = null!;
 }

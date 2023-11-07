@@ -3,36 +3,61 @@
 using System;
 using System.Collections.Generic;
 
-namespace Tgs.ProfitRebate.Repository.Entities
+namespace Tgs.ProfitRebate.Repository.Entities;
+
+public partial class PlayerRebate
 {
-    public partial class PlayerRebate
-    {
-        public int Id { get; set; }
-        public Guid BrandId { get; set; }
-        public Guid? AgentId { get; set; }
-        public string PlayerCode { get; set; } = null!;
-        public DateTime? SentOn { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime ReportDate { get; set; }
-        public decimal SportsTurnover { get; set; }
-        public decimal SportsRebateAmount { get; set; }
-        public decimal VirtualSportsTurnover { get; set; }
-        public decimal VirtualSportsRebateAmount { get; set; }
-        public decimal LiveDealerTurnover { get; set; }
-        public decimal LiveDealerRebateAmount { get; set; }
-        public decimal CardGameTurnover { get; set; }
-        public decimal CardGameRebateAmount { get; set; }
-        public decimal SlotTurnover { get; set; }
-        public decimal SlotRebateAmount { get; set; }
-        public decimal LotteryTurnover { get; set; }
-        public decimal LotteryRebateAmount { get; set; }
-        public decimal VipLiveDealerRebatePercentage { get; set; }
-        public decimal VipSlotRebatePercentage { get; set; }
-        public decimal VipCardGameRebatePercentage { get; set; }
-        public decimal VipSportsRebatePercentage { get; set; }
-        public decimal VipVirtualSportsRebatePercentage { get; set; }
-        public decimal VipLotteryRebatePercentage { get; set; }
-        public decimal RebateAmount { get; set; }
-        public string? SentByUsername { get; set; }
-    }
+    public int Id { get; set; }
+
+    public Guid BrandId { get; set; }
+
+    public Guid? AgentId { get; set; }
+
+    public string PlayerCode { get; set; } = null!;
+
+    public DateTime? SentOn { get; set; }
+
+    public DateTime CreatedOn { get; set; }
+
+    public DateTime ReportDate { get; set; }
+
+    public decimal SportsTurnover { get; set; }
+
+    public decimal SportsRebateAmount { get; set; }
+
+    public decimal VirtualSportsTurnover { get; set; }
+
+    public decimal VirtualSportsRebateAmount { get; set; }
+
+    public decimal LiveDealerTurnover { get; set; }
+
+    public decimal LiveDealerRebateAmount { get; set; }
+
+    public decimal CardGameTurnover { get; set; }
+
+    public decimal CardGameRebateAmount { get; set; }
+
+    public decimal SlotTurnover { get; set; }
+
+    public decimal SlotRebateAmount { get; set; }
+
+    public decimal LotteryTurnover { get; set; }
+
+    public decimal LotteryRebateAmount { get; set; }
+
+    public decimal VipLiveDealerRebatePercentage { get; set; }
+
+    public decimal VipSlotRebatePercentage { get; set; }
+
+    public decimal VipCardGameRebatePercentage { get; set; }
+
+    public decimal VipSportsRebatePercentage { get; set; }
+
+    public decimal VipVirtualSportsRebatePercentage { get; set; }
+
+    public decimal VipLotteryRebatePercentage { get; set; }
+
+    public decimal RebateAmount { get; set; }
+
+    public string? SentByUsername { get; set; }
 }

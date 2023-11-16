@@ -56,7 +56,7 @@ public class AgentDividendFactory : IAgentDividendFactory
         };
     }
 
-    public async IAsyncEnumerable<Brand[]> GetSettlementIntervalBrands(string brandCode, DateTimeOffset queryDate)
+    public async IAsyncEnumerable<Brand[]> GetSettlementIntervalBrandsAsync(string brandCode, DateTimeOffset queryDate)
     {
         bool hasBrands;
 
@@ -72,7 +72,7 @@ public class AgentDividendFactory : IAgentDividendFactory
         } while (hasBrands);
     }
 
-    public async ValueTask SaveAgentDividendData(Brand[] brands,
+    public async ValueTask SaveAgentDividendDataAsync(Brand[] brands,
         List<CreateAgentDividendModel> createSendModels,
         List<AgentDividend> updateAgentDividends)
     {
@@ -89,7 +89,7 @@ public class AgentDividendFactory : IAgentDividendFactory
     }
 
     public async Task<(List<CreateAgentDividendModel>, int)>
-        GetAgentDividends(Brand brand, int idNumber, CancellationToken cancellationToken)
+        GetAgentDividendsAsync(Brand brand, int idNumber, CancellationToken cancellationToken)
     {
         var agents = await _agentService.GetQueries()
             .Where(x => x.BrandId == brand.Id)
@@ -600,7 +600,7 @@ public class AgentDividendFactory : IAgentDividendFactory
             allAgent.Any() ? allAgent.Max(x => x.Id) : idNumber);
     }
 
-    public async Task<(List<CreateAgentDividendModel> ,List<AgentDividend>)> GetNoSendDividends(List<CreateAgentDividendModel> agentDividends, CancellationToken cancellationToken)
+    public async Task<(List<CreateAgentDividendModel> ,List<AgentDividend>)> GetNoSendDividendsAsync(List<CreateAgentDividendModel> agentDividends, CancellationToken cancellationToken)
     {
         var agentIds = agentDividends.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
 
@@ -653,6 +653,13 @@ public class AgentDividendFactory : IAgentDividendFactory
         }
 
         return (agentDividends,noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList());
+    }
+
+    public Task SetSentOnAsync(int agentDividendId, CancellationToken cancellationToken)
+    {
+        return _agentDividendService.GetQueries()
+            .Where(a => a.Id == agentDividendId)
+            .ExecuteUpdateAsync(e => e.SetProperty(s => s.SentOn, DateTime.UtcNow), cancellationToken);
     }
 
     private static decimal GetAgentDividendPercentage(AgentDividendCondition[] agentDividendCondition,

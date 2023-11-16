@@ -6,17 +6,20 @@ namespace Tgs.ProfitRebate.Core;
 
 public interface IAgentDividendFactory
 {
-    public IAsyncEnumerable<Brand[]> GetSettlementIntervalBrands(string brandCode, DateTimeOffset queryDate);
+    public IAsyncEnumerable<Brand[]> GetSettlementIntervalBrandsAsync(string brandCode, DateTimeOffset queryDate);
 
     public (DateTimeOffset, DateTimeOffset) GetInterval(SettlementIntervalType type, DateTimeOffset startDate,
         int? dayOfMonth);
 
-    public ValueTask SaveAgentDividendData(
+    public ValueTask SaveAgentDividendDataAsync(
         Brand[] brands, List<CreateAgentDividendModel> createAutoSendModels, List<AgentDividend> updateAgentDividends);
 
     public Task<(List<CreateAgentDividendModel>, int)>
-        GetAgentDividends(Brand brand, int idNumber, CancellationToken cancellationToken);
+        GetAgentDividendsAsync(Brand brand, int idNumber, CancellationToken cancellationToken);
 
     public Task<(List<CreateAgentDividendModel>, List<AgentDividend>)>
-        GetNoSendDividends(List<CreateAgentDividendModel> agentDividends, CancellationToken cancellationToken);
+        GetNoSendDividendsAsync(List<CreateAgentDividendModel> agentDividends, CancellationToken cancellationToken);
+
+    public Task SetSentOnAsync(int agentDividendId, CancellationToken cancellationToken);
+
 }

@@ -76,9 +76,9 @@ public class AgentDividendGetDividendTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        var (sendDividends, _) = await sut.GetNoSendDividends(dividends, default);
+        var (sendDividends, _) = await sut.GetNoSendDividendsAsync(dividends, default);
 
         Assert.IsTrue(sendDividends.Count == 1);
 
@@ -187,9 +187,9 @@ public class AgentDividendGetDividendTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        var (sendDividends, _) = await sut.GetNoSendDividends(dividends, default);
+        var (sendDividends, _) = await sut.GetNoSendDividendsAsync(dividends, default);
 
         Assert.IsTrue(sendDividends.Count == 5);
 
@@ -305,9 +305,9 @@ public class AgentDividendGetDividendTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(negativeDividends.AsQueryable().BuildMock());
 
-        var (dividends, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        var (sendDividends, noSendDividends) = await sut.GetNoSendDividends(dividends, default);
+        var (sendDividends, noSendDividends) = await sut.GetNoSendDividendsAsync(dividends, default);
 
         Assert.IsTrue(sendDividends.Count == 5);
 
@@ -439,9 +439,9 @@ public class AgentDividendGetDividendTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        var (sendDividends, noSendDividends) = await sut.GetNoSendDividends(dividends, default);
+        var (sendDividends, noSendDividends) = await sut.GetNoSendDividendsAsync(dividends, default);
 
         Assert.IsTrue(sendDividends.Count == 6);
 

@@ -12,15 +12,18 @@ public class
     private readonly ICashServiceClient _cashServiceClient;
     private readonly ITgsService<Agent> _agentService;
     private readonly ITgsService<AgentDividend> _agentDividendService;
+    private readonly IAgentDividendFactory _agentDividendFactory;
 
     public AgentDividendDistributionHandler(
         ICashServiceClient cashServiceClient,
         ITgsService<Agent> agentService,
-        ITgsService<AgentDividend> agentDividendService)
+        ITgsService<AgentDividend> agentDividendService,
+        IAgentDividendFactory agentDividendFactory)
     {
         _cashServiceClient = cashServiceClient;
         _agentService = agentService;
         _agentDividendService = agentDividendService;
+        _agentDividendFactory = agentDividendFactory;
     }
 
     public async Task Handle(AgentDividendDistributionRequest request,
@@ -35,9 +38,7 @@ public class
 
         foreach (var dividendAmount in dividendAmounts)
         {
-            await _agentDividendService.GetQueries()
-                .Where(a => a.Id == dividendAmount.Id)
-                .ExecuteUpdateAsync(e => e.SetProperty(s => s.SentOn, DateTime.UtcNow), cancellationToken);
+            await _agentDividendFactory.SetSentOnAsync(dividendAmount.Id, cancellationToken);
 
             await _cashServiceClient.AgentDividendAsync(agent.WalletId!.Value,
                 dividendAmount.AgentDividendAmount,

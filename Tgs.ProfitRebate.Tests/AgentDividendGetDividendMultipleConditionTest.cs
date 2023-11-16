@@ -76,9 +76,9 @@ public class AgentDividendGetDividendMultipleConditionTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        var (sendDividends, _) = await sut.GetNoSendDividends(dividends, default);
+        var (sendDividends, _) = await sut.GetNoSendDividendsAsync(dividends, default);
 
         Assert.IsTrue(sendDividends.Count == 1);
 
@@ -152,9 +152,9 @@ public class AgentDividendGetDividendMultipleConditionTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        var (sendDividends, _) = await sut.GetNoSendDividends(dividends, default);
+        var (sendDividends, _) = await sut.GetNoSendDividendsAsync(dividends, default);
 
         Assert.IsTrue(sendDividends.Count == 1);
 
@@ -244,9 +244,9 @@ public class AgentDividendGetDividendMultipleConditionTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        var (sendDividends, _) = await sut.GetNoSendDividends(dividends, default);
+        var (sendDividends, _) = await sut.GetNoSendDividendsAsync(dividends, default);
 
         Assert.IsTrue(sendDividends.Count == 1);
 

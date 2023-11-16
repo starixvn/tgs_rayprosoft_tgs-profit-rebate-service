@@ -65,7 +65,7 @@ public class AgentDividendBackground : BackgroundService
                     var queryDate = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, new(8, 0, 0));
 
                     await foreach (var brands in
-                                   agentDividendFactory.GetSettlementIntervalBrands(request.BrandCode, queryDate)
+                                   agentDividendFactory.GetSettlementIntervalBrandsAsync(request.BrandCode, queryDate)
                                        .WithCancellation(stoppingToken))
                     {
                         var createSendModels = new List<CreateAgentDividendModel>();
@@ -83,10 +83,10 @@ public class AgentDividendBackground : BackgroundService
                                         request.CancellationToken))
                             {
                                 var (newDividends , backMaxNumber) =
-                                    await agentDividendFactory.GetAgentDividends(brand, maxNumber, stoppingToken);
+                                    await agentDividendFactory.GetAgentDividendsAsync(brand, maxNumber, stoppingToken);
 
                                 var (sendDividends, noSendDividends) =
-                                    await agentDividendFactory.GetNoSendDividends(newDividends, stoppingToken);
+                                    await agentDividendFactory.GetNoSendDividendsAsync(newDividends, stoppingToken);
 
                                 maxNumber = backMaxNumber;
 
@@ -107,7 +107,7 @@ public class AgentDividendBackground : BackgroundService
                             brand.NextSettlementTo = nextTo.UtcDateTime;
                         }
 
-                        await agentDividendFactory.SaveAgentDividendData(brands,
+                        await agentDividendFactory.SaveAgentDividendDataAsync(brands,
                             createSendModels,
                             updateAgentDividends);
 

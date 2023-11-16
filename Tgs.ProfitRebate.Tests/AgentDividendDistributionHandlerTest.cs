@@ -22,8 +22,9 @@ public class AgentDividendDistributionHandlerTest
         var fakeAgentService = Substitute.For<ITgsService<Agent>>();
         var fakeAgentDividendService = Substitute.For<ITgsService<AgentDividend>>();
         var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+        var fakeAgentDividendFactory = Substitute.For<IAgentDividendFactory>();
 
-        var sut = new AgentDividendDistributionHandler(fakeCashServiceClient, fakeAgentService, fakeAgentDividendService);
+        var sut = new AgentDividendDistributionHandler(fakeCashServiceClient, fakeAgentService, fakeAgentDividendService, fakeAgentDividendFactory);
 
         var agentId = Guid.NewGuid();
 

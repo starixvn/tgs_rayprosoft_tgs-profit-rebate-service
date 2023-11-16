@@ -74,6 +74,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.Property(e => e.SlotRebatePercentage)
             .HasPrecision(18, 6)
             .HasColumnName("slot_rebate_percentage");
+            entity.Property(e => e.SnapshotEventId).HasColumnName("snapshot_event_id");
             entity.Property(e => e.SportsRebatePercentage)
             .HasPrecision(18, 6)
             .HasColumnName("sports_rebate_percentage");
@@ -87,6 +88,7 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.Property(e => e.VirtualSportsRebatePercentage)
             .HasPrecision(18, 6)
             .HasColumnName("virtual_sports_rebate_percentage");
+            entity.Property(e => e.WalletId).HasColumnName("wallet_id");
             entity.Property(e => e.Wechat)
             .HasMaxLength(64)
             .HasColumnName("wechat");

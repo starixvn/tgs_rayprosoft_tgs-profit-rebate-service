@@ -73,6 +73,13 @@ namespace Tgs.ProfitRebate.Repository.Entities.Configurations
             entity.Property(e => e.VirtualSportsRebatePercentage)
             .HasPrecision(18, 6)
             .HasColumnName("virtual_sports_rebate_percentage");
+            entity.Property(e => e.WithdrawTotalAmountPerDay)
+            .HasPrecision(18, 6)
+            .HasDefaultValueSql("'-1'::integer")
+            .HasColumnName("withdraw_total_amount_per_day");
+            entity.Property(e => e.WithdrawTransactionsPerDay)
+            .HasDefaultValueSql("'-1'::integer")
+            .HasColumnName("withdraw_transactions_per_day");
 
             entity.HasOne(d => d.Brand).WithMany(p => p.VipLevels)
             .HasForeignKey(d => d.BrandId)

@@ -12,9 +12,11 @@ public interface IAgentDividendFactory
         int? dayOfMonth);
 
     public ValueTask SaveAgentDividendData(
-        Brand[] brands, List<CreateAgentDividendModel> createModels,
-        List<CreateAgentDividendModel> createAutoSendModels, List<AgentDividend> updateAgentDividends);
+        Brand[] brands, List<CreateAgentDividendModel> createAutoSendModels, List<AgentDividend> updateAgentDividends);
 
-    public Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>, int)>
+    public Task<(List<CreateAgentDividendModel>, int)>
         GetAgentDividends(Brand brand, int idNumber, CancellationToken cancellationToken);
+
+    public Task<(List<CreateAgentDividendModel>, List<AgentDividend>)>
+        GetNoSendDividends(List<CreateAgentDividendModel> agentDividends, CancellationToken cancellationToken);
 }

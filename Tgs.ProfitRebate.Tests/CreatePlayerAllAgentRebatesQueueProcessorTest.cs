@@ -696,7 +696,7 @@ public class CreatePlayerAllAgentRebatesQueueProcessorTest
         var fixture = new Fixture();
         fixture.Customize<PlayerAllAgentRebateContributor>(u
             => u.With(x => x.BrandId, brandId)
-                .With(x => x.ReportDate, reportDate.UtcDateTime)
+                .With(x => x.SettleDate, reportDate.UtcDateTime)
                 .With(x => x.PlayerCode, playerCode)
                 .With(x => x.ChildPlayerCode, childPlayerCode)
                 .With(x => x.SentOn, (DateTimeOffset?)null));

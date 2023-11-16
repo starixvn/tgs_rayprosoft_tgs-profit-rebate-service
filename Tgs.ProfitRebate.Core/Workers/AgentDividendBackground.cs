@@ -13,13 +13,16 @@ public class AgentDividendBackground : BackgroundService
     private readonly ILogger<AgentDividendBackground> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IAgentDividendTaskQueue _taskQueue;
+    private readonly IAgentDividendDistributionTaskQueue _distributionTaskQueue;
 
     public AgentDividendBackground(IAgentDividendTaskQueue taskQueue,
         IServiceProvider serviceProvider,
-        ILogger<AgentDividendBackground> logger)
+        ILogger<AgentDividendBackground> logger,
+        IAgentDividendDistributionTaskQueue distributionTaskQueue)
     {
         _taskQueue = taskQueue;
         _logger = logger;
+        _distributionTaskQueue = distributionTaskQueue;
         _serviceProvider = serviceProvider;
     }
 
@@ -40,10 +43,10 @@ public class AgentDividendBackground : BackgroundService
             Environment.NewLine,
             Environment.NewLine);
 
-        await BackgroundProcessing(stoppingToken);
+        await BackgroundProcessingAsync(stoppingToken);
     }
 
-    private async Task BackgroundProcessing(CancellationToken stoppingToken)
+    private async Task BackgroundProcessingAsync(CancellationToken stoppingToken)
     {
         try
         {
@@ -65,8 +68,7 @@ public class AgentDividendBackground : BackgroundService
                                    agentDividendFactory.GetSettlementIntervalBrands(request.BrandCode, queryDate)
                                        .WithCancellation(stoppingToken))
                     {
-                        var createModels = new List<CreateAgentDividendModel>();
-                        var createAutoSendModels = new List<CreateAgentDividendModel>();
+                        var createSendModels = new List<CreateAgentDividendModel>();
                         var updateAgentDividends = new List<AgentDividend>();
 
                         var maxNumber = await agentDividendService.GetQueries()
@@ -80,14 +82,16 @@ public class AgentDividendBackground : BackgroundService
                                             brand.CurrentSettlementTo == x.To,
                                         request.CancellationToken))
                             {
-                                var (autoSendDividends, manuelOrNegativeDividends, agentDividends, backMaxNumber) =
+                                var (newDividends , backMaxNumber) =
                                     await agentDividendFactory.GetAgentDividends(brand, maxNumber, stoppingToken);
+
+                                var (sendDividends, noSendDividends) =
+                                    await agentDividendFactory.GetNoSendDividends(newDividends, stoppingToken);
 
                                 maxNumber = backMaxNumber;
 
-                                createAutoSendModels.AddRange(autoSendDividends);
-                                createModels.AddRange(manuelOrNegativeDividends);
-                                updateAgentDividends.AddRange(agentDividends);
+                                createSendModels.AddRange(sendDividends);
+                                updateAgentDividends.AddRange(noSendDividends);
                             }
 
                             var (nextFrom, nextTo) = agentDividendFactory.GetInterval(
@@ -104,9 +108,17 @@ public class AgentDividendBackground : BackgroundService
                         }
 
                         await agentDividendFactory.SaveAgentDividendData(brands,
-                            createModels,
-                            createAutoSendModels,
+                            createSendModels,
                             updateAgentDividends);
+
+                        foreach (var createAgentDividendModel in createSendModels.Where(x => x.AutoSend))
+                        {
+                            await _distributionTaskQueue.QueueAgentDividendDistributionAsync(
+                                new AgentDividendDistributionQueueModel(createAgentDividendModel.AgentId,
+                                    createAgentDividendModel.AgentDividendAmount,
+                                    createAgentDividendModel.Id,
+                                    stoppingToken));
+                        }
                     }
                 }
                 catch (Exception ex)

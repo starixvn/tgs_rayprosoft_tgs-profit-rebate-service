@@ -90,40 +90,7 @@ public partial class TgsContext : DbContext
             .HasPostgresExtension("pg_trgm")
             .HasPostgresExtension("uuid-ossp");
 
-            modelBuilder.ApplyConfiguration(new Configurations.AdjustPlayerRecordConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.AgentConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.AgentDividendConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.AgentDividendConditionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.AgentDividendMultipleLayerConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.AgentTransactionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.AgentWalletConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.BrandConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.BrandAgentDividendConditionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.BrandAllAgentConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.BrandAllAgentGameTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.BrandAllAgentGameTypeConditionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.BrandGameConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.CurrencyConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.DepartmentConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.LicenseeConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerAggregateConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerAllAgentRebateContributorConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerAllAgentRebateRecordConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerBonusAggregateConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerGameRebateAggregateConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerParentConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PlayerRebateConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.PromotionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.ResellerConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.RoundAggregateConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.TransactionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.TransactionPromotionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.UserConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.VipLevelConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.WalletConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.WithdrawFormConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TgsContext).Assembly);
         OnModelCreatingPartial(modelBuilder);
     }
 

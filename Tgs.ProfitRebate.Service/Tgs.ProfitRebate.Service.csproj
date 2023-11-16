@@ -20,7 +20,7 @@
 		<PackageReference Include="TGS.Core.Infrastructures.Json" Version="0.0.1" />
 		<PackageReference Include="Tgs.Logging" Version="0.0.19" />
 		<PackageReference Include="Tgs.MessageQueue" Version="2.3.0" />
-		<PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.3.1" />
+		<PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.3.2" />
 		<PackageReference Include="Tgs.MessageQueue.Nats" Version="2.3.0" />
 		<PackageReference Include="Tgs.MessageQueue.RabbitMQ" Version="2.3.1" />
 		<PackageReference Include="OpenTelemetry" Version="1.5.0" />

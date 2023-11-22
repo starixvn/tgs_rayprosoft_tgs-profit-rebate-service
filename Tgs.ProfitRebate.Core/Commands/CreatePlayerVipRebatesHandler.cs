@@ -184,8 +184,6 @@ public class
                 DefaultWalletId = player.p.DefaultWalletId,
                 IsAutoSend = player.IsAutoSend
             });
-
-            await Task.Delay(200, cancellationToken);
         }
 
         return new MessageResponse

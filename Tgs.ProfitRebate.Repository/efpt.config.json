@@ -13,6 +13,7 @@
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
    "Tables": [
       {
          "Name": "dbo.adjust_player_records",
@@ -40,10 +41,6 @@
       },
       {
          "Name": "dbo.agents",
-         "ObjectType": 0
-      },
-      {
-         "Name": "dbo.brand_agent_dividend_conditions",
          "ObjectType": 0
       },
       {
@@ -164,10 +161,12 @@
    "UseLegacyPluralizer": true,
    "UseManyToManyEntity": true,
    "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,
    "UseNullableReferences": true,
    "UseSchemaFolders": true,
+   "UseSchemaNamespaces": false,
    "UseSpatial": true,
    "UseT4": false
 }

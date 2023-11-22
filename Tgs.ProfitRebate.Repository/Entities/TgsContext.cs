@@ -31,8 +31,6 @@ public partial class TgsContext : DbContext
 
     public virtual DbSet<Brand> Brands { get; set; }
 
-    public virtual DbSet<BrandAgentDividendCondition> BrandAgentDividendConditions { get; set; }
-
     public virtual DbSet<BrandAllAgent> BrandAllAgents { get; set; }
 
     public virtual DbSet<BrandAllAgentGameType> BrandAllAgentGameTypes { get; set; }

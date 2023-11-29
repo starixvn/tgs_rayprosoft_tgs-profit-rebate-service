@@ -31,19 +31,20 @@ public class
     {
         var dividendAmounts = await _agentDividendService.GetQueries()
             .Where(x => x.AgentId == request.AgentId && x.SentOn == null)
-            .Where(x => x.AgentDividendAmount > 0)
             .ToArrayAsync(cancellationToken);
 
-        var agent = await _agentService.GetQueries().FirstAsync(x => x.Id == request.AgentId, cancellationToken);
+        var total = dividendAmounts.Sum(x => x.AgentDividendAmount);
 
-        foreach (var dividendAmount in dividendAmounts)
+        if (total > 0)
         {
-            await _agentDividendFactory.SetSentOnAsync(dividendAmount.Id, cancellationToken);
+            var agent = await _agentService.GetQueries().FirstAsync(x => x.Id == request.AgentId, cancellationToken);
+
+            await _agentDividendFactory.SetSentOnAsync(dividendAmounts.Select(x => x.Id), cancellationToken);
 
             await _cashServiceClient.AgentDividendAsync(agent.WalletId!.Value,
-                dividendAmount.AgentDividendAmount,
+                total,
                 null,
-                dividendAmount.Id.ToString(),
+                dividendAmounts.Where(x => x.AgentDividendAmount > 0).Max(x => x.Id).ToString(),
                 cancellationToken);
         }
     }

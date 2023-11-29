@@ -655,10 +655,10 @@ public class AgentDividendFactory : IAgentDividendFactory
         return (agentDividends,noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList());
     }
 
-    public Task SetSentOnAsync(int agentDividendId, CancellationToken cancellationToken)
+    public Task SetSentOnAsync(IEnumerable<int> agentDividendId, CancellationToken cancellationToken)
     {
         return _agentDividendService.GetQueries()
-            .Where(a => a.Id == agentDividendId)
+            .Where(a => agentDividendId.Contains(a.Id))
             .ExecuteUpdateAsync(e => e.SetProperty(s => s.SentOn, DateTime.UtcNow), cancellationToken);
     }
 

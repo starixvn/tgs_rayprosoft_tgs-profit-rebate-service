@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using MockQueryable.Moq;
@@ -44,7 +46,48 @@ public class AgentDividendDistributionHandlerTest
 
         await sut.Handle(request, default);
 
-        _ = fakeCashServiceClient.ReceivedWithAnyArgs(2)
+        _ = fakeAgentDividendFactory.Received(1)
+            .SetSentOnAsync(Arg.Is<IEnumerable<int>>(x => agentDividends.Select(a => a.Id).SequenceEqual(x)),
+                Arg.Any<CancellationToken>());
+
+        _ = fakeCashServiceClient.Received(1)
+            .AgentDividendAsync(Arg.Any<Guid>(), 110, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    public async Task Can_Not_Send_Agent_Dividends()
+    {
+        var fakeAgentService = Substitute.For<ITgsService<Agent>>();
+        var fakeAgentDividendService = Substitute.For<ITgsService<AgentDividend>>();
+        var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+        var fakeAgentDividendFactory = Substitute.For<IAgentDividendFactory>();
+
+        var sut = new AgentDividendDistributionHandler(fakeCashServiceClient, fakeAgentService, fakeAgentDividendService, fakeAgentDividendFactory);
+
+        var agentId = Guid.NewGuid();
+
+        var request = new AgentDividendDistributionRequest(agentId);
+
+        var agents = CreateAgentFixture(agentId)
+            .CreateMany<Agent>(1).AsQueryable().BuildMock();
+
+        var agentDividends = new AgentDividend[]
+        {
+            CreateAgentDividendFixture(agentId, -500).Create<AgentDividend>(),
+            CreateAgentDividendFixture(agentId, 100).Create<AgentDividend>(),
+            CreateAgentDividendFixture(agentId, 100).Create<AgentDividend>()
+
+        }.AsQueryable().BuildMock();
+
+        fakeAgentDividendService.GetQueries().Returns(agentDividends);
+        fakeAgentService.GetQueries().Returns(agents);
+
+        await sut.Handle(request, default);
+
+        _ = fakeAgentDividendFactory.Received(0)
+            .SetSentOnAsync(Arg.Any<IEnumerable<int>>(), Arg.Any<CancellationToken>());
+
+        _ = fakeCashServiceClient.ReceivedWithAnyArgs(0)
             .AgentDividendAsync(default, 0, null, null, default);
     }
 

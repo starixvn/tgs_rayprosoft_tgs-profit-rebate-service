@@ -20,6 +20,6 @@ public interface IAgentDividendFactory
     public Task<(List<CreateAgentDividendModel>, List<AgentDividend>)>
         GetNoSendDividendsAsync(List<CreateAgentDividendModel> agentDividends, CancellationToken cancellationToken);
 
-    public Task SetSentOnAsync(int agentDividendId, CancellationToken cancellationToken);
+    public Task SetSentOnAsync(IEnumerable<int> agentDividendId, CancellationToken cancellationToken);
 
 }

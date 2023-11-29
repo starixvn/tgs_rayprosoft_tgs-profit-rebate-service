@@ -73,11 +73,11 @@ public partial class Player
 
     public string? Birthday { get; set; }
 
+    public Guid? SnapshotEventId { get; set; }
+
     public virtual Agent? Agent { get; set; }
 
     public virtual Brand Brand { get; set; } = null!;
 
     public virtual VipLevel? Vip { get; set; }
-
-    public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
 }

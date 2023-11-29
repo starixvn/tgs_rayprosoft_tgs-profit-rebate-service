@@ -13,7 +13,7 @@ public partial class Wallet
 
     public string CurrencyCode { get; set; } = null!;
 
-    public string ExternalCurrencyCode { get; set; } = null!;
+    public string? ExternalCurrencyCode { get; set; }
 
     public decimal Balance { get; set; }
 
@@ -23,9 +23,11 @@ public partial class Wallet
 
     public decimal LockedBalance { get; set; }
 
-    public virtual Currency CurrencyCodeNavigation { get; set; } = null!;
+    public Guid? BrandId { get; set; }
 
-    public virtual Player PlayerCodeNavigation { get; set; } = null!;
+    public string CashType { get; set; } = null!;
+
+    public virtual Currency CurrencyCodeNavigation { get; set; } = null!;
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

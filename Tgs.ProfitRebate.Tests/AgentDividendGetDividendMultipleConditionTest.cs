@@ -76,11 +76,13 @@ public class AgentDividendGetDividendMultipleConditionTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, manualDividends, _, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        Assert.IsTrue(dividends.Count + manualDividends.Count == 1);
+        var (sendDividends, _) = await sut.GetNoSendDividendsAsync(dividends, default);
 
-        foreach (var dividend in dividends.Concat(manualDividends))
+        Assert.IsTrue(sendDividends.Count == 1);
+
+        foreach (var dividend in dividends.Concat(sendDividends))
         {
             var agentAdjustAmount = playerAggregateData.Where(x => x.AgentId == dividend.AgentId)
                 .Sum(x => x.AgentAdjustAmount - x.NoIncludeNetProfitAgentAdjustAmount);
@@ -150,11 +152,13 @@ public class AgentDividendGetDividendMultipleConditionTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, manualDividends, _, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        Assert.IsTrue(dividends.Count + manualDividends.Count == 1);
+        var (sendDividends, _) = await sut.GetNoSendDividendsAsync(dividends, default);
 
-        foreach (var dividend in dividends.Concat(manualDividends))
+        Assert.IsTrue(sendDividends.Count == 1);
+
+        foreach (var dividend in dividends.Concat(sendDividends))
         {
             var winLoss = playerAggregateData.Where(x => x.AgentId == dividend.AgentId)
                 .Sum(x => x.WinLossAmount);
@@ -240,11 +244,13 @@ public class AgentDividendGetDividendMultipleConditionTest
         fakePlayerGameRebateAggregateService.GetQueries().Returns(playerGameAggregateData);
         fakeAgentDividendService.GetQueries().Returns(Array.Empty<AgentDividend>().AsQueryable().BuildMock());
 
-        var (dividends, manualDividends, _, _) = await sut.GetAgentDividends(brandData.First(), 0, default);
+        var (dividends, _) = await sut.GetAgentDividendsAsync(brandData.First(), 0, default);
 
-        Assert.IsTrue(dividends.Count + manualDividends.Count == 1);
+        var (sendDividends, _) = await sut.GetNoSendDividendsAsync(dividends, default);
 
-        foreach (var dividend in dividends.Concat(manualDividends))
+        Assert.IsTrue(sendDividends.Count == 1);
+
+        foreach (var dividend in dividends.Concat(sendDividends))
         {
             var winLoss = playerAggregateData.Where(x => x.AgentId == dividend.AgentId)
                 .Sum(x => x.WinLossAmount);
@@ -341,7 +347,6 @@ public class AgentDividendGetDividendMultipleConditionTest
             .With(s => s.Brand, brand)
             .With(s => s.Agent, agent)
             .With(s => s.Birthdate, DateOnly.FromDateTime(DateTime.Now))
-            .With(s => s.Wallets, new Wallet[] { })
         );
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         return fixture;

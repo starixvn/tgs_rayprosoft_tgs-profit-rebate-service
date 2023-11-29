@@ -11,8 +11,6 @@ public class TgsRepository : DbContext, ITgsRepository
 
     public DbSet<AgentDividendMultipleLayer> AgentDividendMultipleLayers { get; set; } = null!;
 
-    public DbSet<BrandAgentDividendCondition> BrandAgentDividendConditions { get; set; } = null!;
-
     public DbSet<Currency> Currencies { get; set; } = null!;
 
     public DbSet<Department> Departments { get; set; } = null!;

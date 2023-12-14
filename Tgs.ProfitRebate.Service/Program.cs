@@ -115,7 +115,6 @@ builder.Services
         .AddSource("TGS.*")
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
-        .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
         .AddProfileViewExporter()
         .AddOtlpExporter())
     .WithMetrics()

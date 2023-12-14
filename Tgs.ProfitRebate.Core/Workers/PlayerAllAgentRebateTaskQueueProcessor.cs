@@ -61,7 +61,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
         if (await _playerAllAgentRebateService.GetQueries()
                 .AnyAsync(
                     x => x.PlayerCode == request.PlayerCode &&
-                        x.ReportDate == request.ReportDate.UtcDateTime, cancellationToken))
+                        x.SettleDate == request.ReportDate.UtcDateTime, cancellationToken))
         {
             _logger.LogInformation("save the all_agent_rebate already. request: {request}", request);
         }
@@ -336,7 +336,7 @@ public class PlayerAllAgentRebateTaskQueueProcessor : IPlayerAllAgentRebateTaskQ
         CancellationToken cancellationToken)
     {
         var savedPlayerContributors = await _playerAllAgentRebateContributorService.GetQueries()
-            .Where(x => x.ReportDate == reportDate.UtcDateTime && x.PlayerCode == playerCode && x.SentOn != null)
+            .Where(x => x.SettleDate == reportDate.UtcDateTime && x.PlayerCode == playerCode && x.SentOn != null)
             .Select(x => x.ChildPlayerCode)
             .ToArrayAsync(cancellationToken);
 

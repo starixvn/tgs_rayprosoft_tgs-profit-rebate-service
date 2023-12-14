@@ -56,7 +56,7 @@ public class AgentDividendFactory : IAgentDividendFactory
         };
     }
 
-    public async IAsyncEnumerable<Brand[]> GetSettlementIntervalBrands(string brandCode, DateTimeOffset queryDate)
+    public async IAsyncEnumerable<Brand[]> GetSettlementIntervalBrandsAsync(string brandCode, DateTimeOffset queryDate)
     {
         bool hasBrands;
 
@@ -72,44 +72,24 @@ public class AgentDividendFactory : IAgentDividendFactory
         } while (hasBrands);
     }
 
-    public async ValueTask SaveAgentDividendData(Brand[] brands, List<CreateAgentDividendModel> createModels,
-        List<CreateAgentDividendModel> createAutoSendModels, List<AgentDividend> updateAgentDividends)
+    public async ValueTask SaveAgentDividendDataAsync(Brand[] brands,
+        List<CreateAgentDividendModel> createSendModels,
+        List<AgentDividend> updateAgentDividends)
     {
         using var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
             { Timeout = TimeSpan.FromMinutes(10) }, TransactionScopeAsyncFlowOption.Enabled);
 
-        await CreateAgentDividendsAsync(createModels.ToArray(), null);
-
-        await CreateAgentDividendsAsync(
-            createAutoSendModels.ToArray(),
-            DateTimeOffset.UtcNow);
+        await CreateAgentDividendsAsync(createSendModels.ToArray());
 
         await _agentDividendService.UpdateEntitiesAsync(updateAgentDividends.ToArray());
 
         await _brandService.UpdateEntitiesAsync(brands);
 
-        var createdAgentIds = createAutoSendModels.Select(x => x.AgentId).ToArray();
-
-        var createdAgents = await _agentService.GetQueries().Where(x => createdAgentIds.Contains(x.Id))
-            .ToArrayAsync();
-
-        foreach (var models in createAutoSendModels)
-        {
-            var agent = createdAgents.Single(a => a.Id == models.AgentId);
-
-            _ = await _agentWalletRepository.ExchangeAsync(
-                models.BrandId,
-                agent.DefaultWalletId,
-                agent.Id,
-                TransactionType.Dividend,
-                models.AgentDividendAmount);
-        }
-
         scope.Complete();
     }
 
-    public async Task<(List<CreateAgentDividendModel>, List<CreateAgentDividendModel>, List<AgentDividend>, int)>
-        GetAgentDividends(Brand brand, int idNumber, CancellationToken cancellationToken)
+    public async Task<(List<CreateAgentDividendModel>, int)>
+        GetAgentDividendsAsync(Brand brand, int idNumber, CancellationToken cancellationToken)
     {
         var agents = await _agentService.GetQueries()
             .Where(x => x.BrandId == brand.Id)
@@ -535,50 +515,52 @@ public class AgentDividendFactory : IAgentDividendFactory
                 }).ToArray();
 
         var allAgent = allAgentAggregate.GroupBy(x => new { x.AgentId, x.BrandId, x.AgentDividendPercentage },
-            (x, list) =>
-                new CreateAgentDividendModel
-                {
-                    Id = allAgentAggregate.First(a => a.AgentId == x.AgentId &&
-                        a.BrandId == x.BrandId &&
-                        a.AgentDividendPercentage == x.AgentDividendPercentage).Id,
-                    AgentId = x.AgentId,
-                    BrandId = x.BrandId,
-                    AutoSend = brand.AutoSentAgentBonus,
-                    From = brand.CurrentSettlementFrom,
-                    To = brand.CurrentSettlementTo,
-                    AgentDividendPercentage = x.AgentDividendPercentage,
-                    PromotionAmount = list.Sum(x => x.PromotionAmount),
-                    RebateAmount = list.Sum(x => x.RebateAmount),
-                    DepositAmount = list.Sum(x => x.DepositAmount),
-                    WithdrawalAmount = list.Sum(x => x.WithdrawalAmount),
-                    CompanyAdjustAmount = list.Sum(x => x.CompanyAdjustAmount),
-                    AgentAdjustAmount = list.Sum(x => x.AgentAdjustAmount),
-                    BonusAdjustAmount = list.Sum(x => x.BonusAdjustAmount),
-                    BonusAmount = list.Sum(x => x.BonusAmount),
-                    BetAmount = list.Sum(x => x.BetAmount),
-                    ValidBetAmount = list.Sum(x => x.ValidBetAmount),
-                    OriginalTurnover = list.Sum(x => x.OriginalTurnover),
-                    Turnover = list.Sum(x => x.Turnover),
-                    WinLossAmount = list.Sum(x => x.WinLossAmount),
-                    NoIncludeNetProfitCompanyAdjustAmount =
-                        list.Sum(x => x.NoIncludeNetProfitCompanyAdjustAmount),
-                    NoIncludeNetProfitAgentAdjustAmount =
-                        list.Sum(x => x.NoIncludeNetProfitAgentAdjustAmount),
-                    NoIncludeNetProfitBonusAdjustAmount =
-                        list.Sum(x => x.NoIncludeNetProfitBonusAdjustAmount),
-                    NetProfit = list.Sum(x => x.NetProfit),
-                    LiveDealerWinLoss = list.Sum(x => x.LiveDealerWinLoss),
-                    SlotWinLoss = list.Sum(x => x.SlotWinLoss),
-                    FishingWinLoss = list.Sum(x => x.FishingWinLoss),
-                    ArcadeWinLoss = list.Sum(x => x.ArcadeWinLoss),
-                    TableGameWinLoss = list.Sum(x => x.TableGameWinLoss),
-                    LotteryWinLoss = list.Sum(x => x.LotteryWinLoss),
-                    CardGameWinLoss = list.Sum(x => x.CardGameWinLoss),
-                    SportsWinLoss = list.Sum(x => x.SportsWinLoss),
-                    ESportsWinLoss = list.Sum(x => x.ESportsWinLoss),
-                    VirtualSportsWinLoss = list.Sum(x => x.VirtualSportsWinLoss),
-                    CreatedOn = DateTimeOffset.UtcNow
-                }).ToArray();
+                (x, list) =>
+                    new CreateAgentDividendModel
+                    {
+                        Id = allAgentAggregate.First(a => a.AgentId == x.AgentId &&
+                                                          a.BrandId == x.BrandId &&
+                                                          a.AgentDividendPercentage == x.AgentDividendPercentage)
+                            .Id,
+                        AgentId = x.AgentId,
+                        BrandId = x.BrandId,
+                        AutoSend = brand.AutoSentAgentBonus,
+                        From = brand.CurrentSettlementFrom,
+                        To = brand.CurrentSettlementTo,
+                        AgentDividendPercentage = x.AgentDividendPercentage,
+                        PromotionAmount = list.Sum(x => x.PromotionAmount),
+                        RebateAmount = list.Sum(x => x.RebateAmount),
+                        DepositAmount = list.Sum(x => x.DepositAmount),
+                        WithdrawalAmount = list.Sum(x => x.WithdrawalAmount),
+                        CompanyAdjustAmount = list.Sum(x => x.CompanyAdjustAmount),
+                        AgentAdjustAmount = list.Sum(x => x.AgentAdjustAmount),
+                        BonusAdjustAmount = list.Sum(x => x.BonusAdjustAmount),
+                        BonusAmount = list.Sum(x => x.BonusAmount),
+                        BetAmount = list.Sum(x => x.BetAmount),
+                        ValidBetAmount = list.Sum(x => x.ValidBetAmount),
+                        OriginalTurnover = list.Sum(x => x.OriginalTurnover),
+                        Turnover = list.Sum(x => x.Turnover),
+                        WinLossAmount = list.Sum(x => x.WinLossAmount),
+                        NoIncludeNetProfitCompanyAdjustAmount =
+                            list.Sum(x => x.NoIncludeNetProfitCompanyAdjustAmount),
+                        NoIncludeNetProfitAgentAdjustAmount =
+                            list.Sum(x => x.NoIncludeNetProfitAgentAdjustAmount),
+                        NoIncludeNetProfitBonusAdjustAmount =
+                            list.Sum(x => x.NoIncludeNetProfitBonusAdjustAmount),
+                        NetProfit = list.Sum(x => x.NetProfit),
+                        LiveDealerWinLoss = list.Sum(x => x.LiveDealerWinLoss),
+                        SlotWinLoss = list.Sum(x => x.SlotWinLoss),
+                        FishingWinLoss = list.Sum(x => x.FishingWinLoss),
+                        ArcadeWinLoss = list.Sum(x => x.ArcadeWinLoss),
+                        TableGameWinLoss = list.Sum(x => x.TableGameWinLoss),
+                        LotteryWinLoss = list.Sum(x => x.LotteryWinLoss),
+                        CardGameWinLoss = list.Sum(x => x.CardGameWinLoss),
+                        SportsWinLoss = list.Sum(x => x.SportsWinLoss),
+                        ESportsWinLoss = list.Sum(x => x.ESportsWinLoss),
+                        VirtualSportsWinLoss = list.Sum(x => x.VirtualSportsWinLoss),
+                        CreatedOn = DateTimeOffset.UtcNow
+                    })
+            .ToArray();
 
         foreach (var dividend in allAgent)
             if (brand.AgentDividendType == (short)AgentDividendType.MultipleLayer)
@@ -608,31 +590,54 @@ public class AgentDividendFactory : IAgentDividendFactory
             }
 
         allAgent = allAgent.Where(x => x.DepositAmount != 0M || x.WithdrawalAmount != 0M || x.AgentAdjustAmount != 0M ||
-            x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
-            x.NetProfit != 0M || x.BonusAdjustAmount != 0M || x.AgentDividendPercentage != 0M ||
-            x.AgentDividendAmount != 0M ||
-            x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||
-            x.ValidBetAmount != 0M).ToArray();
+                                       x.BonusAmount != 0M || x.BetAmount != 0M || x.Turnover != 0M || x.WinLossAmount != 0M ||
+                                       x.NetProfit != 0M || x.BonusAdjustAmount != 0M || x.AgentDividendPercentage != 0M ||
+                                       x.AgentDividendAmount != 0M ||
+                                       x.PromotionAmount != 0M || x.RebateAmount != 0M || x.OriginalTurnover != 0M ||
+                                       x.ValidBetAmount != 0M).ToArray();
 
-        var agentIds = allAgent.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
+        return (allAgent.ToList(),
+            allAgent.Any() ? allAgent.Max(x => x.Id) : idNumber);
+    }
+
+    public async Task<(List<CreateAgentDividendModel> ,List<AgentDividend>)> GetNoSendDividendsAsync(List<CreateAgentDividendModel> agentDividends, CancellationToken cancellationToken)
+    {
+        var agentIds = agentDividends.Where(x => x.AgentDividendAmount >= 0M).Select(x => x.AgentId).ToArray();
 
         var noSendDividends = await _agentDividendService.GetQueries()
             .Where(x => agentIds.Contains(x.AgentId) && x.SentOn == null)
             .ToArrayAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        foreach (var dividend in allAgent)
+        var deductedNegativeDividends = new Dictionary<Guid, decimal>();
+
+        foreach (var dividend in agentDividends)
         {
             var agentNoSendDividends = noSendDividends.Where(x => x.AgentId == dividend.AgentId).ToArray();
 
-            var agentNoSendDividend = agentNoSendDividends.Sum(x => x.AgentDividendAmount);
+            var haveDeductedNegativeDividend = deductedNegativeDividends.TryGetValue(dividend.AgentId, out var deductedNegativeDividend);
+
+            var agentNoSendDividend = haveDeductedNegativeDividend ? deductedNegativeDividend : agentNoSendDividends.Sum(x => x.AgentDividendAmount);
 
             if (agentNoSendDividend < 0)
             {
-                if (dividend.AgentDividendAmount + agentNoSendDividend > 0M)
+                var agentDividendAmount = agentDividends.Where(x => x.AgentId == dividend.AgentId)
+                    .Sum(x => x.AgentDividendAmount);
+
+                if (agentDividendAmount + agentNoSendDividend > 0M)
                 {
                     dividend.BeforeDividendAmount = dividend.AgentDividendAmount;
-                    dividend.AgentDividendAmount += agentNoSendDividend;
+
+                    deductedNegativeDividends[dividend.AgentId] = dividend.AgentDividendAmount + agentNoSendDividend;
+
+                    if (dividend.AgentDividendAmount + agentNoSendDividend <= 0M)
+                    {
+                        dividend.AgentDividendAmount = 0M;
+                    }
+                    else
+                    {
+                        dividend.AgentDividendAmount += agentNoSendDividend;
+                    }
 
                     foreach (var negativeDividend in agentNoSendDividends)
                     {
@@ -647,12 +652,14 @@ public class AgentDividendFactory : IAgentDividendFactory
             }
         }
 
-        return (allAgent.Where(x =>
-                x.AgentDividendAmount >= 0M && x.AutoSend).ToList(),
-            allAgent.Where(x =>
-                x.AgentDividendAmount < 0M || !x.AutoSend).ToList(),
-            noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList(),
-            allAgent.Any() ? allAgent.Max(x => x.Id) : idNumber);
+        return (agentDividends,noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList());
+    }
+
+    public Task SetSentOnAsync(IEnumerable<int> agentDividendId, CancellationToken cancellationToken)
+    {
+        return _agentDividendService.GetQueries()
+            .Where(a => agentDividendId.Contains(a.Id))
+            .ExecuteUpdateAsync(e => e.SetProperty(s => s.SentOn, DateTime.UtcNow), cancellationToken);
     }
 
     private static decimal GetAgentDividendPercentage(AgentDividendCondition[] agentDividendCondition,
@@ -791,7 +798,7 @@ public class AgentDividendFactory : IAgentDividendFactory
         } while (hasParentAgentId);
     }
 
-    private ValueTask CreateAgentDividendsAsync(CreateAgentDividendModel[] models, DateTimeOffset? sentOn) =>
+    private ValueTask CreateAgentDividendsAsync(CreateAgentDividendModel[] models) =>
         _agentDividendService.CreateEntitiesAsync(models.Select(model => new AgentDividend
         {
             Id = model.Id,
@@ -828,8 +835,8 @@ public class AgentDividendFactory : IAgentDividendFactory
             ESportsWinLoss = model.ESportsWinLoss,
             VirtualSportsWinLoss = model.VirtualSportsWinLoss,
             AgentDividendAmount = model.AgentDividendAmount,
-            CreatedOn = model.CreatedOn.UtcDateTime,
-            SentOn = sentOn?.UtcDateTime,
+            CreatedOn = DateTime.UtcNow,
+            SentOn = null,
             BeforeDividendAmount = model.BeforeDividendAmount,
             ReferencedAgentDividendId = model.ReferencedAgentDividendId,
             AgentDividendMultipleLayers = model.AgentDividendMultipleLayerModels.Select(x

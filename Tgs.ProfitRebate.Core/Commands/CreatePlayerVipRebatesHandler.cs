@@ -148,7 +148,7 @@ public class
 
         var players = await _playerService.GetQueries()
             .Where(x => sendPlayers.Select(p => p.PlayerRebate.PlayerCode).Contains(x.PlayerCode))
-            .Select(x => new { x.BrandId, x.PlayerCode, x.Wallets, x.DefaultWalletId })
+            .Select(x => new { x.BrandId, x.PlayerCode, x.DefaultWalletId })
             .ToArrayAsync(cancellationToken);
 
         foreach (var player in sendPlayers.Join(players,
@@ -184,8 +184,6 @@ public class
                 DefaultWalletId = player.p.DefaultWalletId,
                 IsAutoSend = player.IsAutoSend
             });
-
-            await Task.Delay(200, cancellationToken);
         }
 
         return new MessageResponse

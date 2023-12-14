@@ -6,7 +6,6 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Tgs.MessageQueue;
-using Tgs.PlayerBucket.Clients.DependencyInjection;
 using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Core.Workers;
 
@@ -22,9 +21,11 @@ builder.Host.ConfigureServices((context, services) => services
     .AddHostedService<AgentDividendBackground>()
     .AddHostedService<PlayerRebateBackground>()
     .AddHostedService<PlayerAllAgentRebateBackground>()
-    .AddSingleton<IAgentDividendTaskQueue>(_ => new AgentDividendTaskQueue())
-    .AddSingleton<IPlayerRebateTaskQueue>(_ => new PlayerRebateTaskQueue())
-    .AddSingleton<IPlayerAllAgentRebateTaskQueue, PlayerAllAgentRebateTaskQueue>());
+    .AddHostedService<AgentDividendDistributionBackground>()
+    .AddSingleton<IAgentDividendTaskQueue, AgentDividendTaskQueue>()
+    .AddSingleton<IPlayerRebateTaskQueue, PlayerRebateTaskQueue>()
+    .AddSingleton<IPlayerAllAgentRebateTaskQueue, PlayerAllAgentRebateTaskQueue>()
+    .AddSingleton<IAgentDividendDistributionTaskQueue, AgentDividendDistributionTaskQueue>());
 
 // Add services to the container.
 builder.Services
@@ -114,7 +115,6 @@ builder.Services
         .AddSource("TGS.*")
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
-        .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
         .AddProfileViewExporter()
         .AddOtlpExporter())
     .WithMetrics()

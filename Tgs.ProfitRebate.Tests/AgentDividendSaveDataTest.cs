@@ -39,7 +39,7 @@ public class AgentDividendSaveDataTest
 
         fakeBrandService.GetQueries().Returns(brandData);
 
-        var response = await sut.GetSettlementIntervalBrands(brandCode, queryDate).FirstAsync();
+        var response = await sut.GetSettlementIntervalBrandsAsync(brandCode, queryDate).FirstAsync();
 
         Assert.IsTrue(response.First().Code == brandCode);
     }
@@ -69,7 +69,7 @@ public class AgentDividendSaveDataTest
 
         fakeBrandService.GetQueries().Returns(brandData);
 
-        var response = await sut.GetSettlementIntervalBrands(brandCode, queryDate).FirstAsync();
+        var response = await sut.GetSettlementIntervalBrandsAsync(brandCode, queryDate).FirstAsync();
 
         Assert.IsTrue(response.Length == 0);
     }

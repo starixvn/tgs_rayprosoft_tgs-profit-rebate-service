@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
+using Microsoft.Extensions.Logging.Abstractions;
 using MockQueryable.Moq;
 using NSubstitute;
 using NUnit.Framework;
@@ -28,7 +29,8 @@ public class AgentDividendGetDividendMultipleConditionTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         var from = DateTimeOffset.Parse("2022-10-01 00:00:00+8");
         var to = DateTimeOffset.Parse("2022-10-31 00:00:00+8");
@@ -104,7 +106,8 @@ public class AgentDividendGetDividendMultipleConditionTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         var from = DateTimeOffset.Parse("2022-10-01 00:00:00+8");
         var to = DateTimeOffset.Parse("2022-10-31 00:00:00+8");
@@ -196,7 +199,8 @@ public class AgentDividendGetDividendMultipleConditionTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository, 
+            NullLogger<AgentDividendFactory>.Instance);
 
         var from = DateTimeOffset.Parse("2022-10-01 00:00:00+8");
         var to = DateTimeOffset.Parse("2022-10-31 00:00:00+8");

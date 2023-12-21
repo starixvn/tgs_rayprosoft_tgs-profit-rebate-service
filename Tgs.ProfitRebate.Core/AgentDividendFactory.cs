@@ -7,6 +7,7 @@ using Tgs.ProfitRebate.Core.ViewModel;
 using Tgs.ProfitRebate.Enum;
 using Tgs.ProfitRebate.Repository;
 using Tgs.ProfitRebate.Repository.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Tgs.ProfitRebate.Core;
 
@@ -19,6 +20,7 @@ public class AgentDividendFactory : IAgentDividendFactory
     private readonly ITgsService<PlayerAggregate> _playerAggregateService;
     private readonly ITgsService<PlayerBonusAggregate> _playerBonusAggregateService;
     private readonly ITgsService<PlayerGameRebateAggregate> _playerGameAggregateService;
+    private readonly ILogger<AgentDividendFactory> _logger;
 
     public AgentDividendFactory(
         ITgsService<Agent> agentService,
@@ -27,7 +29,8 @@ public class AgentDividendFactory : IAgentDividendFactory
         ITgsService<PlayerAggregate> playerAggregateService,
         ITgsService<PlayerGameRebateAggregate> playerGameAggregateService,
         ITgsService<PlayerBonusAggregate> playerBonusAggregateService,
-        IAgentWalletRepository agentWalletRepository)
+        IAgentWalletRepository agentWalletRepository,
+        ILogger<AgentDividendFactory> logger)
     {
         _agentService = agentService;
         _brandService = brandService;
@@ -36,6 +39,7 @@ public class AgentDividendFactory : IAgentDividendFactory
         _playerGameAggregateService = playerGameAggregateService;
         _agentWalletRepository = agentWalletRepository;
         _playerBonusAggregateService = playerBonusAggregateService;
+        _logger = logger;
     }
 
     public (DateTimeOffset, DateTimeOffset) GetInterval(SettlementIntervalType type, DateTimeOffset startDate,
@@ -496,6 +500,8 @@ public class AgentDividendFactory : IAgentDividendFactory
                         : JsonSerializer.Deserialize<AgentDividendPercentageData[]>(x.AgentDividendPercentageTreeData);
 
                     var bonusAdjustAmount = x.BonusAdjustAmount - x.NoIncludeNetProfitBonusAdjustAmount;
+
+                    _logger.LogInformation("agentId: {agentId}, agentTree: {agentTree}", x.AgentId, x.AgentDividendPercentageTreeData);
 
                     return x.AgentDividendPercentageTreeData is null
                         ? GetAgentDividends(

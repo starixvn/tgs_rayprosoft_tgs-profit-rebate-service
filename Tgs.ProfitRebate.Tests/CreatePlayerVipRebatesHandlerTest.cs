@@ -84,7 +84,6 @@ public class CreatePlayerVipRebatesHandlerTest
             .With(s => s.BrandId, brandId)
             .With(s => s.PlayerCode, playerCode)
             .With(s => s.Birthdate, DateOnly.FromDateTime(DateTime.Now))
-            .With(s => s.Wallets, Array.Empty<Wallet>())
         );
 
         fixture.Behaviors.Add(new OmitOnRecursionBehavior());

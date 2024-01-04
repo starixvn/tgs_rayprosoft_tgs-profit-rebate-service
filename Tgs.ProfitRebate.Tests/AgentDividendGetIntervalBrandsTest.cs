@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
+using Microsoft.Extensions.Logging.Abstractions;
 using MockQueryable.Moq;
 using NSubstitute;
 using NUnit.Framework;
@@ -27,7 +28,8 @@ public class AgentDividendGetIntervalBrandsTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         var brandData = CreateBrandFixture()
             .CreateMany<Brand>(1)
@@ -39,7 +41,7 @@ public class AgentDividendGetIntervalBrandsTest
 
         fakeBrandService.GetQueries().Returns(brandData);
 
-        var response = await sut.GetSettlementIntervalBrands(brandCode, queryDate).FirstAsync();
+        var response = await sut.GetSettlementIntervalBrandsAsync(brandCode, queryDate).FirstAsync();
 
         Assert.IsTrue(response.First().Code == brandCode);
     }
@@ -57,7 +59,8 @@ public class AgentDividendGetIntervalBrandsTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         var brandData = CreateBrandFixture()
             .CreateMany<Brand>(1)
@@ -69,7 +72,7 @@ public class AgentDividendGetIntervalBrandsTest
 
         fakeBrandService.GetQueries().Returns(brandData);
 
-        var response = await sut.GetSettlementIntervalBrands(brandCode, queryDate).FirstAsync();
+        var response = await sut.GetSettlementIntervalBrandsAsync(brandCode, queryDate).FirstAsync();
 
         Assert.IsTrue(response.Length == 0);
     }

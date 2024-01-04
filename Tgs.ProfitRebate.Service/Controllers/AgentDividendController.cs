@@ -21,4 +21,11 @@ public class AgentDividendController : ControllerBase
     public Task<MessageResponse> CreateAgentDividendsAsync(
         CreateAgentDividendsRequest request)
         => _mediator.Send(request);
+
+    [HttpPost("manual-send")]
+    [Description("send agent dividends")]
+    public Task SendAgentDividendAsync(
+        AgentDividendDistributionRequest request)
+        => _mediator.Send(request);
+
 }

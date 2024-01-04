@@ -76,6 +76,10 @@ public partial class Agent
 
     public LTree Path { get; set; }
 
+    public Guid? SnapshotEventId { get; set; }
+
+    public Guid? WalletId { get; set; }
+
     public virtual ICollection<AgentDividendCondition> AgentDividendConditions { get; set; } = new List<AgentDividendCondition>();
 
     public virtual ICollection<AgentWallet> AgentWallets { get; set; } = new List<AgentWallet>();

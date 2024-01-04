@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.ProfitRebate.Core;
@@ -24,7 +25,8 @@ public class AgentDividendIntervalTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         const SettlementIntervalType type = SettlementIntervalType.Daily;
         var startDate = new DateTimeOffset(2022, 10, 01, 0, 0, 0, new(8, 0, 0));
@@ -48,7 +50,8 @@ public class AgentDividendIntervalTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         const SettlementIntervalType type = SettlementIntervalType.Weekly;
         var startDate = new DateTimeOffset(2022, 10, 02, 0, 0, 0, new(8, 0, 0));
@@ -72,7 +75,8 @@ public class AgentDividendIntervalTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         const SettlementIntervalType type = SettlementIntervalType.Monthly;
         var startDate = new DateTimeOffset(2022, 10, 31, 0, 0, 0, new(8, 0, 0));
@@ -96,7 +100,8 @@ public class AgentDividendIntervalTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         var type = SettlementIntervalType.Monthly;
         var startDate = new DateTimeOffset(2022, 11, 2, 0, 0, 0, new(8, 0, 0));
@@ -120,7 +125,8 @@ public class AgentDividendIntervalTest
 
         var sut = new AgentDividendFactory(fakeAgentService, fakeBrandService, fakeAgentDividendService,
             fakePlayerAggregateService, fakePlayerGameRebateAggregateService, fakePlayerBonusAggregateService,
-            fakeAgentWalletRepository);
+            fakeAgentWalletRepository,
+            NullLogger<AgentDividendFactory>.Instance);
 
         var startDate = new DateTimeOffset(2022, 10, 31, 0, 0, 0, new(8, 0, 0));
 

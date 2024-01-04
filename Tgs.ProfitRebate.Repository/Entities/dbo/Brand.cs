@@ -99,8 +99,6 @@ public partial class Brand
 
     public virtual ICollection<Agent> Agents { get; set; } = new List<Agent>();
 
-    public virtual ICollection<BrandAgentDividendCondition> BrandAgentDividendConditions { get; set; } = new List<BrandAgentDividendCondition>();
-
     public virtual ICollection<BrandGame> BrandGames { get; set; } = new List<BrandGame>();
 
     public virtual ICollection<Department> Departments { get; set; } = new List<Department>();

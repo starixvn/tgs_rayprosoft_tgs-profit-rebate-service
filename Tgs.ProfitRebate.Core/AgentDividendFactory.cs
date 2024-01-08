@@ -630,7 +630,7 @@ public class AgentDividendFactory : IAgentDividendFactory
                 var agentDividendAmount = agentDividends.Where(x => x.AgentId == dividend.AgentId)
                     .Sum(x => x.AgentDividendAmount);
 
-                if (agentDividendAmount + agentNoSendDividend > 0M)
+                if (agentDividendAmount + agentNoSendDividend >= 0M)
                 {
                     dividend.BeforeDividendAmount = dividend.AgentDividendAmount;
 
@@ -655,6 +655,11 @@ public class AgentDividendFactory : IAgentDividendFactory
                 {
                     dividend.AutoSend = false;
                 }
+            }
+
+            if (dividend.AgentDividendAmount < 0)
+            {
+                dividend.AutoSend = false;
             }
         }
 

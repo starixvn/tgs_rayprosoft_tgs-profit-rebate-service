@@ -656,6 +656,11 @@ public class AgentDividendFactory : IAgentDividendFactory
                     dividend.AutoSend = false;
                 }
             }
+
+            if (dividend.AgentDividendAmount < 0)
+            {
+                dividend.AutoSend = false;
+            }
         }
 
         return (agentDividends,noSendDividends.Where(x => x.ReferencedAgentDividendId is not null).ToList());

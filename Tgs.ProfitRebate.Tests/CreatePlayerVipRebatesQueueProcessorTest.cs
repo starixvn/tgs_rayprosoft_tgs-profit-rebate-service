@@ -92,6 +92,7 @@ public class CreatePlayerVipRebatesQueueProcessorTest
             new()
             {
                 BrandId = playerRebateQueue.BrandId,
+                AgentId = playerRebateQueue.AgentId,
                 PlayerCode = playerRebateQueue.PlayerCode,
                 ReportDate = playerRebateQueue.ReportDate.UtcDateTime,
                 VipCardGameRebatePercentage = playerRebateQueue.VipCardGameRebatePercentage,
@@ -115,6 +116,71 @@ public class CreatePlayerVipRebatesQueueProcessorTest
         await fakePlayerRebateFactory.Received(0)
             .CreatePlayerBucketsAsync(Arg.Any<CreatePlayerBucketRequest>());
         await fakeCashServiceClient.Received(0)
+            .RebateAsync(Arg.Any<Guid>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string>(),
+                Arg.Any<CancellationToken>());
+    }
+
+    [Test]
+    [AutoData]
+    public async Task Can_Create_Vip_Player_Rebate_Scenario_2(
+    PlayerRebateQueueModel playerRebateQueue)
+    {
+        var fakePlayerRebateTaskQueue = Substitute.For<IPlayerRebateTaskQueue>();
+        var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+        var fakeNotificationClient = Substitute.For<INotificationClient>();
+        var fakePlayerRebateService = Substitute.For<ITgsService<PlayerRebate>>();
+        var fakePlayerRebateFactory = Substitute.For<IPlayerRebateFactory>();
+        var fakeTransactionService = Substitute.For<ITgsService<Transaction>>();
+        var fakeLogger = Substitute.For<ILogger<PlayerAllAgentRebateTaskQueueProcessor>>();
+
+        var sut = new PlayerRebateTaskQueueProcessor(
+            fakePlayerRebateTaskQueue,
+            fakePlayerRebateFactory,
+            fakeCashServiceClient,
+            fakeNotificationClient,
+            fakePlayerRebateService,
+            fakeTransactionService,
+            fakeLogger);
+
+        var playerRebate = new PlayerRebate
+        {
+            BrandId = playerRebateQueue.BrandId,
+            AgentId = playerRebateQueue.AgentId,
+            PlayerCode = playerRebateQueue.PlayerCode,
+            ReportDate = playerRebateQueue.ReportDate.UtcDateTime,
+            VipCardGameRebatePercentage = playerRebateQueue.VipCardGameRebatePercentage,
+            VipLiveDealerRebatePercentage = playerRebateQueue.VipLiveDealerRebatePercentage,
+            VipLotteryRebatePercentage = playerRebateQueue.VipLotteryRebatePercentage,
+            VipSlotRebatePercentage = playerRebateQueue.VipSlotRebatePercentage,
+            VipSportsRebatePercentage = playerRebateQueue.VipSportsRebatePercentage,
+            VipVirtualSportsRebatePercentage = playerRebateQueue.VipVirtualSportsRebatePercentage
+        };
+
+        var playerRebates = new PlayerRebate[]
+        {
+            playerRebate
+        };
+
+        var playerRebate2 = playerRebate;
+
+        playerRebate2.AgentId = null;
+
+        _ = fakePlayerRebateTaskQueue.DequeueAsync(Arg.Any<CancellationToken>()).Returns(playerRebateQueue);
+
+        _ = fakePlayerRebateFactory
+            .CreateVipPlayerRebateAsync(Arg.Any<VipPlayerRebateModel>(), Arg.Any<DateTimeOffset>())
+            .Returns(playerRebate2);
+
+        _ = fakePlayerRebateService.GetQueries()
+            .Returns(playerRebates.AsQueryable().BuildMock());
+
+        await sut.ProcessQueue(default);
+
+        await fakePlayerRebateFactory.Received(1)
+            .CreateVipPlayerRebateAsync(Arg.Any<VipPlayerRebateModel>(), Arg.Any<DateTimeOffset>());
+        await fakePlayerRebateFactory.Received(1)
+            .CreatePlayerBucketsAsync(Arg.Any<CreatePlayerBucketRequest>());
+        await fakeCashServiceClient.Received(1)
             .RebateAsync(Arg.Any<Guid>(), Arg.Any<decimal>(), Arg.Any<string>(), Arg.Any<string>(),
                 Arg.Any<CancellationToken>());
     }

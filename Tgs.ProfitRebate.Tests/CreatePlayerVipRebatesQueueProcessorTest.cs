@@ -92,6 +92,7 @@ public class CreatePlayerVipRebatesQueueProcessorTest
             new()
             {
                 BrandId = playerRebateQueue.BrandId,
+                AgentId = playerRebateQueue.AgentId,
                 PlayerCode = playerRebateQueue.PlayerCode,
                 ReportDate = playerRebateQueue.ReportDate.UtcDateTime,
                 VipCardGameRebatePercentage = playerRebateQueue.VipCardGameRebatePercentage,

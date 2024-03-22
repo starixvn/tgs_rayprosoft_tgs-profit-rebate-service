@@ -56,6 +56,7 @@ internal class PlayerRebateTaskQueueProcessor : IPlayerRebateTaskQueueProcessor
         if (await _playerRebateService.GetQueries()
                 .AnyAsync(x =>
                         x.BrandId == request.BrandId &&
+                        x.AgentId == request.AgentId &&
                         x.PlayerCode == request.PlayerCode &&
                         x.ReportDate == request.ReportDate.ToUniversalTime() &&
                         x.VipCardGameRebatePercentage == request.VipCardGameRebatePercentage &&
